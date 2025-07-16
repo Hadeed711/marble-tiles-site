@@ -95,8 +95,29 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="mt-6 sm:mt-8 border-t border-[#d4af37]/20 pt-3 sm:pt-4 text-center text-xs sm:text-sm text-gray-200">
-        © {new Date().getFullYear()} Sundar Marbles & Tiles. All rights reserved.
+      <div className="mt-6 sm:mt-8 border-t border-[#d4af37]/20 pt-3 sm:pt-4 text-xs sm:text-sm text-gray-200">
+        <div className="flex flex-col sm:grid sm:grid-cols-3 items-center gap-2">
+          {/* Empty left space for desktop layout */}
+          <div className="hidden sm:block"></div>
+          
+          {/* Center - Copyright */}
+          <div className="text-center order-1 sm:order-none">
+            © {new Date().getFullYear()} Sundar Marbles & Tiles. All rights reserved.
+          </div>
+          
+          {/* Right - Developer Credit */}
+          <div className="text-center sm:text-right order-2 sm:order-none">
+            Website developed by{" "}
+            <a 
+              href="https://wa.me/923241669274?text=Hello%20Hadeed!%20I%20saw%20the%20Sundar%20Marbles%20website%20you%20developed.%20Great%20work!" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-[#d4af37] hover:text-white transition-colors duration-300 underline hover:no-underline"
+            >
+              Hadeed Ahmad
+            </a>
+          </div>
+        </div>
       </div>
     </motion.footer>
   );
