@@ -85,7 +85,7 @@ export default function Navbar() {
             <Link
               key={link.name}
               to={link.path}
-              className={`text-md font-medium transition-all duration-300 hover:text-[#d4af37] relative ${
+              className={`text-md font-medium transition-all duration-300 hover:text-[#d4af37] relative whitespace-nowrap ${
                 pathname === link.path
                   ? "text-[#00796b] font-semibold border-b-2 border-[#d4af37]"
                   : "text-[#333] hover:text-[#00796b]"

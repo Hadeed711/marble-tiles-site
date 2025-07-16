@@ -5,12 +5,15 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Card from "../components/Card";
 import HoverShadowBg from "../components/HoverShadowBg";
+import slider1 from "../assets/cover_img.jpg";
+import slider2 from "../assets/cover_img2.jpg";
+import slider3 from "../assets/cover_img1.jpg";
 
 // High-quality marble and stone images
 const sliderImages = [
-  "https://images.unsplash.com/photo-1615873968403-89e068ea8a3d?auto=format&fit=crop&w=1920&q=80",
-  "https://images.unsplash.com/photo-1560185008-c01c0520c1f7?auto=format&fit=crop&w=1920&q=80",
-  "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=1920&q=80",
+  slider1,
+  slider2,
+  slider3,
 ];
 
 const cardWidth = 320;
@@ -84,35 +87,30 @@ export default function Home() {
   const services = [
     {
       title: "Premium Marble Flooring",
-      image:
-        "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=800&q=80",
+      image: slider1,
       description:
         "Luxurious marble flooring installation with precision and elegance",
     },
     {
       title: "Granite & Marble Staircases",
-      image:
-        "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=800&q=80",
+      image: slider1,
       description:
         "Custom staircase designs with premium marble and granite materials",
     },
     {
       title: "Artistic Stone Design",
-      image:
-        "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=800&q=80",
+      image: slider1,
       description: "Bespoke marble and granite designs tailored to your vision",
     },
     {
       title: "Kitchen Countertops",
-      image:
-        "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=800&q=80",
+      image: slider1,
       description:
         "Durable and beautiful granite countertops for modern kitchens",
     },
     {
       title: "Mosaic Art Installations",
-      image:
-        "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=800&q=80",
+      image: slider1,
       description:
         "Intricate mosaic art installations using premium marble and granite",
     },
@@ -120,36 +118,31 @@ export default function Home() {
 
   const featuredProducts = [
     {
-      image:
-        "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=800&q=80",
+      image: slider1,
       name: "Carrara White Marble",
       price: "3,700",
       description: "Premium Italian white marble with elegant veining",
     },
     {
-      image:
-        "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=800&q=80",
+      image: slider1,
       name: "Black Galaxy Granite",
       price: "3,900",
       description: "Stunning black granite with golden speckles",
     },
     {
-      image:
-        "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=800&q=80",
+      image: slider1,
       name: "Calacatta Gold Marble",
       price: "4,100",
       description: "Luxurious marble with distinctive gold veining",
     },
     {
-      image:
-        "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=800&q=80",
+      image: slider1,
       name: "Kashmir White Granite",
       price: "4,300",
       description: "Pure white granite with subtle gray patterns",
     },
     {
-      image:
-        "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=800&q=80",
+      image: slider1,
       name: "Emperador Dark Marble",
       price: "4,500",
       description: "Rich brown marble with cream veining",
@@ -282,22 +275,78 @@ export default function Home() {
             ))}
           </div>
 
-          {/* Hero Text Overlay */}
+        {/* Hero Text Overlay */}
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="absolute bottom-6 sm:bottom-12 md:bottom-20 left-4 sm:left-8 md:left-20 right-4 sm:right-8 md:right-auto bg-white/70 backdrop-blur-sm p-3 sm:p-4 md:p-6 rounded-lg sm:rounded-xl shadow-lg max-w-full sm:max-w-md md:max-w-xl"
+        >
+          <h1 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-extrabold text-[#00796b] leading-tight">
+            Premium Marble & Granite <br className="hidden md:block" />
+            <span className="md:hidden">& </span>Elegant Craftsmanship
+          </h1>
+          <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-[#333] leading-relaxed mb-3 sm:mb-4 md:mb-6">
+            Elevate your interiors with our timeless stones — handcrafted since 2008.
+          </p>
+          
+          {/* Premium CTA Button */}
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="absolute bottom-12 sm:bottom-20 left-4 sm:left-12 right-4 sm:right-auto bg-white/90 backdrop-blur-sm p-4 sm:p-6 rounded-xl shadow-lg max-w-full sm:max-w-xl"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.6, duration: 0.4 }}
+            className="flex flex-col sm:flex-row gap-2 sm:gap-3 md:gap-4"
           >
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#00796b] leading-tight sm:leading-snug">
-              Premium Marble & Granite <br className="hidden sm:block" />
-              <span className="sm:hidden">& </span>Elegant Craftsmanship
-            </h1>
-            <p className="mt-2 text-xs sm:text-sm text-[#333] leading-relaxed">
-              Elevate your interiors with our timeless stones — handcrafted
-              since 2008.
-            </p>
+            <Link
+              to="/products"
+              className="group relative inline-flex items-center justify-center px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4 text-xs sm:text-sm md:text-base font-semibold text-white rounded-full overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-105"
+            >
+              {/* Gradient Background */}
+              <div className="absolute inset-0 bg-gradient-to-r from-[#00796b] via-[#d4af37] to-[#00796b] bg-[length:200%_100%] bg-left group-hover:bg-right transition-all duration-700"></div>
+              
+              {/* Button Content */}
+              <span className="relative flex items-center gap-1 sm:gap-2">
+                <svg 
+                  className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 transition-transform duration-300 group-hover:translate-x-1" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+                <span className="hidden sm:inline">Explore Our</span> Products
+                <svg 
+                  className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 transition-transform duration-300 group-hover:translate-x-1" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </span>
+              
+              {/* Shimmer Effect */}
+              <div className="absolute inset-0 -top-1 -bottom-1 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+            </Link>
+            
+            <Link
+              to="/contact"
+              className="group inline-flex items-center justify-center px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 text-xs sm:text-sm md:text-base font-medium text-[#00796b] bg-transparent border-2 border-[#00796b] rounded-full hover:bg-[#00796b] hover:text-white transition-all duration-300 shadow-md hover:shadow-lg"
+            >
+              <span className="flex items-center gap-1 sm:gap-2">
+                <svg 
+                  className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 transition-transform duration-300 group-hover:rotate-12" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                </svg>
+                Get Quote
+              </span>
+            </Link>
           </motion.div>
+        </motion.div>
         </div>
 
         {/* Services */}
@@ -444,17 +493,13 @@ export default function Home() {
             </div>
           </motion.div>
           <motion.img
-            src="https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=800&q=80"
+            src={slider1}
             alt="About Sundar Marbles - Modern Interior"
             className="w-full md:w-1/2 h-64 sm:h-80 md:h-96 rounded-xl shadow-lg object-cover"
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            onError={(e) => {
-              e.target.src =
-                "https://images.unsplash.com/photo-1615873968403-89e068ea8a3d?auto=format&fit=crop&w=800&q=80";
-            }}
           />
         </div>
 
@@ -468,7 +513,7 @@ export default function Home() {
             <button
               onClick={handlePrevProduct}
               disabled={productIndex === 0}
-              className={`absolute left-0 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white shadow-lg rounded-full p-1.5 sm:p-2 z-20 transition-all duration-300 ${
+              className={`absolute left-0 top-1/2 -translate-y-1/2 bg-white/60 hover:bg-white shadow-lg rounded-full p-1.5 sm:p-2 z-20 transition-all duration-300 ${
                 productIndex === 0
                   ? "opacity-50 cursor-not-allowed"
                   : "hover:scale-110"
@@ -648,7 +693,7 @@ export default function Home() {
         <div className="fixed bottom-4 sm:bottom-6 left-4 sm:left-6 flex flex-col gap-3 sm:gap-4 z-50">
           {/* WhatsApp Icon - Top */}
           <motion.a
-            href="https://wa.me/923001234567?text=Hello%20Sundar%20Marbles!%20I'm%20interested%20in%20your%20marble%20and%20granite%20products."
+            href="https://wa.me/923006641727?text=Hello%20Sundar%20Marbles!%20I'm%20interested%20in%20your%20marble%20and%20granite%20products."
             target="_blank"
             rel="noopener noreferrer"
             className="group relative"
@@ -695,7 +740,7 @@ export default function Home() {
 
           {/* Facebook Icon - Bottom */}
           <motion.a
-            href="https://facebook.com/sundarmarbles"
+            href="https://www.facebook.com/SundarMarble/"
             target="_blank"
             rel="noopener noreferrer"
             className="group relative"
