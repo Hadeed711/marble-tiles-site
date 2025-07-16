@@ -12,27 +12,27 @@ import aboutImage from "../assets/services1.jpg";
 
 const teamMembers = [
   {
-    name: "Umar Farooq",
-    role: "Production Manager",
-    phone: "0301-1234567",
+    name: "Mian Tahir Masood",
+    role: "Chief Executive",
+    phone: "0300-6641727",
     image: team1,
   },
   {
-    name: "Asim Nawaz",
-    role: "Quality Control Officer",
-    phone: "0321-9876543",
+    name: "Azmat Ali",
+    role: "Sales Officer",
+    phone: "0304-1394413",
     image: team2,
   },
   {
-    name: "Saad Arshad",
-    role: "Warehouse Supervisor",
-    phone: "0303-1122334",
+    name: "Mian Talha Tahir",
+    role: "Unknown",
+    phone: "0320-6040196",
     image: team3,
   },
   {
-    name: "Junaid Akhtar",
-    role: "Customer Coordinator",
-    phone: "0312-6655443",
+    name: "Unknown",
+    role: "Unknown",
+    phone: "Nan",
     image: team4,
   },
 ];
@@ -107,7 +107,7 @@ export default function About() {
             </li>
             <li className="flex items-center">
               <span className="w-2 h-2 bg-[#00796b] rounded-full mr-4"></span>
-              3D Visualization & Consultation Services
+              Professional Consultation Services
             </li>
           </ul>
         </motion.div>

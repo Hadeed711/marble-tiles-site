@@ -39,7 +39,7 @@ export default function Contact() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -64,13 +64,140 @@ export default function Contact() {
     }
 
     setLoading(true);
-    setTimeout(() => {
-      const mailto = `mailto:hadeedahmad711@gmail.com?subject=Marble Inquiry&body=Name: ${formData.name}%0D%0AEmail: ${formData.email}%0D%0APhone: ${formData.phone}%0D%0AMessage: ${formData.message}`;
-      window.location.href = mailto;
+
+    // Both operations will run independently - if one fails, the other continues
+    const sendToBackend = async () => {
+      try {
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        });
+        
+        if (response.ok) {
+          console.log('✅ Message sent to backend successfully');
+          return { success: true, method: 'backend' };
+        } else {
+          console.log('❌ Backend response error');
+          return { success: false, method: 'backend', error: 'Response error' };
+        }
+      } catch (error) {
+        console.log('❌ Backend not available:', error.message);
+        return { success: false, method: 'backend', error: error.message };
+      }
+    };
+
+    const sendToWhatsApp = async () => {
+      try {
+        // Format message for WhatsApp API
+        const whatsappMessage = `*New Marble Inquiry from Website*
+
+👤 *Name:* ${formData.name}
+📧 *Email:* ${formData.email}
+📱 *Phone:* ${formData.phone}
+
+💬 *Message:*
+${formData.message}
+
+---
+_Sent from Sundar Marbles Website_`;
+
+        // Using WhatsApp Business API or webhook
+        // Replace this URL with your WhatsApp webhook endpoint when available
+        const whatsappApiUrl = '/api/send-whatsapp'; // Your WhatsApp API endpoint
+        
+        const response = await fetch(whatsappApiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            to: '+923241669274',
+            message: whatsappMessage,
+            customerData: formData
+          }),
+        });
+
+        if (response.ok) {
+          console.log('✅ Message sent to WhatsApp successfully');
+          return { success: true, method: 'whatsapp' };
+        } else {
+          console.log('❌ WhatsApp API error');
+          return { success: false, method: 'whatsapp', error: 'API error' };
+        }
+      } catch (error) {
+        console.log('❌ WhatsApp API not available:', error.message);
+        
+        // Fallback: Use WhatsApp Web URL (silent, no popup)
+        try {
+          const whatsappMessage = `New Marble Inquiry from Website\n\nName: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}\n\nMessage:\n${formData.message}\n\n----\nSent from Sundar Marbles Website`;
+          
+          // Create a hidden iframe to trigger WhatsApp without opening new window
+          const iframe = document.createElement('iframe');
+          iframe.style.display = 'none';
+          iframe.src = `https://wa.me/923241669274?text=${encodeURIComponent(whatsappMessage)}`;
+          document.body.appendChild(iframe);
+          
+          // Remove iframe after 3 seconds
+          setTimeout(() => {
+            document.body.removeChild(iframe);
+          }, 3000);
+          
+          console.log('📱 WhatsApp fallback triggered');
+          return { success: true, method: 'whatsapp-fallback' };
+        } catch (fallbackError) {
+          console.log('❌ WhatsApp fallback failed:', fallbackError.message);
+          return { success: false, method: 'whatsapp', error: fallbackError.message };
+        }
+      }
+    };
+
+    // Run both operations simultaneously
+    try {
+      const [backendResult, whatsappResult] = await Promise.allSettled([
+        sendToBackend(),
+        sendToWhatsApp()
+      ]);
+
+      let successCount = 0;
+      let successMessage = "Message processing completed: ";
+
+      if (backendResult.status === 'fulfilled' && backendResult.value.success) {
+        successCount++;
+        successMessage += "✅ Saved to database ";
+      } else {
+        successMessage += "❌ Database unavailable ";
+      }
+
+      if (whatsappResult.status === 'fulfilled' && whatsappResult.value.success) {
+        successCount++;
+        successMessage += "✅ Sent to WhatsApp";
+      } else {
+        successMessage += "❌ WhatsApp unavailable";
+      }
+
+      console.log(successMessage);
+
       setLoading(false);
       setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
-    }, 1000);
+      
+      // Clear form after processing
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        message: "",
+      });
+      
+      setTimeout(() => setSuccess(false), 5000);
+
+    } catch (error) {
+      console.error('Error in form submission:', error);
+      setLoading(false);
+      alert('There was an error processing your message. Please try again.');
+    }
   };
 
   return (
@@ -91,7 +218,7 @@ export default function Contact() {
           exit={{ opacity: 0 }}
           className="fixed top-10 left-1/2 transform -translate-x-1/2 z-50 bg-[#00796b] text-white px-6 py-3 rounded-full shadow-lg"
         >
-          ✅ Message prepared! Check your mail client.
+          ✅ Message submitted successfully!
         </motion.div>
       )}
 
@@ -138,7 +265,7 @@ export default function Contact() {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder="example@email.com"
+                  placeholder="example@gmail.com"
                   className="w-full border border-gray-300 rounded px-4 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-[#00796b]"
                   required
                 />
@@ -188,14 +315,14 @@ export default function Contact() {
                 Main Branch
               </h3>
               <p className="text-[#444]">
-                Sundar Marbles, Near Samundri Road, Faisalabad
+                Chakki Stop, New Green Town, Millat Road, Faisalabad
               </p>
-              <p className="text-sm text-[#666]">Tel: 041-1234567</p>
+              <p className="text-sm text-[#666]">Tel: 041-8816900</p>
               <p className="text-sm text-[#666]">
-                Email: main@sundarmarbles.com
+                Email: info@sundarmarbles.com
               </p>
               <a
-                href="https://maps.google.com"
+                href="https://maps.app.goo.gl/dR9DepEoZGSmXRaA7"
                 target="_blank"
                 rel="noreferrer"
                 className="text-sm mt-2 inline-block text-[#00796b] hover:underline"
@@ -209,14 +336,14 @@ export default function Contact() {
                 Sub Branch
               </h3>
               <p className="text-[#444]">
-                Sundar Marbles Outlet, D-Ground, Faisalabad
+                Dhanola Saim, near Hina Sana Mill, Faisalabad
               </p>
-              <p className="text-sm text-[#666]">Tel: 041-7654321</p>
+              <p className="text-sm text-[#666]">Tel:  041-8816900</p>
               <p className="text-sm text-[#666]">
-                Email: outlet@sundarmarbles.com
+                Email: info@sundarmarbles.com
               </p>
               <a
-                href="https://maps.google.com"
+                href="https://maps.app.goo.gl/9oP6NFSYNWLdf3GFA"
                 target="_blank"
                 rel="noreferrer"
                 className="text-sm mt-2 inline-block text-[#00796b] hover:underline"
