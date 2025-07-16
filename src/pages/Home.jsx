@@ -280,7 +280,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="absolute bottom-6 sm:bottom-12 md:bottom-20 left-4 sm:left-8 md:left-20 right-4 sm:right-8 md:right-auto bg-white/70 backdrop-blur-sm p-3 sm:p-4 md:p-6 rounded-lg sm:rounded-xl shadow-lg max-w-full sm:max-w-md md:max-w-xl"
+          className="absolute bottom-6 sm:bottom-12 md:bottom-20 left-4 sm:left-8 md:left-20 right-4 sm:right-8 md:right-auto bg-white/60 backdrop-blur-sm p-3 sm:p-4 md:p-6 rounded-lg sm:rounded-xl shadow-lg max-w-full sm:max-w-md md:max-w-xl"
         >
           <h1 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-extrabold text-[#00796b] leading-tight">
             Premium Marble & Granite <br className="hidden md:block" />
