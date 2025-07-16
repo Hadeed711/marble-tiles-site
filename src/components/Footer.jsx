@@ -10,7 +10,7 @@ export default function Footer() {
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
       
-      className="bg-gradient-to-b from-[#004d40] to-[#30786c] text-white pt-8 sm:pt-10 pb-4 sm:pb-6"
+      className="relative z-10 bg-gradient-to-b from-[#004d40] to-[#30786c] text-white pt-8 sm:pt-10 pb-4 sm:pb-6"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
 

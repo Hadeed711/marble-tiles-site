@@ -4,12 +4,13 @@ import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Card from "../components/Card";
+import HoverShadowBg from "../components/HoverShadowBg";
 
 // High-quality marble and stone images
 const sliderImages = [
   "https://images.unsplash.com/photo-1615873968403-89e068ea8a3d?auto=format&fit=crop&w=1920&q=80",
   "https://images.unsplash.com/photo-1560185008-c01c0520c1f7?auto=format&fit=crop&w=1920&q=80",
-  "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=1920&q=80"
+  "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=1920&q=80",
 ];
 
 const cardWidth = 320;
@@ -20,7 +21,9 @@ export default function Home() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const intervalRef = useRef(null);
   const [productIndex, setProductIndex] = useState(0);
-  const [currentCardsToShow, setCurrentCardsToShow] = useState(cardsToShow.desktop);
+  const [currentCardsToShow, setCurrentCardsToShow] = useState(
+    cardsToShow.desktop
+  );
 
   // Helper to start interval
   const startSliderInterval = () => {
@@ -44,8 +47,8 @@ export default function Home() {
     };
 
     updateCardsToShow();
-    window.addEventListener('resize', updateCardsToShow);
-    return () => window.removeEventListener('resize', updateCardsToShow);
+    window.addEventListener("resize", updateCardsToShow);
+    return () => window.removeEventListener("resize", updateCardsToShow);
   }, []);
 
   useEffect(() => {
@@ -74,79 +77,101 @@ export default function Home() {
     const handleMouseMove = (e) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
     };
-    document.addEventListener("mousemove", handleMouseMove);
-    return () => document.removeEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
   const services = [
-    { 
-      title: "Premium Marble Flooring", 
-      image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=800&q=80",
-      description: "Luxurious marble flooring installation with precision and elegance"
+    {
+      title: "Premium Marble Flooring",
+      image:
+        "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=800&q=80",
+      description:
+        "Luxurious marble flooring installation with precision and elegance",
     },
-    { 
-      title: "Granite & Marble Staircases", 
-      image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=800&q=80",
-      description: "Custom staircase designs with premium marble and granite materials"
+    {
+      title: "Granite & Marble Staircases",
+      image:
+        "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=800&q=80",
+      description:
+        "Custom staircase designs with premium marble and granite materials",
     },
-    { 
-      title: "Artistic Stone Design", 
-      image: "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=800&q=80",
-      description: "Bespoke marble and granite designs tailored to your vision"
+    {
+      title: "Artistic Stone Design",
+      image:
+        "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=800&q=80",
+      description: "Bespoke marble and granite designs tailored to your vision",
     },
-    { 
-      title: "Kitchen Countertops", 
-      image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=800&q=80",
-      description: "Durable and beautiful granite countertops for modern kitchens"
+    {
+      title: "Kitchen Countertops",
+      image:
+        "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=800&q=80",
+      description:
+        "Durable and beautiful granite countertops for modern kitchens",
+    },
+    {
+      title: "Mosaic Art Installations",
+      image:
+        "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=800&q=80",
+      description:
+        "Intricate mosaic art installations using premium marble and granite",
     },
   ];
 
   const featuredProducts = [
     {
-      image: "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=800&q=80",
+      image:
+        "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=800&q=80",
       name: "Carrara White Marble",
       price: "3,700",
-      description: "Premium Italian white marble with elegant veining"
+      description: "Premium Italian white marble with elegant veining",
     },
     {
-      image: "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=800&q=80",
+      image:
+        "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=800&q=80",
       name: "Black Galaxy Granite",
       price: "3,900",
-      description: "Stunning black granite with golden speckles"
+      description: "Stunning black granite with golden speckles",
     },
     {
-      image: "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=800&q=80",
+      image:
+        "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=800&q=80",
       name: "Calacatta Gold Marble",
       price: "4,100",
-      description: "Luxurious marble with distinctive gold veining"
+      description: "Luxurious marble with distinctive gold veining",
     },
     {
-      image:"https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=800&q=80",
+      image:
+        "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=800&q=80",
       name: "Kashmir White Granite",
       price: "4,300",
-      description: "Pure white granite with subtle gray patterns"
+      description: "Pure white granite with subtle gray patterns",
     },
     {
-      image: "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=800&q=80",
+      image:
+        "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=800&q=80",
       name: "Emperador Dark Marble",
       price: "4,500",
-      description: "Rich brown marble with cream veining"
+      description: "Rich brown marble with cream veining",
     },
   ];
-  
+
   // Calculate max index for the product slider - responsive
-  const maxProductIndex = Math.max(0, featuredProducts.length - currentCardsToShow);
-  
+  const maxProductIndex = Math.max(
+    0,
+    featuredProducts.length - currentCardsToShow
+  );
+
   // Handle previous product navigation
   const handlePrevProduct = () => {
-    setProductIndex(prev => Math.max(0, prev - 1));
+    setProductIndex((prev) => Math.max(0, prev - 1));
   };
 
   // Handle next product navigation
   const handleNextProduct = () => {
-    setProductIndex(prev => Math.min(maxProductIndex, prev + 1));
+    setProductIndex((prev) => Math.min(maxProductIndex, prev + 1));
   };
-  
+
   const dotColors = [
     "#00796b", // for marble1
     "#d4af37", // for marble2
@@ -155,14 +180,7 @@ export default function Home() {
 
   return (
     <div className="relative bg-[#f8f9fa] text-[#333333] overflow-hidden">
-      {/* Background Hover Animation */}
-      <motion.div
-        className="fixed top-0 left-0 w-full h-full pointer-events-none z-0"
-        animate={{
-          background: `radial-gradient(circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(212, 175, 55, 0.12), transparent 300px)`,
-        }}
-        transition={{ ease: "easeOut", duration: 0.3 }}
-      />
+      <HoverShadowBg mousePosition={mousePosition} />
 
       <div className="relative z-10">
         <Navbar />
@@ -272,7 +290,7 @@ export default function Home() {
             className="absolute bottom-12 sm:bottom-20 left-4 sm:left-12 right-4 sm:right-auto bg-white/90 backdrop-blur-sm p-4 sm:p-6 rounded-xl shadow-lg max-w-full sm:max-w-xl"
           >
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#00796b] leading-tight sm:leading-snug">
-              Premium Marble & Granite <br className="hidden sm:block" /> 
+              Premium Marble & Granite <br className="hidden sm:block" />
               <span className="sm:hidden">& </span>Elegant Craftsmanship
             </h1>
             <p className="mt-2 text-xs sm:text-sm text-[#333] leading-relaxed">
@@ -374,7 +392,7 @@ export default function Home() {
 
         {/* About Section */}
         <div className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 bg-[#f5f5f5] flex flex-col md:flex-row items-center gap-6 sm:gap-8 md:gap-10 max-w-7xl mx-auto">
-          <motion.div 
+          <motion.div
             className="w-full md:w-1/2 space-y-4 sm:space-y-6"
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -385,26 +403,37 @@ export default function Home() {
               About Sundar Marbles
             </h2>
             <p className="text-base sm:text-lg text-gray-700 leading-relaxed mb-3 sm:mb-4 text-center md:text-left">
-              Established in 2008, Sundar Marbles has been Faisalabad's premier destination for
-              luxury marble, granite, and natural stone solutions. With over 15 years of expertise,
-              we've transformed countless homes and commercial spaces with our exceptional craftsmanship.
+              Established in 2008, Sundar Marbles has been Faisalabad's premier
+              destination for luxury marble, granite, and natural stone
+              solutions. With over 15 years of expertise, we've transformed
+              countless homes and commercial spaces with our exceptional
+              craftsmanship.
             </p>
             <p className="text-sm sm:text-base text-gray-600 leading-relaxed mb-4 sm:mb-6 text-center md:text-left">
-              Our commitment to quality, innovation, and customer satisfaction has made us the trusted
-              choice for architects, interior designers, and homeowners seeking timeless elegance.
+              Our commitment to quality, innovation, and customer satisfaction
+              has made us the trusted choice for architects, interior designers,
+              and homeowners seeking timeless elegance.
             </p>
-            
+
             <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
               <div className="text-center p-3 sm:p-4 bg-white rounded-lg shadow-sm">
-                <h3 className="text-xl sm:text-2xl font-bold text-[#00796b]">15+</h3>
-                <p className="text-xs sm:text-sm text-gray-600">Years Experience</p>
+                <h3 className="text-xl sm:text-2xl font-bold text-[#00796b]">
+                  15+
+                </h3>
+                <p className="text-xs sm:text-sm text-gray-600">
+                  Years Experience
+                </p>
               </div>
               <div className="text-center p-3 sm:p-4 bg-white rounded-lg shadow-sm">
-                <h3 className="text-xl sm:text-2xl font-bold text-[#d4af37]">1000+</h3>
-                <p className="text-xs sm:text-sm text-gray-600">Projects Completed</p>
+                <h3 className="text-xl sm:text-2xl font-bold text-[#d4af37]">
+                  1000+
+                </h3>
+                <p className="text-xs sm:text-sm text-gray-600">
+                  Projects Completed
+                </p>
               </div>
             </div>
-            
+
             <div className="text-center md:text-left">
               <Link
                 to="/about"
@@ -423,7 +452,8 @@ export default function Home() {
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
             onError={(e) => {
-              e.target.src = 'https://images.unsplash.com/photo-1615873968403-89e068ea8a3d?auto=format&fit=crop&w=800&q=80';
+              e.target.src =
+                "https://images.unsplash.com/photo-1615873968403-89e068ea8a3d?auto=format&fit=crop&w=800&q=80";
             }}
           />
         </div>
@@ -439,7 +469,9 @@ export default function Home() {
               onClick={handlePrevProduct}
               disabled={productIndex === 0}
               className={`absolute left-0 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white shadow-lg rounded-full p-1.5 sm:p-2 z-20 transition-all duration-300 ${
-                productIndex === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110'
+                productIndex === 0
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:scale-110"
               } hidden sm:block`}
               aria-label="Previous Product"
             >
@@ -470,15 +502,19 @@ export default function Home() {
                     24 * (featuredProducts.length - 1)
                   }px`,
                 }}
-                animate={{ 
-                  x: window.innerWidth < 640 
-                    ? -productIndex * (cardWidth + 16) // Smaller gap on mobile
-                    : -productIndex * (cardWidth + 24) 
+                animate={{
+                  x:
+                    window.innerWidth < 640
+                      ? -productIndex * (cardWidth + 16) // Smaller gap on mobile
+                      : -productIndex * (cardWidth + 24),
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
               >
                 {featuredProducts.map((product) => (
-                  <div key={product.name} className="w-80 sm:w-80 flex-shrink-0 h-full">
+                  <div
+                    key={product.name}
+                    className="w-80 sm:w-80 flex-shrink-0 h-full"
+                  >
                     <Card
                       image={product.image}
                       name={product.name}
@@ -495,7 +531,9 @@ export default function Home() {
               onClick={handleNextProduct}
               disabled={productIndex >= maxProductIndex}
               className={`absolute right-0 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white shadow-lg rounded-full p-1.5 sm:p-2 z-20 transition-all duration-300 ${
-                productIndex >= maxProductIndex ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110'
+                productIndex >= maxProductIndex
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:scale-110"
               } hidden sm:block`}
               aria-label="Next Product"
             >
@@ -516,14 +554,16 @@ export default function Home() {
               </svg>
             </button>
           </div>
-          
+
           {/* Mobile Navigation Buttons */}
           <div className="flex justify-center gap-4 mt-4 sm:hidden">
             <button
               onClick={handlePrevProduct}
               disabled={productIndex === 0}
               className={`bg-white/70 hover:bg-white shadow-lg rounded-full p-2 transition-all duration-300 ${
-                productIndex === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110'
+                productIndex === 0
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:scale-110"
               }`}
               aria-label="Previous Product"
             >
@@ -546,7 +586,9 @@ export default function Home() {
               onClick={handleNextProduct}
               disabled={productIndex >= maxProductIndex}
               className={`bg-white/70 hover:bg-white shadow-lg rounded-full p-2 transition-all duration-300 ${
-                productIndex >= maxProductIndex ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110'
+                productIndex >= maxProductIndex
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:scale-110"
               }`}
               aria-label="Next Product"
             >
@@ -566,7 +608,7 @@ export default function Home() {
               </svg>
             </button>
           </div>
-          
+
           {/* Slider Indicators */}
           <div className="flex justify-center mt-4 sm:mt-6 space-x-2">
             {Array.from({ length: maxProductIndex + 1 }, (_, index) => (
@@ -574,19 +616,19 @@ export default function Home() {
                 key={index}
                 onClick={() => setProductIndex(index)}
                 className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full transition-all duration-300 ${
-                  index === productIndex 
-                    ? 'bg-[#00796b] scale-110' 
-                    : 'bg-gray-300 hover:bg-gray-400'
+                  index === productIndex
+                    ? "bg-[#00796b] scale-110"
+                    : "bg-gray-300 hover:bg-gray-400"
                 }`}
                 aria-label={`Go to slide ${index + 1}`}
               />
             ))}
           </div>
         </div>
-       <div className="text-center  mb-20">
-  <Link
-    to="/products"
-    className="
+        <div className="text-center  mb-20">
+          <Link
+            to="/products"
+            className="
       inline-flex items-center justify-center
       text-white text-base font-medium
       px-6 py-3 rounded-full shadow-md
@@ -595,12 +637,10 @@ export default function Home() {
       hover:bg-right
       transition-all duration-500 ease-in-out
     "
-  >
-    View All Products →
-  </Link>
-</div>
-
-
+          >
+            View All Products →
+          </Link>
+        </div>
 
         <Footer />
 
@@ -616,35 +656,38 @@ export default function Home() {
             whileTap={{ scale: 0.95 }}
             initial={{ x: -100, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 1, duration: 0.8, type: "spring", stiffness: 100 }}
+            transition={{
+              delay: 1,
+              duration: 0.8,
+              type: "spring",
+              stiffness: 100,
+            }}
           >
             {/* WhatsApp Button */}
             <motion.div
               className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-r from-[#25D366] to-[#128C7E] rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300"
-              animate={{ 
+              animate={{
                 y: [0, -8, 0],
               }}
               transition={{
                 duration: 2,
                 repeat: Infinity,
-                ease: "easeInOut"
+                ease: "easeInOut",
               }}
             >
-              <svg 
-                width="24" 
-                height="24" 
+              <svg
+                width="24"
+                height="24"
                 className="sm:w-7 sm:h-7 text-white"
-                viewBox="0 0 24 24" 
+                viewBox="0 0 24 24"
                 fill="currentColor"
               >
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.051 3.488"/>
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.051 3.488" />
               </svg>
             </motion.div>
-            
+
             {/* WhatsApp Tooltip */}
-            <div
-              className="absolute left-16 sm:left-18 top-1/2 -translate-y-1/2 bg-[#25D366] text-white px-3 py-2 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 z-10"
-            >
+            <div className="absolute left-16 sm:left-18 top-1/2 -translate-y-1/2 bg-[#25D366] text-white px-3 py-2 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
               Chat on WhatsApp
               <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-[#25D366] rotate-45"></div>
             </div>
@@ -660,37 +703,39 @@ export default function Home() {
             whileTap={{ scale: 0.95 }}
             initial={{ x: -100, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 1.3, duration: 0.8, type: "spring", stiffness: 100 }}
+            transition={{
+              delay: 1.3,
+              duration: 0.8,
+              type: "spring",
+              stiffness: 100,
+            }}
           >
             {/* Facebook Button */}
             <motion.div
               className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-r from-[#1877F2] to-[#42A5F5] rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300"
-              whileHover={{ 
+              whileHover={{
                 rotate: [0, -10, 10, -10, 0],
-                transition: { duration: 0.5 }
+                transition: { duration: 0.5 },
               }}
             >
-              <svg 
-                width="24" 
-                height="24" 
+              <svg
+                width="24"
+                height="24"
                 className="sm:w-7 sm:h-7 text-white"
-                viewBox="0 0 24 24" 
+                viewBox="0 0 24 24"
                 fill="currentColor"
               >
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
               </svg>
             </motion.div>
-            
+
             {/* Facebook Tooltip */}
-            <div
-              className="absolute left-16 sm:left-18 top-1/2 -translate-y-1/2 bg-[#1877F2] text-white px-3 py-2 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 z-10"
-            >
+            <div className="absolute left-16 sm:left-18 top-1/2 -translate-y-1/2 bg-[#1877F2] text-white px-3 py-2 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
               Follow on Facebook
               <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-[#1877F2] rotate-45"></div>
             </div>
           </motion.a>
         </div>
-
       </div>
     </div>
   );

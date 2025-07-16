@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import Loader from "../components/Loader";
+import HoverShadowBg from "../components/HoverShadowBg";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -12,15 +13,17 @@ export default function Contact() {
     message: "",
   });
 
-  const [cursorPos, setCursorPos] = useState({ x: 50, y: 50 });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-  const handleMouseMove = (e) => {
-    const x = (e.clientX / window.innerWidth) * 100;
-    const y = (e.clientY / window.innerHeight) * 100;
-    setCursorPos({ x, y });
-  };
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -71,19 +74,9 @@ export default function Contact() {
   };
 
   return (
-    <div
-      className="relative min-h-screen bg-[#f7f9f9] text-[#333] overflow-hidden"
-      onMouseMove={handleMouseMove}
-    >
+    <div className="relative min-h-screen bg-[#f7f9f9] text-[#333] overflow-hidden">
       <Navbar />
-
-      {/* Moving circle hover background */}
-      <div
-        className="pointer-events-none fixed inset-0 z-0"
-        style={{
-          background: `radial-gradient(circle at ${cursorPos.x}% ${cursorPos.y}%, rgba(212, 175, 55, 0.12), transparent 20%)`,
-        }}
-      ></div>
+      <HoverShadowBg mousePosition={mousePosition} />
 
       {loading && (
         <div className="fixed inset-0 bg-white/70 z-50 flex items-center justify-center">
