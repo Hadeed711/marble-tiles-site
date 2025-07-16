@@ -113,15 +113,12 @@ export default function About() {
         </motion.div>
 
         <motion.img
-          src="https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=800&q=80"
+          src={aboutImage}
           alt="Luxury Marble Interior Design"
           className="w-full md:w-1/2 rounded-xl shadow-lg object-cover h-64 sm:h-80 md:h-96"
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8 }}
-          onError={(e) => {
-            e.target.src = 'https://images.unsplash.com/photo-1615873968403-89e068ea8a3d?auto=format&fit=crop&w=800&q=80';
-          }}
         />
       </section>
 

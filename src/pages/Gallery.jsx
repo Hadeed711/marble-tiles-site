@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import HoverShadowBg from "../components/HoverShadowBg";
+import slider1 from "../assets/slider1.jpg";
+import hero from "../assets/hero_img1.jpg";
 
 export default function Gallery() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -10,14 +12,14 @@ export default function Gallery() {
   const [loadedImages, setLoadedImages] = useState(0);
 
   const galleryImages = [
-    "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1613544928733-89f7da23f3bd?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1590073242679-1371596a0fe4?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1557683316-973673baf926?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1615873968403-89e068ea8a3d?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1560185008-c01c0520c1f7?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80",
+    slider1,
+    slider1,
+    slider1,
+    slider1,
+    slider1,
+    slider1,
+    slider1,
+    slider1,
   ];
 
   const handleImageLoad = () => {
@@ -49,9 +51,14 @@ export default function Gallery() {
         <Navbar />
 
       {/* Hero Section */}
-      <section className="py-24 px-6 text-center bg-white relative z-10">
+      <section 
+        className="py-24 px-6 text-center relative z-10 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `linear-gradient(rgba(255, 255, 255,0.65), rgba(255, 255, 255, 0.65)), url(${hero})`,
+        }}
+      >
         <motion.h1
-          className="text-4xl md:text-5xl font-extrabold text-[#00796b] mb-4"
+          className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#00796b] mb-4 px-2"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -59,7 +66,7 @@ export default function Gallery() {
           Our Gallery
         </motion.h1>
         <motion.p
-          className="text-lg text-gray-600 max-w-3xl mx-auto"
+          className="text-base sm:text-lg text-gray-600 max-w-3xl mx-auto px-2"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}

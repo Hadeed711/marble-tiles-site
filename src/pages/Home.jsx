@@ -10,11 +10,7 @@ import slider2 from "../assets/cover_img2.jpg";
 import slider3 from "../assets/cover_img1.jpg";
 
 // High-quality marble and stone images
-const sliderImages = [
-  slider1,
-  slider2,
-  slider3,
-];
+const sliderImages = [slider1, slider2, slider3];
 
 const cardWidth = 320;
 const cardsToShow = { mobile: 1, tablet: 2, desktop: 4 }; // Responsive cards
@@ -98,7 +94,7 @@ export default function Home() {
         "Custom staircase designs with premium marble and granite materials",
     },
     {
-      title: "Artistic Stone Design",
+      title: "Mosaic Art Installation",
       image: slider1,
       description: "Bespoke marble and granite designs tailored to your vision",
     },
@@ -108,44 +104,30 @@ export default function Home() {
       description:
         "Durable and beautiful granite countertops for modern kitchens",
     },
-    {
-      title: "Mosaic Art Installations",
-      image: slider1,
-      description:
-        "Intricate mosaic art installations using premium marble and granite",
-    },
   ];
 
   const featuredProducts = [
     {
       image: slider1,
       name: "Carrara White Marble",
-      price: "3,700",
-      description: "Premium Italian white marble with elegant veining",
+      
     },
     {
       image: slider1,
       name: "Black Galaxy Granite",
-      price: "3,900",
-      description: "Stunning black granite with golden speckles",
+      
     },
     {
       image: slider1,
       name: "Calacatta Gold Marble",
-      price: "4,100",
-      description: "Luxurious marble with distinctive gold veining",
     },
     {
       image: slider1,
       name: "Kashmir White Granite",
-      price: "4,300",
-      description: "Pure white granite with subtle gray patterns",
     },
     {
       image: slider1,
       name: "Emperador Dark Marble",
-      price: "4,500",
-      description: "Rich brown marble with cream veining",
     },
   ];
 
@@ -275,78 +257,94 @@ export default function Home() {
             ))}
           </div>
 
-        {/* Hero Text Overlay */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="absolute bottom-6 sm:bottom-12 md:bottom-20 left-4 sm:left-8 md:left-20 right-4 sm:right-8 md:right-auto bg-white/60 backdrop-blur-sm p-3 sm:p-4 md:p-6 rounded-lg sm:rounded-xl shadow-lg max-w-full sm:max-w-md md:max-w-xl"
-        >
-          <h1 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-extrabold text-[#00796b] leading-tight">
-            Premium Marble & Granite <br className="hidden md:block" />
-            <span className="md:hidden">& </span>Elegant Craftsmanship
-          </h1>
-          <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-[#333] leading-relaxed mb-3 sm:mb-4 md:mb-6">
-            Elevate your interiors with our timeless stones — handcrafted since 2008.
-          </p>
-          
-          {/* Premium CTA Button */}
+          {/* Hero Text Overlay */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.6, duration: 0.4 }}
-            className="flex flex-col sm:flex-row gap-2 sm:gap-3 md:gap-4"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="absolute bottom-6 sm:bottom-12 md:bottom-20 left-4 sm:left-8 md:left-20 right-4 sm:right-8 md:right-auto bg-white/60 backdrop-blur-sm p-3 sm:p-4 md:p-6 rounded-lg sm:rounded-xl shadow-lg max-w-full sm:max-w-md md:max-w-xl"
           >
-            <Link
-              to="/products"
-              className="group relative inline-flex items-center justify-center px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4 text-xs sm:text-sm md:text-base font-semibold text-white rounded-full overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-105"
+            <h1 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-extrabold text-[#00796b] leading-tight">
+              Premium Marble & Granite <br className="hidden md:block" />
+              <span className="md:hidden">& </span>Elegant Craftsmanship
+            </h1>
+            <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-[#333] leading-relaxed mb-3 sm:mb-4 md:mb-6">
+              Elevate your interiors with our timeless stones — handcrafted
+              since 2008.
+            </p>
+
+            {/* Premium CTA Button */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.6, duration: 0.4 }}
+              className="flex flex-col sm:flex-row gap-2 sm:gap-3 md:gap-4"
             >
-              {/* Gradient Background */}
-              <div className="absolute inset-0 bg-gradient-to-r from-[#00796b] via-[#d4af37] to-[#00796b] bg-[length:200%_100%] bg-left group-hover:bg-right transition-all duration-700"></div>
-              
-              {/* Button Content */}
-              <span className="relative flex items-center gap-1 sm:gap-2">
-                <svg 
-                  className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 transition-transform duration-300 group-hover:translate-x-1" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                </svg>
-                <span className="hidden sm:inline">Explore Our</span> Products
-                <svg 
-                  className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 transition-transform duration-300 group-hover:translate-x-1" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </span>
-              
-              {/* Shimmer Effect */}
-              <div className="absolute inset-0 -top-1 -bottom-1 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-            </Link>
-            
-            <Link
-              to="/contact"
-              className="group inline-flex items-center justify-center px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 text-xs sm:text-sm md:text-base font-medium text-[#00796b] bg-transparent border-2 border-[#00796b] rounded-full hover:bg-[#00796b] hover:text-white transition-all duration-300 shadow-md hover:shadow-lg"
-            >
-              <span className="flex items-center gap-1 sm:gap-2">
-                <svg 
-                  className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 transition-transform duration-300 group-hover:rotate-12" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                </svg>
-                Get Quote
-              </span>
-            </Link>
+              <Link
+                to="/products"
+                className="group relative inline-flex items-center justify-center px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4 text-xs sm:text-sm md:text-base font-semibold text-white rounded-full overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-105"
+              >
+                {/* Gradient Background */}
+                <div className="absolute inset-0 bg-gradient-to-r from-[#00796b] via-[#d4af37] to-[#00796b] bg-[length:200%_100%] bg-left group-hover:bg-right transition-all duration-700"></div>
+
+                {/* Button Content */}
+                <span className="relative flex items-center gap-1 sm:gap-2">
+                  <svg
+                    className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 transition-transform duration-300 group-hover:translate-x-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                    />
+                  </svg>
+                  <span className="hidden sm:inline">Explore Our</span> Products
+                  <svg
+                    className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 transition-transform duration-300 group-hover:translate-x-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17 8l4 4m0 0l-4 4m4-4H3"
+                    />
+                  </svg>
+                </span>
+
+                {/* Shimmer Effect */}
+                <div className="absolute inset-0 -top-1 -bottom-1 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+              </Link>
+
+              <Link
+                to="/contact"
+                className="group inline-flex items-center justify-center px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 text-xs sm:text-sm md:text-base font-medium text-[#00796b] bg-transparent border-2 border-[#00796b] rounded-full hover:bg-[#00796b] hover:text-white transition-all duration-300 shadow-md hover:shadow-lg"
+              >
+                <span className="flex items-center gap-1 sm:gap-2">
+                  <svg
+                    className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 transition-transform duration-300 group-hover:rotate-12"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                    />
+                  </svg>
+                  Get Quote
+                </span>
+              </Link>
+            </motion.div>
           </motion.div>
-        </motion.div>
         </div>
 
         {/* Services */}
@@ -394,8 +392,9 @@ export default function Home() {
                     {index === 2 && (
                       <>
                         <li>• Collaborative design consultation</li>
-                        <li>• 3D visualization before installation</li>
+                        <li>• Detailed Mosaic Texture Design</li>
                         <li>• Unique patterns and artistic elements</li>
+                        <li>• Custom Design Services</li>
                       </>
                     )}
                     {index === 3 && (
@@ -563,7 +562,6 @@ export default function Home() {
                     <Card
                       image={product.image}
                       name={product.name}
-                      price={product.price}
                       description={product.description}
                     />
                   </div>

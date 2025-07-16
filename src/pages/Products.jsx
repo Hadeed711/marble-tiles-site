@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Link, useSearchParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import HoverShadowBg from "../components/HoverShadowBg";
 import Card from "../components/Card";
+import slider1 from "../assets/slider1.jpg";
+import hero from "../assets/hero_img1.jpg";
 
 export default function Products() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchParams, setSearchParams] = useSearchParams();
+  const [zoomedImage, setZoomedImage] = useState(null);
 
   // Get search query from URL parameters
   useEffect(() => {
@@ -21,14 +24,14 @@ export default function Products() {
   }, [searchParams]);
 
   const products = [
-    { image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80", name: "Carrara White Marble", price: "3,700", category: "marble", description: "Premium Italian white marble with elegant veining" },
-    { image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80", name: "Black Galaxy Granite", price: "3,900", category: "granite", description: "Stunning black granite with golden speckles" },
-    { image: "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=800&q=80", name: "Calacatta Gold Marble", price: "4,100", category: "marble", description: "Luxurious marble with distinctive gold veining" },
-    { image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80", name: "Kashmir White Granite", price: "4,300", category: "granite", description: "Pure white granite with subtle gray patterns" },
-    { image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80", name: "Emperador Dark Marble", price: "4,500", category: "marble", description: "Rich brown marble with cream veining" },
-    { image: "https://images.unsplash.com/photo-1557683316-973673baf926?auto=format&fit=crop&w=800&q=80", name: "Blue Pearl Granite", price: "4,700", category: "granite", description: "Elegant blue-gray granite with silver highlights" },
-    { image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80", name: "Travertine Classic", price: "4,900", category: "travertine", description: "Natural travertine with warm beige tones" },
-    { image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80", name: "Verde Guatemala Marble", price: "5,100", category: "marble", description: "Exotic green marble with unique patterns" },
+    { image: slider1, name: "Carrara White Marble", price: "3,700", category: "marble"},
+    { image: slider1, name: "Black Galaxy Granite", price: "3,900", category: "granite"  },
+    { image: slider1, name: "Calacatta Gold Marble", price: "4,100", category: "marble" },
+    { image: slider1, name: "Kashmir White Granite", price: "4,300", category: "granite"},
+    { image: slider1, name: "Emperador Dark Marble", price: "4,500", category: "marble"},
+    { image: slider1, name: "Blue Pearl Granite", price: "4,700", category: "granite"},
+    { image: slider1, name: "Travertine Classic", price: "4,900", category: "travertine"},
+    { image: slider1, name: "Verde Guatemala Marble", price: "5,100", category: "marble"},
   ];
 
   const categories = [
@@ -40,10 +43,19 @@ export default function Products() {
 
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.description.toLowerCase().includes(searchTerm.toLowerCase());
+                         product.description?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === "all" || product.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
+
+  // Handle image zoom
+  const handleImageClick = (image, name) => {
+    setZoomedImage({ image, name });
+  };
+
+  const closeZoom = () => {
+    setZoomedImage(null);
+  };
 
   // Update URL when search term changes
   const handleSearchChange = (value) => {
@@ -70,9 +82,14 @@ export default function Products() {
         <Navbar />
 
       {/* Premium Hero Section */}
-      <section className="py-16 sm:py-20 md:py-24 px-4 sm:px-6 text-center bg-white relative z-10">
+      <section 
+        className="py-16 sm:py-20 md:py-24 px-4 sm:px-6 text-center relative z-10 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.65)), url(${hero})`,
+        }}
+      >
         <motion.h1
-          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-[#00796b] mb-3 sm:mb-4 leading-tight"
+          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-[#00796b] mb-3 sm:mb-4 leading-tight px-2"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -80,7 +97,7 @@ export default function Products() {
           Explore Our Premium Stone Collection
         </motion.h1>
         <motion.p
-          className="text-sm sm:text-base md:text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed"
+          className="text-sm sm:text-base md:text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed px-2"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
@@ -98,7 +115,7 @@ export default function Products() {
       </section>
 
       {/* Search and Filter Section */}
-      <section className="py-6 sm:py-8 px-4 sm:px-6 max-w-7xl mx-auto">
+      <section className="py-4 sm:py-6 md:py-8 px-4 sm:px-6 max-w-7xl mx-auto">
         <div className="flex flex-col gap-4 sm:gap-6 mb-6 sm:mb-8">
           {/* Search Bar */}
           <motion.div
@@ -194,9 +211,9 @@ export default function Products() {
       </section>
 
       {/* Product Grid */}
-      <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 max-w-7xl mx-auto">
+      <section className="py-6 sm:py-8 md:py-10 px-4 sm:px-6 max-w-7xl mx-auto">
         <motion.h2
-          className="text-xl sm:text-2xl md:text-3xl font-bold text-center text-[#00796b] mb-8 sm:mb-10 md:mb-12"
+          className="text-xl sm:text-2xl md:text-3xl font-bold text-center text-[#00796b] mb-4 sm:mb-6 md:mb-8"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -205,6 +222,44 @@ export default function Products() {
            selectedCategory !== "all" ? `${categories.find(c => c.id === selectedCategory)?.name} Collection` : 
            "All Products"}
         </motion.h2>
+
+        {/* Instruction Text */}
+        <motion.div
+          className="text-center mb-6 sm:mb-8"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+        >
+          <motion.p
+            className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-[#00796b] to-[#4db6ac] px-4 py-2 rounded-full shadow-lg"
+            animate={{
+              scale: [1, 1.05, 1],
+              boxShadow: [
+                "0 4px 6px rgba(0, 121, 107, 0.3)",
+                "0 8px 15px rgba(0, 121, 107, 0.4)",
+                "0 4px 6px rgba(0, 121, 107, 0.3)"
+              ]
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          >
+            <svg 
+              width="16" 
+              height="16" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+              className="animate-pulse"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+            Click on any product image to zoom in
+          </motion.p>
+        </motion.div>
 
         <motion.div
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 md:gap-8"
@@ -225,7 +280,7 @@ export default function Products() {
                   image={product.image} 
                   name={product.name} 
                   price={product.price}
-                  description={product.description}
+                  onImageClick={handleImageClick}
                 />
               </motion.div>
             ))
@@ -246,6 +301,50 @@ export default function Products() {
           )}
         </motion.div>
       </section>
+
+      {/* Image Zoom Modal */}
+      <AnimatePresence>
+        {zoomedImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4"
+            onClick={closeZoom}
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="relative max-w-4xl max-h-[95vh] sm:max-h-[90vh] w-full h-full flex items-center justify-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img
+                src={zoomedImage.image}
+                alt={zoomedImage.name}
+                className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+              />
+              
+              {/* Close button */}
+              <button
+                onClick={closeZoom}
+                className="absolute top-2 right-2 sm:top-4 sm:right-4 bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-sm text-white p-2 rounded-full transition-all duration-200"
+              >
+                <svg width="20" height="20" className="sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              
+              {/* Product name overlay */}
+              <div className="absolute bottom-2 left-2 right-2 sm:bottom-4 sm:left-4 sm:right-4 bg-black bg-opacity-50 backdrop-blur-sm text-white p-2 sm:p-3 rounded-lg">
+                <h3 className="text-sm sm:text-lg font-semibold text-center">{zoomedImage.name}</h3>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <Footer />
       </div>
