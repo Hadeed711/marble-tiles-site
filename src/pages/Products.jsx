@@ -104,14 +104,116 @@ export default function Products() {
         >
           Hand-selected marble and granite pieces to elevate your space with luxury, durability, and timeless design.
         </motion.p>
-        <div className="mt-4 sm:mt-6 flex justify-center">
-          <Link
-            to="/"
-            className="inline-block bg-gradient-to-r from-[#00796b] to-[#4db6ac] hover:from-[#4db6ac] hover:to-[#00796b] text-white px-5 sm:px-6 py-2 sm:py-2.5 text-sm sm:text-base rounded-full transition-all duration-500"
+        <motion.div 
+          className="mt-4 sm:mt-6 flex justify-center"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+        >
+          <motion.div
+            className="relative group"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
-            Back to Home
-          </Link>
-        </div>
+            <Link
+              to="/"
+              className="relative inline-block overflow-hidden bg-gradient-to-r from-[#00796b] via-[#4db6ac] to-[#00796b] bg-[length:200%_100%] text-white px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base rounded-full transition-all duration-700 group-hover:bg-right shadow-lg hover:shadow-2xl"
+            >
+              {/* Futuristic glow effect */}
+              <motion.div
+                className="absolute inset-0 rounded-full bg-gradient-to-r from-[#00796b] to-[#4db6ac] opacity-0 group-hover:opacity-50 blur-lg"
+                animate={{
+                  scale: [1, 1.2, 1],
+                  opacity: [0.3, 0.6, 0.3]
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
+              
+              {/* Animated border */}
+              <motion.div
+                className="absolute inset-0 rounded-full border-2 border-transparent bg-gradient-to-r from-[#00796b] via-transparent to-[#4db6ac] p-[2px]"
+                animate={{
+                  rotate: [0, 360]
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "linear"
+                }}
+              >
+                <div className="rounded-full bg-transparent h-full w-full" />
+              </motion.div>
+
+              {/* Button content */}
+              <span className="relative z-10 flex items-center gap-2">
+                <motion.svg
+                  className="w-4 h-4 sm:w-5 sm:h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  animate={{
+                    x: [0, -4, 0],
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </motion.svg>
+                <motion.span
+                  animate={{
+                    textShadow: [
+                      "0 0 0px rgba(255,255,255,0)",
+                      "0 0 8px rgba(255,255,255,0.8)",
+                      "0 0 0px rgba(255,255,255,0)"
+                    ]
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
+                  Back to Home
+                </motion.span>
+                
+                {/* Particle effect */}
+                <motion.div
+                  className="absolute -top-1 -right-1 w-2 h-2 bg-white rounded-full opacity-0 group-hover:opacity-100"
+                  animate={{
+                    scale: [0, 1, 0],
+                    x: [0, 10, 20],
+                    y: [0, -5, -10],
+                  }}
+                  transition={{
+                    duration: 1,
+                    repeat: Infinity,
+                    delay: 0.5
+                  }}
+                />
+              </span>
+
+              {/* Shimmer effect */}
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 opacity-0 group-hover:opacity-100"
+                animate={{
+                  x: ["-100%", "100%"]
+                }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
+            </Link>
+          </motion.div>
+        </motion.div>
       </section>
 
       {/* Search and Filter Section */}
