@@ -80,6 +80,8 @@ export default function Gallery() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [visibleImages, setVisibleImages] = useState(12); // Show 12 images initially
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [cachedImages, setCachedImages] = useState(new Set()); // Cache for loaded images
+  const [preloadedCategories, setPreloadedCategories] = useState(new Set()); // Track preloaded categories
 
   // Gallery categories with images - reordered with Others (formerly Countertops) at the end
   const galleryCategories = {
@@ -112,6 +114,25 @@ export default function Gallery() {
   // Get all images for loading calculation
   const totalImages = Object.values(galleryCategories).reduce((total, category) => total + category.images.length, 0);
 
+  // Preload images function
+  const preloadImages = (imageUrls) => {
+    imageUrls.forEach((url) => {
+      if (!cachedImages.has(url)) {
+        const img = new Image();
+        img.onload = () => {
+          setCachedImages(prev => new Set([...prev, url]));
+        };
+        img.src = url;
+      }
+    });
+  };
+
+  // Preload all images on component mount
+  useEffect(() => {
+    const allImageUrls = Object.values(galleryCategories).flatMap(category => category.images);
+    preloadImages(allImageUrls);
+  }, []);
+
   // Get filtered images based on active category
   const getFilteredImages = () => {
     if (activeCategory === 'all') {
@@ -138,12 +159,30 @@ export default function Gallery() {
     return allImages.slice(0, visibleImages);
   };
 
-  // Reset pagination when category changes
-  useEffect(() => {
-    setVisibleImages(12);
-    setLoadedImages(0);
-    setImagesLoaded(false);
-  }, [activeCategory]);
+  // Smart category switching - check if images are cached
+  const switchCategory = (categoryKey) => {
+    setActiveCategory(categoryKey);
+    
+    // Get images for the new category
+    const categoryImages = categoryKey === 'all' 
+      ? Object.values(galleryCategories).flatMap(cat => cat.images)
+      : galleryCategories[categoryKey].images;
+    
+    // Check if all images in this category are cached
+    const allImagesCached = categoryImages.every(img => cachedImages.has(img));
+    
+    if (allImagesCached) {
+      // If all images are cached, instantly show them
+      setImagesLoaded(true);
+      setLoadedImages(categoryImages.length);
+      setVisibleImages(12);
+    } else {
+      // If not all cached, reset loading state
+      setVisibleImages(12);
+      setLoadedImages(0);
+      setImagesLoaded(false);
+    }
+  };
 
   // Load more images function
   const loadMoreImages = () => {
@@ -155,7 +194,7 @@ export default function Gallery() {
       const newVisibleCount = Math.min(visibleImages + 8, allImages.length);
       setVisibleImages(newVisibleCount);
       setIsLoadingMore(false);
-    }, 500);
+    }, 300); // Reduced timeout for faster loading
   };
 
   const handleImageLoad = () => {
@@ -263,7 +302,7 @@ export default function Gallery() {
           >
             {/* All Categories Button */}
             <button
-              onClick={() => setActiveCategory('all')}
+              onClick={() => switchCategory('all')}
               className={`flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all duration-300 ${
                 activeCategory === 'all'
                   ? 'bg-[#00796b] text-white shadow-lg transform scale-105'
@@ -278,7 +317,7 @@ export default function Gallery() {
             {Object.entries(galleryCategories).map(([categoryKey, category]) => (
               <button
                 key={categoryKey}
-                onClick={() => setActiveCategory(categoryKey)}
+                onClick={() => switchCategory(categoryKey)}
                 className={`flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all duration-300 ${
                   activeCategory === categoryKey
                     ? 'bg-[#00796b] text-white shadow-lg transform scale-105'
@@ -342,8 +381,12 @@ export default function Gallery() {
                     e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjQ4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5JbWFnZSBub3QgYXZhaWxhYmxlPC90ZXh0Pjwvc3ZnPg==';
                     handleImageLoad();
                   }}
-                  loading="lazy"
-                  style={{ imageRendering: 'high-quality' }}
+                  loading={cachedImages.has(image.src) ? "eager" : "lazy"}
+                  style={{ 
+                    imageRendering: 'high-quality',
+                    opacity: cachedImages.has(image.src) ? 1 : 0.8,
+                    transition: 'opacity 0.3s ease'
+                  }}
                 />
                 
                 {/* Category Badge */}
