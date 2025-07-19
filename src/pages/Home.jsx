@@ -8,6 +8,7 @@ import HoverShadowBg from "../components/HoverShadowBg";
 import slider1 from "../assets/cover_img.jpg";
 import slider2 from "../assets/cover_img2.jpg";
 import slider3 from "../assets/cover_img1.jpg";
+import floors9 from "../assets/floors/gallery32.jpg";
 
 // High-quality marble and stone images
 const sliderImages = [slider1, slider2, slider3];
@@ -99,10 +100,10 @@ export default function Home() {
       description: "Bespoke marble and granite designs tailored to your vision",
     },
     {
-      title: "Kitchen Countertops",
+      title: "Kitchen Surfaces",
       image: slider1,
       description:
-        "Durable and beautiful granite countertops for modern kitchens",
+        "Durable and beautiful granite surfaces for modern kitchens",
     },
   ];
 

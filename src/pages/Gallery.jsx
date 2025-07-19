@@ -58,19 +58,19 @@ import mosaic9 from "../assets/mosaic/gallery30.jpg";
 import mosaic10 from "../assets/mosaic/gallery36.jpg";
 import mosaic11 from "../assets/mosaic/gallery40.jpg";
 
-// Others Images (previously Countertops)
-import others1 from "../assets/countertoops/gallery1.jpg";
-import others2 from "../assets/countertoops/gallery18.jpg";
-import others3 from "../assets/countertoops/gallery2.jpg";
-import others4 from "../assets/countertoops/gallery26.jpg";
-import others5 from "../assets/countertoops/gallery27.jpg";
-import others6 from "../assets/countertoops/gallery28.jpg";
-import others7 from "../assets/countertoops/gallery3.jpg";
-import others8 from "../assets/countertoops/gallery43.jpg";
-import others9 from "../assets/countertoops/gallery45.jpg";
-import others10 from "../assets/countertoops/gallery50.jpg";
-import others11 from "../assets/countertoops/gallery51.jpg";
-import others12 from "../assets/countertoops/gallery58.jpg";
+// Others Images
+import others1 from "../assets/others/gallery1.jpg";
+import others2 from "../assets/others/gallery18.jpg";
+import others3 from "../assets/others/gallery2.jpg";
+import others4 from "../assets/others/gallery26.jpg";
+import others5 from "../assets/others/gallery27.jpg";
+import others6 from "../assets/others/gallery28.jpg";
+import others7 from "../assets/others/gallery3.jpg";
+import others8 from "../assets/others/gallery43.jpg";
+import others9 from "../assets/others/gallery45.jpg";
+import others10 from "../assets/others/gallery50.jpg";
+import others11 from "../assets/others/gallery51.jpg";
+import others12 from "../assets/others/gallery58.jpg";
 
 export default function Gallery() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -107,7 +107,7 @@ export default function Gallery() {
       title: "Others",
       icon: "🔹",
       images: [others1, others2, others3, others4, others5, others6, others7, others8, others9, others10, others11, others12],
-      description: "Premium marble and granite work including countertops and custom installations"
+      description: "Premium marble and granite work including custom installations and other specialty projects"
     }
   };
 

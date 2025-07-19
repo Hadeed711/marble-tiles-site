@@ -103,7 +103,7 @@ export default function About() {
             </li>
             <li className="flex items-center">
               <span className="w-2 h-2 bg-[#00796b] rounded-full mr-4"></span>
-              Modern Kitchen Granite Countertops and Vanities
+              Modern Kitchen Granite Surfaces and Vanities
             </li>
             <li className="flex items-center">
               <span className="w-2 h-2 bg-[#00796b] rounded-full mr-4"></span>
