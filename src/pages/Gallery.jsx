@@ -23,6 +23,8 @@ import stairs13 from "../assets/stairs/gallery54.jpg";
 import stairs14 from "../assets/stairs/gallery55.jpg";
 import stairs15 from "../assets/stairs/gallery56.jpg";
 import stairs16 from "../assets/stairs/gallery7.jpg";
+import stairs17 from "../assets/stairs/gallery65.jpg";
+import stairs18 from "../assets/stairs/gallery66.jpg";
 
 // Floors Images  
 import floors1 from "../assets/floors/gallery10.jpg";
@@ -44,6 +46,7 @@ import floors16 from "../assets/floors/gallery57.jpg";
 import floors17 from "../assets/floors/gallery6.jpg";
 import floors18 from "../assets/floors/gallery8.jpg";
 import floors19 from "../assets/floors/gallery9.jpg";
+import floors20 from "../assets/floors/gallery64.jpg";
 
 // Mosaic Images
 import mosaic1 from "../assets/mosaic/gallery17.jpg";
@@ -57,6 +60,8 @@ import mosaic8 from "../assets/mosaic/gallery29.jpg";
 import mosaic9 from "../assets/mosaic/gallery30.jpg";
 import mosaic10 from "../assets/mosaic/gallery36.jpg";
 import mosaic11 from "../assets/mosaic/gallery40.jpg";
+import mosaic12 from "../assets/mosaic/gallery63.jpg";
+
 
 // Others Images
 import others1 from "../assets/others/gallery1.jpg";
@@ -71,6 +76,7 @@ import others9 from "../assets/others/gallery45.jpg";
 import others10 from "../assets/others/gallery50.jpg";
 import others11 from "../assets/others/gallery51.jpg";
 import others12 from "../assets/others/gallery58.jpg";
+import others13 from "../assets/others/gallery61.jpg";
 
 export default function Gallery() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -88,25 +94,25 @@ export default function Gallery() {
     stairs: {
       title: "Stairs",
       icon: "🪜",
-      images: [stairs1, stairs2, stairs3, stairs4, stairs5, stairs6, stairs7, stairs8, stairs9, stairs10, stairs11, stairs12, stairs13, stairs14, stairs15, stairs16],
+      images: [stairs1, stairs2, stairs3, stairs4, stairs5, stairs6, stairs7, stairs8, stairs9, stairs10, stairs11, stairs12, stairs13, stairs14, stairs15, stairs16, stairs17, stairs18],
       description: "Elegant marble and granite staircases with precision craftsmanship"
     },
     floors: {
       title: "Floors",
       icon: "🏢",
-      images: [floors1, floors2, floors3, floors4, floors5, floors6, floors7, floors8, floors9, floors10, floors11, floors12, floors13, floors14, floors15, floors16, floors17, floors18, floors19],
+      images: [floors1, floors2, floors3, floors4, floors5, floors6, floors7, floors8, floors9, floors10, floors11, floors12, floors13, floors14, floors15, floors16, floors17, floors18, floors19, floors20],
       description: "Luxurious marble and granite flooring for homes and commercial spaces"
     },
     mosaic: {
       title: "Mosaic",
       icon: "🎨",
-      images: [mosaic1, mosaic2, mosaic3, mosaic4, mosaic5, mosaic6, mosaic7, mosaic8, mosaic9, mosaic10, mosaic11],
+      images: [mosaic1, mosaic2, mosaic3, mosaic4, mosaic5, mosaic6, mosaic7, mosaic8, mosaic9, mosaic10, mosaic11, mosaic12],
       description: "Artistic mosaic designs and custom marble patterns"
     },
     others: {
       title: "Others",
       icon: "🔹",
-      images: [others1, others2, others3, others4, others5, others6, others7, others8, others9, others10, others11, others12],
+      images: [others1, others2, others3, others4, others5, others6, others7, others8, others9, others10, others11, others12, others13],
       description: "Premium marble and granite work including custom installations and other specialty projects"
     }
   };

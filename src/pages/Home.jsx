@@ -5,10 +5,15 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Card from "../components/Card";
 import HoverShadowBg from "../components/HoverShadowBg";
-import slider1 from "../assets/cover_img.jpg";
-import slider2 from "../assets/cover_img2.jpg";
-import slider3 from "../assets/cover_img1.jpg";
-import floors9 from "../assets/floors/gallery32.jpg";
+import PremiumButton from "../components/PremiumButton";
+import slider1 from "../assets/cover_img3.jpg";
+import slider2 from "../assets/cover_img4.jpg";
+import slider3 from "../assets/cover_img.jpg";
+import floor from "../assets/floors/gallery64.jpg";
+import stair from "../assets/stairs/gallery65.jpg";
+import surface from "../assets/others/gallery61.jpg";
+import mosaic from "../assets/mosaic/gallery63.jpg";
+
 
 // High-quality marble and stone images
 const sliderImages = [slider1, slider2, slider3];
@@ -84,26 +89,51 @@ export default function Home() {
   const services = [
     {
       title: "Premium Marble Flooring",
-      image: slider1,
-      description:
-        "Luxurious marble flooring installation with precision and elegance",
+      image: floor,
+      description: "Transform your space with luxurious marble flooring that defines sophistication",
+      subheading: "Engineered for Perfection",
+      features: [
+        "Precision laser-leveled installation technology",
+        "Italian marble with lifetime quality guarantee", 
+        "Advanced sealing for stain & scratch resistance",
+        "Custom patterns with 3D visualization preview"
+      ]
     },
     {
-      title: "Granite & Marble Staircases",
-      image: slider1,
-      description:
-        "Custom staircase designs with premium marble and granite materials",
+      title: "Granite & Marble Staircases", 
+      image: stair,
+      description: "Architectural masterpieces that elevate your home's grandeur",
+      subheading: "Sculptured Excellence",
+      features: [
+        "CAD-designed custom measurements & profiles",
+        "Anti-slip nano-coating for ultimate safety",
+        "Premium European granite with natural veining",
+        "Seamless integration with existing architecture"
+      ]
     },
     {
       title: "Mosaic Art Installation",
-      image: slider1,
-      description: "Bespoke marble and granite designs tailored to your vision",
+      image: mosaic, 
+      description: "Artistic expressions that transform walls into living masterpieces",
+      subheading: "Bespoke Artistry",
+      features: [
+        "Collaborative design with renowned artists",
+        "Hand-cut precision mosaic textures",
+        "Unique patterns with cultural storytelling",
+        "Museum-grade installation techniques"
+      ]
     },
     {
-      title: "Kitchen Surfaces",
-      image: slider1,
-      description:
-        "Durable and beautiful granite surfaces for modern kitchens",
+      title: "Bathroom & Kitchen Surfaces",
+      image: surface,
+      description: "Future-ready surfaces engineered for modern living spaces",
+      subheading: "Smart Surface Technology", 
+      features: [
+        "Heat-resistant up to 1200°F temperature",
+        "Antibacterial nano-coating technology",
+        "Edge profiles with contemporary styling",
+        "Smart integration for modern appliances"
+      ]
     },
   ];
 
@@ -281,47 +311,13 @@ export default function Home() {
               transition={{ delay: 0.6, duration: 0.4 }}
               className="flex flex-col sm:flex-row gap-2 sm:gap-3 md:gap-4"
             >
-              <Link
+              <PremiumButton
                 to="/products"
-                className="group relative inline-flex items-center justify-center px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4 text-xs sm:text-sm md:text-base font-semibold text-white rounded-full overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-105"
+                leftIcon="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                rightIcon="M17 8l4 4m0 0l-4 4m4-4H3"
               >
-                {/* Gradient Background */}
-                <div className="absolute inset-0 bg-gradient-to-r from-[#00796b] via-[#d4af37] to-[#00796b] bg-[length:200%_100%] bg-left group-hover:bg-right transition-all duration-700"></div>
-
-                {/* Button Content */}
-                <span className="relative flex items-center gap-1 sm:gap-2">
-                  <svg
-                    className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 transition-transform duration-300 group-hover:translate-x-1"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-                    />
-                  </svg>
-                  <span className="hidden sm:inline">Explore Our</span> Products
-                  <svg
-                    className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 transition-transform duration-300 group-hover:translate-x-1"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17 8l4 4m0 0l-4 4m4-4H3"
-                    />
-                  </svg>
-                </span>
-
-                {/* Shimmer Effect */}
-                <div className="absolute inset-0 -top-1 -bottom-1 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-              </Link>
+                <span className="hidden sm:inline">Explore Our</span> Products
+              </PremiumButton>
 
               <Link
                 to="/contact"
@@ -361,80 +357,136 @@ export default function Home() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.7 }}
               >
-                <div className="w-full md:w-1/2">
+                {/* Content Section - Shows first on mobile */}
+                <div className="w-full md:w-1/2 space-y-4 sm:space-y-6 order-1 md:order-none">
+                  {/* Title with gradient effect */}
+                  <motion.h2 
+                    className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#00796b] via-[#d4af37] to-[#00796b] bg-clip-text text-transparent mb-3 sm:mb-4 text-center md:text-left leading-tight"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.2, duration: 0.6 }}
+                  >
+                    {service.title}
+                  </motion.h2>
+
+                  {/* Description with typing effect */}
+                  <motion.p 
+                    className="text-base sm:text-lg text-gray-700 leading-relaxed mb-3 sm:mb-4 text-center md:text-left font-medium"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.4, duration: 0.8 }}
+                  >
+                    {service.description}
+                  </motion.p>
+
+                  {/* Subheading with premium styling */}
+                  <motion.div
+                    className="text-center md:text-left mb-4"
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.5, duration: 0.6 }}
+                  >
+                    <h3 className="text-lg sm:text-xl font-bold text-[#00796b] mb-2 relative inline-block">
+                      {service.subheading}
+                      <motion.div
+                        className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-[#d4af37] to-[#00796b]"
+                        initial={{ scaleX: 0 }}
+                        whileInView={{ scaleX: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.7, duration: 0.8 }}
+                      />
+                    </h3>
+                  </motion.div>
+
+                  {/* Feature list with staggered animations */}
+                  <motion.ul 
+                    className="text-sm sm:text-base text-gray-600 space-y-3 sm:space-y-4 text-center md:text-left"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.6, duration: 0.8 }}
+                  >
+                    {service.features.map((feature, featureIndex) => (
+                      <motion.li 
+                        key={featureIndex}
+                        className="flex items-start justify-center md:justify-start gap-3 group/item hover:text-[#00796b] transition-colors duration-300"
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.8 + featureIndex * 0.1, duration: 0.5 }}
+                        whileHover={{ x: 5 }}
+                      >
+                        <motion.span 
+                          className="w-2 h-2 bg-gradient-to-r from-[#d4af37] to-[#00796b] rounded-full mt-2 flex-shrink-0 group-hover/item:scale-125 transition-transform duration-300"
+                          whileHover={{ 
+                            scale: 1.5,
+                            boxShadow: "0 0 10px rgba(212, 175, 55, 0.5)"
+                          }}
+                        />
+                        <span className="leading-relaxed font-medium">{feature}</span>
+                      </motion.li>
+                    ))}
+                  </motion.ul>
+
+                  {/* CTA Button with futuristic design */}
+                  <motion.div 
+                    className="text-center md:text-left mt-6"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 1.2, duration: 0.6 }}
+                  >
+                    <PremiumButton
+                      to="/contact"
+                      leftIcon="M13 10V3L4 14h7v7l9-11h-7z"
+                      rightIcon="M17 8l4 4m0 0l-4 4m4-4H3"
+                      className="px-8 py-4 text-sm sm:text-base"
+                    >
+                      Get Premium Quote
+                    </PremiumButton>
+                  </motion.div>
+                </div>
+
+                {/* Image Section - Shows second on mobile */}
+                <motion.div 
+                  className="w-full md:w-1/2 relative overflow-hidden rounded-xl order-2 md:order-none"
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ duration: 0.4 }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   <img
                     src={service.image}
                     alt={service.title}
-                    className="w-full h-48 sm:h-64 md:h-auto rounded-lg shadow-md object-cover"
+                    className="w-full h-68 sm:h-80 md:h-96 rounded-xl shadow-2xl object-cover transform group-hover:scale-105 transition-transform duration-700"
                   />
-                </div>
-                <div className="w-full md:w-1/2 space-y-3 sm:space-y-4">
-                  <h2 className="text-2xl sm:text-3xl font-bold text-[#00796b] mb-3 sm:mb-4 text-center md:text-left">
-                    {service.title}
-                  </h2>
-                  <p className="text-base sm:text-lg text-gray-700 leading-relaxed mb-3 sm:mb-4 text-center md:text-left">
-                    {service.description}
-                  </p>
-                  <ul className="text-sm sm:text-base text-gray-600 space-y-1.5 sm:space-y-2 text-center md:text-left">
-                    {index === 0 && (
-                      <>
-                        <li>• Expert installation with precision leveling</li>
-                        <li>• Wide variety of marble patterns and colors</li>
-                        <li>• Durable finish with lifetime warranty</li>
-                      </>
-                    )}
-                    {index === 1 && (
-                      <>
-                        <li>• Custom measurements and designs</li>
-                        <li>• Anti-slip surface treatments available</li>
-                        <li>• Premium granite and marble options</li>
-                      </>
-                    )}
-                    {index === 2 && (
-                      <>
-                        <li>• Collaborative design consultation</li>
-                        <li>• Detailed Mosaic Texture Design</li>
-                        <li>• Unique patterns and artistic elements</li>
-                        <li>• Custom Design Services</li>
-                      </>
-                    )}
-                    {index === 3 && (
-                      <>
-                        <li>• Heat and stain resistant surfaces</li>
-                        <li>• Modern edge profiles and finishes</li>
-                        <li>• Perfect for high-traffic kitchens</li>
-                      </>
-                    )}
-                  </ul>
-                  <div className="text-center md:text-left">
-                    <Link
-                      to="/contact"
-                      className="inline-block mt-3 sm:mt-4 px-5 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-[#00796b] to-[#4db6ac] text-white text-sm sm:text-base rounded-full hover:shadow-lg transition-all duration-300"
-                    >
-                      Get Quote
-                    </Link>
-                  </div>
+                  {/* Floating overlay badge */}
+                  <motion.div
+                    className="absolute top-4 left-4 bg-gradient-to-r from-[#00796b]/90 to-[#d4af37]/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-semibold opacity-0 group-hover:opacity-100"
+                    initial={{ x: -20, opacity: 0 }}
+                    whileInView={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.3, duration: 0.5 }}
+                  >
+                    Premium Service
+                  </motion.div>
+                </motion.div>
+              </motion.div>
+
+              {/* Enhanced divider with animated gradient */}
+              <motion.div 
+                className="flex justify-center mt-8 sm:mt-12"
+                initial={{ opacity: 0, scaleX: 0 }}
+                whileInView={{ opacity: 1, scaleX: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 1.4, duration: 0.8 }}
+              >
+                <div className="relative">
+                  <div className="h-1 w-32 sm:w-48 bg-gradient-to-r from-[#d4af37] via-[#00796b] to-[#d4af37] rounded-full group-hover:w-64 transition-all duration-500"></div>
+                  <div className="absolute inset-0 h-1 w-32 sm:w-48 bg-gradient-to-r from-[#d4af37] via-[#00796b] to-[#d4af37] rounded-full opacity-50 blur-sm group-hover:w-64 transition-all duration-500"></div>
                 </div>
               </motion.div>
-              {/* Divider line, shown after every service including the last */}
-              <div className="flex justify-center">
-                <div
-                  className={`
-            h-1
-            bg-gradient-to-r from-[#d4af37] via-[#00796b] to-[#b91c1c]
-            rounded-full
-            transition-all duration-300
-            w-1/6
-            group-hover:w-1/3
-            mt-8
-          `}
-                  style={{
-                    marginTop: "24px",
-                    marginBottom:
-                      index === services.length - 1 ? "40px" : "0px",
-                  }}
-                />
-              </div>
             </div>
           ))}
         </div>
