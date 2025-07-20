@@ -93,10 +93,10 @@ export default function Home() {
       description: "Transform your space with luxurious marble flooring that defines sophistication",
       subheading: "Engineered for Perfection",
       features: [
-        "Precision laser-leveled installation technology",
-        "Italian marble with lifetime quality guarantee", 
+        "Precision & leveled installation",
+        "Premium marble with lifetime quality guarantee", 
         "Advanced sealing for stain & scratch resistance",
-        "Custom patterns with 3D visualization preview"
+        "Custom patterns"
       ]
     },
     {
@@ -105,9 +105,9 @@ export default function Home() {
       description: "Architectural masterpieces that elevate your home's grandeur",
       subheading: "Sculptured Excellence",
       features: [
-        "CAD-designed custom measurements & profiles",
-        "Anti-slip nano-coating for ultimate safety",
-        "Premium European granite with natural veining",
+        "Custom & Unique Pattern Designs",
+        "Anti-slip for ultimate safety",
+        "Premium granite with natural veining",
         "Seamless integration with existing architecture"
       ]
     },
@@ -129,8 +129,8 @@ export default function Home() {
       description: "Future-ready surfaces engineered for modern living spaces",
       subheading: "Smart Surface Technology", 
       features: [
-        "Heat-resistant up to 1200°F temperature",
-        "Antibacterial nano-coating technology",
+        "Heat-resistant",
+        "Uniquely designed Patterns",
         "Edge profiles with contemporary styling",
         "Smart integration for modern appliances"
       ]
@@ -355,7 +355,7 @@ export default function Home() {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.7 }}
+                transition={{ duration: 0.4 }}
               >
                 {/* Content Section - Shows first on mobile */}
                 <div className="w-full md:w-1/2 space-y-4 sm:space-y-6 order-1 md:order-none">
@@ -365,7 +365,7 @@ export default function Home() {
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: 0.2, duration: 0.6 }}
+                    transition={{ delay: 0.1, duration: 0.3 }}
                   >
                     {service.title}
                   </motion.h2>
@@ -376,7 +376,7 @@ export default function Home() {
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     viewport={{ once: true }}
-                    transition={{ delay: 0.4, duration: 0.8 }}
+                    transition={{ delay: 0.2, duration: 0.4 }}
                   >
                     {service.description}
                   </motion.p>
@@ -387,7 +387,7 @@ export default function Home() {
                     initial={{ opacity: 0, x: -20 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: 0.5, duration: 0.6 }}
+                    transition={{ delay: 0.3, duration: 0.4 }}
                   >
                     <h3 className="text-lg sm:text-xl font-bold text-[#00796b] mb-2 relative inline-block">
                       {service.subheading}
@@ -396,7 +396,7 @@ export default function Home() {
                         initial={{ scaleX: 0 }}
                         whileInView={{ scaleX: 1 }}
                         viewport={{ once: true }}
-                        transition={{ delay: 0.7, duration: 0.8 }}
+                        transition={{ delay: 0.4, duration: 0.5 }}
                       />
                     </h3>
                   </motion.div>
@@ -407,7 +407,7 @@ export default function Home() {
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     viewport={{ once: true }}
-                    transition={{ delay: 0.6, duration: 0.8 }}
+                    transition={{ delay: 0.3, duration: 0.4 }}
                   >
                     {service.features.map((feature, featureIndex) => (
                       <motion.li 
@@ -416,7 +416,7 @@ export default function Home() {
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
-                        transition={{ delay: 0.8 + featureIndex * 0.1, duration: 0.5 }}
+                        transition={{ delay: 0.4 + featureIndex * 0.05, duration: 0.3 }}
                         whileHover={{ x: 5 }}
                       >
                         <motion.span 
@@ -437,7 +437,7 @@ export default function Home() {
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: 1.2, duration: 0.6 }}
+                    transition={{ delay: 0.6, duration: 0.3 }}
                   >
                     <PremiumButton
                       to="/contact"
@@ -467,7 +467,7 @@ export default function Home() {
                     className="absolute top-4 left-4 bg-gradient-to-r from-[#00796b]/90 to-[#d4af37]/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-semibold opacity-0 group-hover:opacity-100"
                     initial={{ x: -20, opacity: 0 }}
                     whileInView={{ x: 0, opacity: 1 }}
-                    transition={{ delay: 0.3, duration: 0.5 }}
+                    transition={{ delay: 0.2, duration: 0.3 }}
                   >
                     Premium Service
                   </motion.div>
@@ -480,7 +480,7 @@ export default function Home() {
                 initial={{ opacity: 0, scaleX: 0 }}
                 whileInView={{ opacity: 1, scaleX: 1 }}
                 viewport={{ once: true }}
-                transition={{ delay: 1.4, duration: 0.8 }}
+                transition={{ delay: 0.8, duration: 0.5 }}
               >
                 <div className="relative">
                   <div className="h-1 w-32 sm:w-48 bg-gradient-to-r from-[#d4af37] via-[#00796b] to-[#d4af37] rounded-full group-hover:w-64 transition-all duration-500"></div>
