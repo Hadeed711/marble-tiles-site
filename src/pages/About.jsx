@@ -4,8 +4,8 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import HoverShadowBg from "../components/HoverShadowBg";
 import aboutImage from "../assets/services1.jpg";
-import talha_img from "../assets/talha_img.jpg";
-import tahir_img from "../assets/tahir_img.jpg";
+import talha_img from "../assets/talha_img.JPG";
+import tahir_img from "../assets/tahir_img.JPG";
 
 
 // Fast-loading SVG placeholder for team members
