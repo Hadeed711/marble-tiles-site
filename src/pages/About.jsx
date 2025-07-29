@@ -38,7 +38,7 @@ const teamMembers = [
     image: talha_img,
   },
   {
-    name: "Unknown",
+    name: "Anas",
     role: "Sales Officer",
     phone: "Nan",
     image: avatarPlaceholder,

@@ -8,6 +8,14 @@ import Card from "../components/Card";
 import PremiumButton from "../components/PremiumButton";
 import slider1 from "../assets/slider1.jpg";
 import hero from "../assets/hero_img1.jpg";
+import black_gold from "../assets/products/black_gold.jpg";
+import booti_seena from "../assets/products/booti_seena.png";
+import jet_black from "../assets/products/jet_black.png";
+import star_black from "../assets/products/star_black.jpg";
+import taweera from "../assets/products/taweera.png";
+import tropical_grey from "../assets/products/tropical_grey.png";
+import sunny_white from "../assets/products/sunny_white.jpg";
+import sunny_grey from "../assets/products/sunny_grey.jpg";
 
 export default function Products() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -25,21 +33,20 @@ export default function Products() {
   }, [searchParams]);
 
   const products = [
-    { image: slider1, name: "Carrara White Marble", price: "3,700", category: "marble"},
-    { image: slider1, name: "Black Galaxy Granite", price: "3,900", category: "granite"  },
-    { image: slider1, name: "Calacatta Gold Marble", price: "4,100", category: "marble" },
-    { image: slider1, name: "Kashmir White Granite", price: "4,300", category: "granite"},
-    { image: slider1, name: "Emperador Dark Marble", price: "4,500", category: "marble"},
-    { image: slider1, name: "Blue Pearl Granite", price: "4,700", category: "granite"},
-    { image: slider1, name: "Travertine Classic", price: "4,900", category: "travertine"},
-    { image: slider1, name: "Verde Guatemala Marble", price: "5,100", category: "marble"},
+    { image: black_gold, name: "Black gold Marble",  category: "marble"},
+    { image: star_black, name: "Star black Marble", price: "3,900", category: "marble"  },
+    { image: taweera, name: "Taweera Granite",  category: "granite" },
+    { image: jet_black, name: "Jet_black Marble", category: "marble"},
+    { image: tropical_grey, name: "Tropical grey Granite", category: "granite"},
+    { image: booti_seena, name: "Booti seena",  category: "granite"},
+    { image: sunny_white, name: "Sunny White Marble",  category: "marble"},
+    { image: sunny_grey, name: "Sunny Grey Marble",  category: "marble"},
   ];
 
   const categories = [
     { id: "all", name: "All Products" },
     { id: "marble", name: "Marble" },
     { id: "granite", name: "Granite" },
-    { id: "travertine", name: "Travertine" },
   ];
 
   const filteredProducts = products.filter(product => {
