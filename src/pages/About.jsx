@@ -3,11 +3,19 @@ import React from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import HoverShadowBg from "../components/HoverShadowBg";
-import team1 from "../assets/profile.jpg";
-import team2 from "../assets/profile.jpg";
-import team3 from "../assets/profile.jpg";
-import team4 from "../assets/profile.jpg";
 import aboutImage from "../assets/services1.jpg";
+import talha_img from "../assets/talha_img.jpg";
+import tahir_img from "../assets/tahir_img.jpg";
+
+
+// Fast-loading SVG placeholder for team members
+const avatarPlaceholder = "data:image/svg+xml;base64," + btoa(`
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="60" cy="60" r="60" fill="#e5e7eb"/>
+  <circle cx="60" cy="45" r="18" fill="#9ca3af"/>
+  <path d="M30 100c0-16.569 13.431-30 30-30s30 13.431 30 30" fill="#9ca3af"/>
+</svg>
+`);
 
 
 const teamMembers = [
@@ -15,25 +23,25 @@ const teamMembers = [
     name: "Mian Tahir Masood",
     role: "Chief Executive",
     phone: "0300-6641727",
-    image: team1,
+    image: tahir_img,
   },
   {
     name: "Azmat Ali",
     role: "Sales Officer",
     phone: "0304-1394413",
-    image: team2,
+    image: avatarPlaceholder,
   },
   {
     name: "Mian Talha Tahir",
-    role: "Unknown",
+    role: "Sales Officer",
     phone: "0320-6040196",
-    image: team3,
+    image: talha_img,
   },
   {
     name: "Unknown",
-    role: "Unknown",
+    role: "Sales Officer",
     phone: "Nan",
-    image: team4,
+    image: avatarPlaceholder,
   },
 ];
 
@@ -147,7 +155,12 @@ export default function About() {
               <img
                 src={member.image}
                 alt={member.name}
-                className="w-28 h-28 object-cover rounded-full mb-4 shadow-lg"
+                className="w-32 h-32 sm:w-36 sm:h-36 object-cover rounded-full mb-4 shadow-lg ring-2 ring-gray-100"
+                style={{
+                  imageRendering: 'auto',
+                  backfaceVisibility: 'hidden',
+                  transform: 'translateZ(0)'
+                }}
               />
               <h3 className="text-lg font-semibold text-[#00796b]">
                 {member.name}
