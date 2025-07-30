@@ -13,6 +13,12 @@ import floor from "../assets/floors/gallery64.jpg";
 import stair from "../assets/stairs/gallery65.jpg";
 import surface from "../assets/others/gallery61.jpg";
 import mosaic from "../assets/mosaic/gallery63.jpg";
+import black_gold from "../assets/products/black_gold.jpg";
+import booti_seena from "../assets/products/booti_seena.png";
+import taweera from "../assets/products/taweera.png";
+import tropical_grey from "../assets/products/tropical_grey.png";
+import sunny_white from "../assets/products/sunny_white.jpg";
+
 
 
 // High-quality marble and stone images
@@ -139,26 +145,26 @@ export default function Home() {
 
   const featuredProducts = [
     {
-      image: slider1,
-      name: "Carrara White Marble",
+      image: black_gold,
+      name: "Black Gold Marble",
       
     },
     {
-      image: slider1,
-      name: "Black Galaxy Granite",
+      image: booti_seena,
+      name: "BootiSeena Granite",
       
     },
     {
-      image: slider1,
-      name: "Calacatta Gold Marble",
+      image: taweera,
+      name: "Taweera Granite",
     },
     {
-      image: slider1,
-      name: "Kashmir White Granite",
+      image: tropical_grey,
+      name: "Tropical Grey Granite",
     },
     {
-      image: slider1,
-      name: "Emperador Dark Marble",
+      image: sunny_white,
+      name: "Sunny White Marble",
     },
   ];
 
