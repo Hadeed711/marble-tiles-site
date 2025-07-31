@@ -68,12 +68,18 @@ export default function Contact() {
     // Both operations will run independently - if one fails, the other continues
     const sendToBackend = async () => {
       try {
-        const response = await fetch('/api/contact', {
+        const response = await fetch('https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net/api/contact/message/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(formData),
+          body: JSON.stringify({
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            subject: 'Website Contact Form',
+            message: formData.message
+          }),
         });
         
         if (response.ok) {
@@ -106,7 +112,7 @@ _Sent from Sundar Marbles Website_`;
 
         // Using WhatsApp Business API or webhook
         // Replace this URL with your WhatsApp webhook endpoint when available
-        const whatsappApiUrl = '/api/send-whatsapp'; // Your WhatsApp API endpoint
+        const whatsappApiUrl = 'https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net/api/send-whatsapp'; // Your WhatsApp API endpoint
         
         const response = await fetch(whatsappApiUrl, {
           method: 'POST',
