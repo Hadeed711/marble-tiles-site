@@ -8,14 +8,6 @@ import Card from "../components/Card";
 import PremiumButton from "../components/PremiumButton";
 import slider1 from "../assets/slider1.jpg";
 import hero from "../assets/hero_img1.jpg";
-import black_gold from "../assets/products/black_gold.jpg";
-import booti_seena from "../assets/products/booti_seena.png";
-import jet_black from "../assets/products/jet_black.png";
-import star_black from "../assets/products/star_black.jpg";
-import taweera from "../assets/products/taweera.png";
-import tropical_grey from "../assets/products/tropical_grey.png";
-import sunny_white from "../assets/products/sunny_white.jpg";
-import sunny_grey from "../assets/products/sunny_grey.jpg";
 
 export default function Products() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -23,6 +15,51 @@ export default function Products() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchParams, setSearchParams] = useSearchParams();
   const [zoomedImage, setZoomedImage] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const BACKEND_URL = 'https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net';
+
+  // Fetch products and categories from backend
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        
+        // Fetch products
+        const productsResponse = await fetch(`${BACKEND_URL}/api/products/products/`);
+        if (productsResponse.ok) {
+          const productsData = await productsResponse.json();
+          setProducts(productsData.results || productsData);
+        } else {
+          console.error('Failed to fetch products');
+        }
+
+        // Fetch categories
+        const categoriesResponse = await fetch(`${BACKEND_URL}/api/products/categories/`);
+        if (categoriesResponse.ok) {
+          const categoriesData = await categoriesResponse.json();
+          const formattedCategories = [
+            { id: "all", name: "All Products" },
+            ...categoriesData.map(cat => ({ id: cat.slug, name: cat.name }))
+          ];
+          setCategories(formattedCategories);
+        } else {
+          console.error('Failed to fetch categories');
+        }
+
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setError('Failed to load products. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // Get search query from URL parameters
   useEffect(() => {
@@ -32,27 +69,12 @@ export default function Products() {
     }
   }, [searchParams]);
 
-  const products = [
-    { image: black_gold, name: "Black gold Marble",  category: "marble"},
-    { image: star_black, name: "Star black Marble", price: "3,900", category: "marble"  },
-    { image: taweera, name: "Taweera Granite",  category: "granite" },
-    { image: jet_black, name: "Jet_black Marble", category: "marble"},
-    { image: tropical_grey, name: "Tropical grey Granite", category: "granite"},
-    { image: booti_seena, name: "Booti seena",  category: "granite"},
-    { image: sunny_white, name: "Sunny White Marble",  category: "marble"},
-    { image: sunny_grey, name: "Sunny Grey Marble",  category: "marble"},
-  ];
-
-  const categories = [
-    { id: "all", name: "All Products" },
-    { id: "marble", name: "Marble" },
-    { id: "granite", name: "Granite" },
-  ];
-
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === "all" || product.category === selectedCategory;
+                         (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesCategory = selectedCategory === "all" || 
+                           (product.category && product.category.slug === selectedCategory) ||
+                           (product.category && product.category.name.toLowerCase() === selectedCategory);
     return matchesSearch && matchesCategory;
   });
 
@@ -280,19 +302,34 @@ export default function Products() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
         >
-          {filteredProducts.length > 0 ? (
+          {loading ? (
+            <div className="col-span-full text-center py-12">
+              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#00796b] mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading products...</p>
+            </div>
+          ) : error ? (
+            <div className="col-span-full text-center py-12">
+              <div className="text-red-500 mb-4">
+                <svg className="mx-auto h-16 w-16 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Error loading products</h3>
+                <p className="text-gray-600">{error}</p>
+              </div>
+            </div>
+          ) : filteredProducts.length > 0 ? (
             filteredProducts.map((product, index) => (
               <motion.div
-                key={index}
+                key={product.id || index}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="h-full"
               >
                 <Card 
-                  image={product.image} 
+                  image={product.image ? `${BACKEND_URL}${product.image}` : hero} 
                   name={product.name} 
-                  price={product.price}
+                  price={product.price ? `PKR ${product.price}` : 'Contact for price'}
                   onImageClick={handleImageClick}
                 />
               </motion.div>
