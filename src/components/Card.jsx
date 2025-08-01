@@ -1,12 +1,12 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 
-export default function Card({ image, name, description, price, onImageClick }) {
+export default function Card({ image, name, description, onImageClick }) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
   const handleWhatsAppOrder = () => {
-    const message = `Hi! I'm interested in ordering ${name}${price ? ` (${price})` : ''}! Please provide more details.`;
+    const message = `Hi! I'm interested in ordering ${name}! Please provide more details.`;
     const whatsappUrl = `https://wa.me/923206040196?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
@@ -27,8 +27,8 @@ export default function Card({ image, name, description, price, onImageClick }) 
       >
         {/* Loading placeholder */}
         {!imageLoaded && !imageError && (
-          <div className="w-full h-44 sm:h-56 bg-gray-200 animate-pulse flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#00796b]"></div>
+          <div className="w-full h-44 sm:h-56 bg-gray-200 flex items-center justify-center">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#00796b]"></div>
           </div>
         )}
         
@@ -48,7 +48,7 @@ export default function Card({ image, name, description, price, onImageClick }) 
         <img
           src={image}
           alt={name}
-          loading="lazy"
+          loading="eager" // Changed from lazy to eager for faster loading
           className={`w-full h-44 sm:h-56 object-cover group-hover:brightness-110 transition-all duration-300 ${
             imageLoaded ? 'opacity-100' : 'opacity-0 absolute'
           }`}
@@ -61,9 +61,6 @@ export default function Card({ image, name, description, price, onImageClick }) 
       <div className="p-4 sm:p-5 flex-grow flex flex-col justify-between">
         <div className="space-y-2 sm:space-y-3">
           <h3 className="text-base sm:text-lg font-bold text-[#00796b] tracking-wide line-clamp-2">{name}</h3>
-          {price && (
-            <p className="text-sm sm:text-base font-semibold text-[#d4af37]">{price}</p>
-          )}
           {description && (
             <p className="text-xs sm:text-sm text-gray-600 line-clamp-3 min-h-[2.75rem] sm:min-h-[3.75rem]">{description}</p>
           )}

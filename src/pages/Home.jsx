@@ -43,7 +43,14 @@ export default function Home() {
   useEffect(() => {
     const fetchFeaturedProducts = async () => {
       try {
-        const response = await fetch('https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net/api/products/');
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout for featured products
+        
+        const response = await fetch('https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net/api/products/', {
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+        
         if (response.ok) {
           const data = await response.json();
           const products = data.results || data;
@@ -52,8 +59,7 @@ export default function Home() {
           if (featured.length > 0) {
             setBackendFeaturedProducts(featured.map(p => ({
               image: `https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net${p.image}`,
-              name: p.name,
-              price: `₹${p.price}/sq ft`
+              name: p.name
             })));
             setUseBackendProducts(true);
           }
@@ -177,28 +183,23 @@ export default function Home() {
   const featuredProducts = [
     {
       image: black_gold,
-      name: "Black Gold Marble",
-      price: "₹12,000/sq ft"
+      name: "Black Gold Marble"
     },
     {
       image: star_black,
-      name: "Star Black Marble",
-      price: "₹8,500/sq ft"
+      name: "Star Black Marble"
     },
     {
       image: sunny_white,
-      name: "Sunny White Marble",
-      price: "₹6,800/sq ft"
+      name: "Sunny White Marble"
     },
     {
       image: sunny_grey,
-      name: "Sunny Grey Marble",
-      price: "₹7,200/sq ft"
+      name: "Sunny Grey Marble"
     },
     {
       image: tropical_grey,
-      name: "Tropical Grey Granite",
-      price: "₹9,500/sq ft"
+      name: "Tropical Grey Granite"
     },
   ];
 
@@ -660,7 +661,6 @@ export default function Home() {
                     <Card
                       image={product.image}
                       name={product.name}
-                      price={product.price}
                       description={product.description}
                     />
                   </div>

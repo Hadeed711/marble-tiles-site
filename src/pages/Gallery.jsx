@@ -184,8 +184,15 @@ export default function Gallery() {
         
         console.log('Trying to fetch gallery from backend...');
         
+        // Add timeout for gallery requests
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+        
         // Try to fetch gallery images
-        const imagesResponse = await fetch(`${BACKEND_URL}/api/gallery/`);
+        const imagesResponse = await fetch(`${BACKEND_URL}/api/gallery/`, {
+          signal: controller.signal,
+        });
+        
         if (imagesResponse.ok) {
           const imagesData = await imagesResponse.json();
           const backendImages = imagesData.results || imagesData;
@@ -203,7 +210,11 @@ export default function Gallery() {
         }
 
         // Try to fetch categories
-        const categoriesResponse = await fetch(`${BACKEND_URL}/api/gallery/categories/`);
+        const categoriesResponse = await fetch(`${BACKEND_URL}/api/gallery/categories/`, {
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+        
         if (categoriesResponse.ok) {
           const categoriesData = await categoriesResponse.json();
           if (categoriesData && categoriesData.length > 0) {
@@ -225,7 +236,11 @@ export default function Gallery() {
         }
 
       } catch (error) {
-        console.log('Error fetching gallery, using fallback:', error);
+        if (error.name === 'AbortError') {
+          console.log('Gallery request timed out, using fallback');
+        } else {
+          console.log('Error fetching gallery, using fallback:', error);
+        }
         setGalleryImages(fallbackGalleryImages);
         setCategories(fallbackCategories);
       } finally {
@@ -270,11 +285,11 @@ export default function Gallery() {
 
   const handleLoadMore = () => {
     setLoadingMore(true);
-    // Simulate loading time for better UX
+    // Reduced loading time for better performance
     setTimeout(() => {
       setVisibleImages(prev => prev + 8); // Load 8 more images at a time
       setLoadingMore(false);
-    }, 1000); // 1000ms delay to show loading state
+    }, 300); // Reduced from 1000ms to 300ms
   };
 
   const openLightbox = (image) => {

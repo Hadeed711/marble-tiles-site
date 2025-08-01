@@ -39,7 +39,6 @@ export default function Products() {
       id: 1,
       image: black_gold, 
       name: "Black Gold Marble", 
-      price: "12,000",
       category: { slug: "marble", name: "Marble" },
       description: "Premium black marble with gold veining"
     },
@@ -47,7 +46,6 @@ export default function Products() {
       id: 2,
       image: star_black, 
       name: "Star Black Marble", 
-      price: "8,500",
       category: { slug: "marble", name: "Marble" },
       description: "Elegant black marble with star patterns"
     },
@@ -55,7 +53,6 @@ export default function Products() {
       id: 3,
       image: taweera, 
       name: "Taweera Granite", 
-      price: "9,200",
       category: { slug: "granite", name: "Granite" },
       description: "Durable granite with natural patterns"
     },
@@ -63,7 +60,6 @@ export default function Products() {
       id: 4,
       image: jet_black, 
       name: "Jet Black Marble", 
-      price: "7,800",
       category: { slug: "marble", name: "Marble" },
       description: "Deep black marble for modern designs"
     },
@@ -71,7 +67,6 @@ export default function Products() {
       id: 5,
       image: tropical_grey, 
       name: "Tropical Grey Granite", 
-      price: "10,500",
       category: { slug: "granite", name: "Granite" },
       description: "Grey granite with tropical patterns"
     },
@@ -79,7 +74,6 @@ export default function Products() {
       id: 6,
       image: booti_seena, 
       name: "Booti Seena Granite", 
-      price: "8,200",
       category: { slug: "granite", name: "Granite" },
       description: "Classic granite with speckled finish"
     },
@@ -87,7 +81,6 @@ export default function Products() {
       id: 7,
       image: sunny_white, 
       name: "Sunny White Marble", 
-      price: "6,800",
       category: { slug: "marble", name: "Marble" },
       description: "Bright white marble for luxury spaces"
     },
@@ -95,7 +88,6 @@ export default function Products() {
       id: 8,
       image: sunny_grey, 
       name: "Sunny Grey Marble", 
-      price: "7,200",
       category: { slug: "marble", name: "Marble" },
       description: "Sophisticated grey marble with subtle veining"
     },
@@ -116,8 +108,14 @@ export default function Products() {
         
         console.log('Trying to fetch from backend...');
         
-        // Try to fetch products from backend
-        const productsResponse = await fetch(`${BACKEND_URL}/api/products/`);
+        // Try to fetch products from backend with timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+        
+        const productsResponse = await fetch(`${BACKEND_URL}/api/products/`, {
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
         
         if (productsResponse.ok) {
           const productsData = await productsResponse.json();
@@ -137,7 +135,9 @@ export default function Products() {
         }
 
         // Try to fetch categories from backend
-        const categoriesResponse = await fetch(`${BACKEND_URL}/api/products/categories/`);
+        const categoriesResponse = await fetch(`${BACKEND_URL}/api/products/categories/`, {
+          signal: controller.signal,
+        });
         
         if (categoriesResponse.ok) {
           const categoriesData = await categoriesResponse.json();
@@ -156,7 +156,11 @@ export default function Products() {
         }
 
       } catch (error) {
-        console.log('Error fetching from backend, using fallback:', error);
+        if (error.name === 'AbortError') {
+          console.log('Request timed out, using fallback');
+        } else {
+          console.log('Error fetching from backend, using fallback:', error);
+        }
         setProducts(fallbackProducts);
         setCategories(fallbackCategories);
       } finally {
@@ -189,11 +193,11 @@ export default function Products() {
 
   const handleLoadMore = () => {
     setLoadingMore(true);
-    // Simulate loading time for better UX
+    // Reduced loading time for better performance
     setTimeout(() => {
       setVisibleProducts(prev => prev + 4); // Load 4 more products
       setLoadingMore(false);
-    }, 800); // 800ms delay to show loading state
+    }, 300); // Reduced from 800ms to 300ms
   };
 
   // Handle image zoom
@@ -449,7 +453,7 @@ export default function Products() {
                   <Card 
                     image={product.image && (product.image.startsWith('http') || product.image.startsWith('/media')) ? `${BACKEND_URL}${product.image}` : product.image || hero} 
                     name={product.name} 
-                    price={product.price ? (typeof product.price === 'string' ? `PKR ${product.price}` : `PKR ${product.price}`) : 'Contact for price'}
+                    description={product.description}
                     onImageClick={handleImageClick}
                   />
                 </motion.div>
