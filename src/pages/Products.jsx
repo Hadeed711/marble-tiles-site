@@ -6,7 +6,6 @@ import Footer from "../components/Footer";
 import HoverShadowBg from "../components/HoverShadowBg";
 import Card from "../components/Card";
 import PremiumButton from "../components/PremiumButton";
-import slider1 from "../assets/slider1.jpg";
 import hero from "../assets/hero_img1.jpg";
 
 // Import your original product images
@@ -29,6 +28,8 @@ export default function Products() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [visibleProducts, setVisibleProducts] = useState(4); // Show only 4 products initially (1 row)
+  const [loadingMore, setLoadingMore] = useState(false); // Loading state for load more
 
   const BACKEND_URL = 'https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net';
 
@@ -183,6 +184,18 @@ export default function Products() {
     return matchesSearch && matchesCategory;
   });
 
+  // Pagination for better performance
+  const displayedProducts = filteredProducts.slice(0, visibleProducts);
+
+  const handleLoadMore = () => {
+    setLoadingMore(true);
+    // Simulate loading time for better UX
+    setTimeout(() => {
+      setVisibleProducts(prev => prev + 4); // Load 4 more products
+      setLoadingMore(false);
+    }, 800); // 800ms delay to show loading state
+  };
+
   // Handle image zoom
   const handleImageClick = (image, name) => {
     setZoomedImage({ image, name });
@@ -323,7 +336,7 @@ export default function Products() {
           transition={{ duration: 0.6, delay: 0.4 }}
         >
           <p className="text-sm sm:text-base text-gray-600 text-center sm:text-left">
-            Showing {filteredProducts.length} of {products.length} products
+            Showing {displayedProducts.length} of {filteredProducts.length} products
             {searchTerm && (
               <span className="block sm:inline ml-0 sm:ml-2 text-[#00796b] font-medium">
                 for "{searchTerm}"
@@ -341,6 +354,7 @@ export default function Products() {
               onClick={() => {
                 handleSearchChange("");
                 setSelectedCategory("all");
+                setVisibleProducts(4); // Reset to initial load
               }}
               className="text-xs sm:text-sm text-gray-500 hover:text-[#00796b] underline mx-auto sm:mx-0"
             >
@@ -423,22 +437,50 @@ export default function Products() {
               </div>
             </div>
           ) : filteredProducts.length > 0 ? (
-            filteredProducts.map((product, index) => (
-              <motion.div
-                key={product.id || index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="h-full"
-              >
-                <Card 
-                  image={product.image && product.image.startsWith('/') ? `${BACKEND_URL}${product.image}` : product.image || hero} 
-                  name={product.name} 
-                  price={product.price ? (typeof product.price === 'string' ? `PKR ${product.price}` : `PKR ${product.price}`) : 'Contact for price'}
-                  onImageClick={handleImageClick}
-                />
-              </motion.div>
-            ))
+            <>
+              {displayedProducts.map((product, index) => (
+                <motion.div
+                  key={product.id || index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="h-full"
+                >
+                  <Card 
+                    image={product.image && (product.image.startsWith('http') || product.image.startsWith('/media')) ? `${BACKEND_URL}${product.image}` : product.image || hero} 
+                    name={product.name} 
+                    price={product.price ? (typeof product.price === 'string' ? `PKR ${product.price}` : `PKR ${product.price}`) : 'Contact for price'}
+                    onImageClick={handleImageClick}
+                  />
+                </motion.div>
+              ))}
+              
+              {/* Load More Button */}
+              {displayedProducts.length < filteredProducts.length && (
+                <div className="col-span-full text-center mt-8">
+                  <motion.button
+                    onClick={handleLoadMore}
+                    disabled={loadingMore}
+                    className={`px-8 py-3 rounded-full transition-all duration-300 font-medium shadow-lg ${
+                      loadingMore 
+                        ? 'bg-gray-400 cursor-not-allowed' 
+                        : 'bg-[#00796b] hover:bg-[#d4af37] text-white'
+                    }`}
+                    whileHover={!loadingMore ? { scale: 1.05 } : {}}
+                    whileTap={!loadingMore ? { scale: 0.95 } : {}}
+                  >
+                    {loadingMore ? (
+                      <div className="flex items-center gap-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        <span>Loading...</span>
+                      </div>
+                    ) : (
+                      `Load More Products (${filteredProducts.length - displayedProducts.length} remaining)`
+                    )}
+                  </motion.button>
+                </div>
+              )}
+            </>
           ) : (
             <div className="col-span-full text-center py-12">
               <motion.div

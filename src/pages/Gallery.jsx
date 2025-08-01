@@ -3,22 +3,83 @@ import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import HoverShadowBg from "../components/HoverShadowBg";
-import slider1 from "../assets/slider1.jpg";
 import hero from "../assets/hero_img1.jpg";
 
-// Import some of your original gallery images
-import stairs1 from "../assets/stairs/gallery65.jpg";
-import stairs2 from "../assets/stairs/gallery66.jpg";
-import stairs3 from "../assets/stairs/gallery5.jpg";
-import stairs4 from "../assets/stairs/gallery7.jpg";
-import floors1 from "../assets/floors/gallery64.jpg";
-import floors2 from "../assets/floors/gallery6.jpg";
-import floors3 from "../assets/floors/gallery8.jpg";
-import floors4 from "../assets/floors/gallery9.jpg";
-import mosaic1 from "../assets/mosaic/gallery63.jpg";
-import mosaic2 from "../assets/mosaic/gallery17.jpg";
-import others1 from "../assets/others/gallery61.jpg";
-import others2 from "../assets/others/gallery1.jpg";
+// Import ALL stairs images
+import stairs1 from "../assets/stairs/gallery16.jpg";
+import stairs2 from "../assets/stairs/gallery33.jpg";
+import stairs3 from "../assets/stairs/gallery34.jpg";
+import stairs4 from "../assets/stairs/gallery35.jpg";
+import stairs5 from "../assets/stairs/gallery39.jpg";
+import stairs6 from "../assets/stairs/gallery41.jpg";
+import stairs7 from "../assets/stairs/gallery47.jpg";
+import stairs8 from "../assets/stairs/gallery48.jpg";
+import stairs9 from "../assets/stairs/gallery49.jpg";
+import stairs10 from "../assets/stairs/gallery5.jpg";
+import stairs11 from "../assets/stairs/gallery52.jpg";
+import stairs12 from "../assets/stairs/gallery53.jpg";
+import stairs13 from "../assets/stairs/gallery54.jpg";
+import stairs14 from "../assets/stairs/gallery55.jpg";
+import stairs15 from "../assets/stairs/gallery56.jpg";
+import stairs16 from "../assets/stairs/gallery65.jpg";
+import stairs17 from "../assets/stairs/gallery66.jpg";
+import stairs18 from "../assets/stairs/gallery7.jpg";
+
+// Import ALL floors images
+import floor1 from "../assets/floors/gallery10.jpg";
+import floor2 from "../assets/floors/gallery11.jpg";
+import floor3 from "../assets/floors/gallery12.jpg";
+import floor4 from "../assets/floors/gallery13.jpg";
+import floor5 from "../assets/floors/gallery14.jpg";
+import floor6 from "../assets/floors/gallery15.jpg";
+import floor7 from "../assets/floors/gallery25.jpg";
+import floor8 from "../assets/floors/gallery31.jpg";
+import floor9 from "../assets/floors/gallery32.jpg";
+import floor10 from "../assets/floors/gallery37.jpg";
+import floor11 from "../assets/floors/gallery38.jpg";
+import floor12 from "../assets/floors/gallery4.jpg";
+import floor13 from "../assets/floors/gallery42.jpg";
+import floor14 from "../assets/floors/gallery44.jpg";
+import floor15 from "../assets/floors/gallery46.jpg";
+import floor16 from "../assets/floors/gallery57.jpg";
+import floor17 from "../assets/floors/gallery6.jpg";
+import floor18 from "../assets/floors/gallery64.jpg";
+import floor19 from "../assets/floors/gallery8.jpg";
+import floor20 from "../assets/floors/gallery9.jpg";
+
+// Import ALL mosaic images
+import mosaic1 from "../assets/mosaic/gallery17.jpg";
+import mosaic2 from "../assets/mosaic/gallery19.jpg";
+import mosaic3 from "../assets/mosaic/gallery20.jpg";
+import mosaic4 from "../assets/mosaic/gallery21.jpg";
+import mosaic5 from "../assets/mosaic/gallery22.jpg";
+import mosaic6 from "../assets/mosaic/gallery23.jpg";
+import mosaic7 from "../assets/mosaic/gallery24.jpg";
+import mosaic8 from "../assets/mosaic/gallery29.jpg";
+import mosaic9 from "../assets/mosaic/gallery30.jpg";
+import mosaic10 from "../assets/mosaic/gallery36.jpg";
+import mosaic11 from "../assets/mosaic/gallery40.jpg";
+import mosaic12 from "../assets/mosaic/gallery63.jpg";
+
+// Import ALL others images
+import other1 from "../assets/others/gallery1.jpg";
+import other2 from "../assets/others/gallery18.jpg";
+import other3 from "../assets/others/gallery2.jpg";
+import other4 from "../assets/others/gallery26.jpg";
+import other5 from "../assets/others/gallery27.jpg";
+import other6 from "../assets/others/gallery28.jpg";
+import other7 from "../assets/others/gallery3.jpg";
+import other8 from "../assets/others/gallery43.jpg";
+import other9 from "../assets/others/gallery45.jpg";
+import other10 from "../assets/others/gallery50.jpg";
+import other11 from "../assets/others/gallery51.jpg";
+import other12 from "../assets/others/gallery58.jpg";
+import other13 from "../assets/others/gallery61.jpg";
+
+
+
+
+
 
 export default function Gallery() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -28,24 +89,83 @@ export default function Gallery() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [lightboxImage, setLightboxImage] = useState(null);
-  const [visibleImages, setVisibleImages] = useState(12);
+  const [visibleImages, setVisibleImages] = useState(8); // Start with 8 images for faster loading
+  const [loadingMore, setLoadingMore] = useState(false); // Loading state for load more
 
   const BACKEND_URL = 'https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net';
 
-  // Fallback gallery images
+  // Comprehensive fallback gallery images with ALL your assets
   const fallbackGalleryImages = [
-    { id: 1, title: "Elegant Marble Staircase", image: stairs1, category: { slug: "stairs", name: "Stairs" }, project_location: "Faisalabad" },
-    { id: 2, title: "Modern Stair Design", image: stairs2, category: { slug: "stairs", name: "Stairs" }, project_location: "Lahore" },
-    { id: 3, title: "Classic Stairs", image: stairs3, category: { slug: "stairs", name: "Stairs" }, project_location: "Karachi" },
-    { id: 4, title: "Premium Staircase", image: stairs4, category: { slug: "stairs", name: "Stairs" }, project_location: "Islamabad" },
-    { id: 5, title: "Luxury Floor Installation", image: floors1, category: { slug: "floors", name: "Floors" }, project_location: "Faisalabad" },
-    { id: 6, title: "Modern Flooring", image: floors2, category: { slug: "floors", name: "Floors" }, project_location: "Lahore" },
-    { id: 7, title: "Premium Floor Design", image: floors3, category: { slug: "floors", name: "Floors" }, project_location: "Karachi" },
-    { id: 8, title: "Elegant Flooring", image: floors4, category: { slug: "floors", name: "Floors" }, project_location: "Islamabad" },
-    { id: 9, title: "Artistic Mosaic Work", image: mosaic1, category: { slug: "mosaic", name: "Mosaic" }, project_location: "Faisalabad" },
-    { id: 10, title: "Decorative Mosaic", image: mosaic2, category: { slug: "mosaic", name: "Mosaic" }, project_location: "Lahore" },
-    { id: 11, title: "Custom Installation", image: others1, category: { slug: "others", name: "Others" }, project_location: "Faisalabad" },
-    { id: 12, title: "Special Project", image: others2, category: { slug: "others", name: "Others" }, project_location: "Lahore" },
+    // Stairs collection (18 images)
+    { id: 1, title: "Premium Marble Staircase Design", image: stairs1, category: { slug: "stairs", name: "Stairs" }, project_location: "Faisalabad" },
+    { id: 2, title: "Elegant Curved Staircase", image: stairs2, category: { slug: "stairs", name: "Stairs" }, project_location: "Lahore" },
+    { id: 3, title: "Modern Spiral Stairs", image: stairs3, category: { slug: "stairs", name: "Stairs" }, project_location: "Karachi" },
+    { id: 4, title: "Classic Marble Steps", image: stairs4, category: { slug: "stairs", name: "Stairs" }, project_location: "Islamabad" },
+    { id: 5, title: "Luxury Staircase Installation", image: stairs5, category: { slug: "stairs", name: "Stairs" }, project_location: "Faisalabad" },
+    { id: 6, title: "Contemporary Stair Design", image: stairs6, category: { slug: "stairs", name: "Stairs" }, project_location: "Lahore" },
+    { id: 7, title: "Granite Step Construction", image: stairs7, category: { slug: "stairs", name: "Stairs" }, project_location: "Multan" },
+    { id: 8, title: "Premium Stair Finishing", image: stairs8, category: { slug: "stairs", name: "Stairs" }, project_location: "Rawalpindi" },
+    { id: 9, title: "Marble Staircase with Railing", image: stairs9, category: { slug: "stairs", name: "Stairs" }, project_location: "Gujranwala" },
+    { id: 10, title: "Designer Staircase Project", image: stairs10, category: { slug: "stairs", name: "Stairs" }, project_location: "Sialkot" },
+    { id: 11, title: "Royal Staircase Design", image: stairs11, category: { slug: "stairs", name: "Stairs" }, project_location: "Peshawar" },
+    { id: 12, title: "Executive Stair Installation", image: stairs12, category: { slug: "stairs", name: "Stairs" }, project_location: "Quetta" },
+    { id: 13, title: "Curved Marble Steps", image: stairs13, category: { slug: "stairs", name: "Stairs" }, project_location: "Hyderabad" },
+    { id: 14, title: "Premium Staircase Work", image: stairs14, category: { slug: "stairs", name: "Stairs" }, project_location: "Sargodha" },
+    { id: 15, title: "Modern Stair Architecture", image: stairs15, category: { slug: "stairs", name: "Stairs" }, project_location: "Bahawalpur" },
+    { id: 16, title: "Elegant Staircase Design", image: stairs16, category: { slug: "stairs", name: "Stairs" }, project_location: "Sukkur" },
+    { id: 17, title: "Luxury Marble Stairway", image: stairs17, category: { slug: "stairs", name: "Stairs" }, project_location: "Larkana" },
+    { id: 18, title: "Designer Steps Installation", image: stairs18, category: { slug: "stairs", name: "Stairs" }, project_location: "Mardan" },
+
+    // Floors collection (20 images)
+    { id: 19, title: "Premium Marble Flooring", image: floor1, category: { slug: "floors", name: "Floors" }, project_location: "Faisalabad" },
+    { id: 20, title: "Luxury Floor Installation", image: floor2, category: { slug: "floors", name: "Floors" }, project_location: "Lahore" },
+    { id: 21, title: "Modern Floor Design", image: floor3, category: { slug: "floors", name: "Floors" }, project_location: "Karachi" },
+    { id: 22, title: "Elegant Granite Flooring", image: floor4, category: { slug: "floors", name: "Floors" }, project_location: "Islamabad" },
+    { id: 23, title: "Designer Floor Pattern", image: floor5, category: { slug: "floors", name: "Floors" }, project_location: "Faisalabad" },
+    { id: 24, title: "Contemporary Flooring", image: floor6, category: { slug: "floors", name: "Floors" }, project_location: "Lahore" },
+    { id: 25, title: "Marble Floor Masterpiece", image: floor7, category: { slug: "floors", name: "Floors" }, project_location: "Multan" },
+    { id: 26, title: "Luxury Marble Installation", image: floor8, category: { slug: "floors", name: "Floors" }, project_location: "Rawalpindi" },
+    { id: 27, title: "Premium Floor Finishing", image: floor9, category: { slug: "floors", name: "Floors" }, project_location: "Gujranwala" },
+    { id: 28, title: "Executive Floor Design", image: floor10, category: { slug: "floors", name: "Floors" }, project_location: "Sialkot" },
+    { id: 29, title: "Granite Floor Pattern", image: floor11, category: { slug: "floors", name: "Floors" }, project_location: "Peshawar" },
+    { id: 30, title: "Modern Marble Flooring", image: floor12, category: { slug: "floors", name: "Floors" }, project_location: "Quetta" },
+    { id: 31, title: "Elegant Floor Installation", image: floor13, category: { slug: "floors", name: "Floors" }, project_location: "Hyderabad" },
+    { id: 32, title: "Designer Marble Floor", image: floor14, category: { slug: "floors", name: "Floors" }, project_location: "Sargodha" },
+    { id: 33, title: "Premium Granite Flooring", image: floor15, category: { slug: "floors", name: "Floors" }, project_location: "Bahawalpur" },
+    { id: 34, title: "Luxury Floor Project", image: floor16, category: { slug: "floors", name: "Floors" }, project_location: "Sukkur" },
+    { id: 35, title: "Contemporary Floor Design", image: floor17, category: { slug: "floors", name: "Floors" }, project_location: "Larkana" },
+    { id: 36, title: "Marble Floor Excellence", image: floor18, category: { slug: "floors", name: "Floors" }, project_location: "Mardan" },
+    { id: 37, title: "Executive Flooring Work", image: floor19, category: { slug: "floors", name: "Floors" }, project_location: "Chiniot" },
+    { id: 38, title: "Premium Floor Craftsmanship", image: floor20, category: { slug: "floors", name: "Floors" }, project_location: "Sahiwal" },
+
+    // Mosaic collection (12 images)
+    { id: 39, title: "Artistic Mosaic Design", image: mosaic1, category: { slug: "mosaic", name: "Mosaic" }, project_location: "Faisalabad" },
+    { id: 40, title: "Decorative Mosaic Pattern", image: mosaic2, category: { slug: "mosaic", name: "Mosaic" }, project_location: "Lahore" },
+    { id: 41, title: "Premium Mosaic Work", image: mosaic3, category: { slug: "mosaic", name: "Mosaic" }, project_location: "Karachi" },
+    { id: 42, title: "Elegant Mosaic Installation", image: mosaic4, category: { slug: "mosaic", name: "Mosaic" }, project_location: "Islamabad" },
+    { id: 43, title: "Contemporary Mosaic Art", image: mosaic5, category: { slug: "mosaic", name: "Mosaic" }, project_location: "Faisalabad" },
+    { id: 44, title: "Designer Mosaic Pattern", image: mosaic6, category: { slug: "mosaic", name: "Mosaic" }, project_location: "Lahore" },
+    { id: 45, title: "Luxury Mosaic Design", image: mosaic7, category: { slug: "mosaic", name: "Mosaic" }, project_location: "Multan" },
+    { id: 46, title: "Artistic Mosaic Creation", image: mosaic8, category: { slug: "mosaic", name: "Mosaic" }, project_location: "Rawalpindi" },
+    { id: 47, title: "Premium Mosaic Artwork", image: mosaic9, category: { slug: "mosaic", name: "Mosaic" }, project_location: "Gujranwala" },
+    { id: 48, title: "Decorative Mosaic Project", image: mosaic10, category: { slug: "mosaic", name: "Mosaic" }, project_location: "Sialkot" },
+    { id: 49, title: "Modern Mosaic Installation", image: mosaic11, category: { slug: "mosaic", name: "Mosaic" }, project_location: "Peshawar" },
+    { id: 50, title: "Executive Mosaic Design", image: mosaic12, category: { slug: "mosaic", name: "Mosaic" }, project_location: "Quetta" },
+
+    // Others collection (13 images)
+    { id: 51, title: "Custom Stone Installation", image: other1, category: { slug: "others", name: "Others" }, project_location: "Faisalabad" },
+    { id: 52, title: "Special Project Design", image: other2, category: { slug: "others", name: "Others" }, project_location: "Lahore" },
+    { id: 53, title: "Unique Marble Work", image: other3, category: { slug: "others", name: "Others" }, project_location: "Karachi" },
+    { id: 54, title: "Designer Stone Project", image: other4, category: { slug: "others", name: "Others" }, project_location: "Islamabad" },
+    { id: 55, title: "Premium Custom Work", image: other5, category: { slug: "others", name: "Others" }, project_location: "Faisalabad" },
+    { id: 56, title: "Elegant Stone Installation", image: other6, category: { slug: "others", name: "Others" }, project_location: "Lahore" },
+    { id: 57, title: "Luxury Custom Design", image: other7, category: { slug: "others", name: "Others" }, project_location: "Multan" },
+    { id: 58, title: "Executive Stone Work", image: other8, category: { slug: "others", name: "Others" }, project_location: "Rawalpindi" },
+    { id: 59, title: "Contemporary Installation", image: other9, category: { slug: "others", name: "Others" }, project_location: "Gujranwala" },
+    { id: 60, title: "Artistic Stone Project", image: other10, category: { slug: "others", name: "Others" }, project_location: "Sialkot" },
+    { id: 61, title: "Designer Custom Work", image: other11, category: { slug: "others", name: "Others" }, project_location: "Peshawar" },
+    { id: 62, title: "Premium Stone Installation", image: other12, category: { slug: "others", name: "Others" }, project_location: "Quetta" },
+    { id: 63, title: "Luxury Custom Project", image: other13, category: { slug: "others", name: "Others" }, project_location: "Hyderabad" },
   ];
 
   const fallbackCategories = [
@@ -138,8 +258,23 @@ export default function Gallery() {
 
   const displayedImages = filteredImages.slice(0, visibleImages);
 
+  // Function to get image count for each category
+  const getCategoryImageCount = (categoryId) => {
+    if (categoryId === "all") {
+      return galleryImages.length;
+    }
+    return galleryImages.filter(img => 
+      img.category && (img.category.slug === categoryId || img.category.name.toLowerCase() === categoryId)
+    ).length;
+  };
+
   const handleLoadMore = () => {
-    setVisibleImages(prev => prev + 12);
+    setLoadingMore(true);
+    // Simulate loading time for better UX
+    setTimeout(() => {
+      setVisibleImages(prev => prev + 8); // Load 8 more images at a time
+      setLoadingMore(false);
+    }, 1000); // 1000ms delay to show loading state
   };
 
   const openLightbox = (image) => {
@@ -225,23 +360,33 @@ export default function Gallery() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              {categories.map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => {
-                    setSelectedCategory(category.id);
-                    setVisibleImages(12);
-                  }}
-                  className={`px-4 py-2 rounded-full transition-all duration-300 flex items-center gap-2 ${
-                    selectedCategory === category.id
-                      ? 'bg-[#00796b] text-white shadow-lg transform scale-105'
-                      : 'bg-white text-[#00796b] border border-[#00796b] hover:bg-[#00796b] hover:text-white'
-                  }`}
-                >
-                  <span>{category.icon}</span>
-                  <span className="font-medium">{category.name}</span>
-                </button>
-              ))}
+              {categories.map((category) => {
+                const imageCount = getCategoryImageCount(category.id);
+                return (
+                  <button
+                    key={category.id}
+                    onClick={() => {
+                      setSelectedCategory(category.id);
+                      setVisibleImages(8); // Reset to initial load
+                    }}
+                    className={`px-4 py-2 rounded-full transition-all duration-300 flex items-center gap-2 ${
+                      selectedCategory === category.id
+                        ? 'bg-[#00796b] text-white shadow-lg transform scale-105'
+                        : 'bg-white text-[#00796b] border border-[#00796b] hover:bg-[#00796b] hover:text-white'
+                    }`}
+                  >
+                    <span>{category.icon}</span>
+                    <span className="font-medium">{category.name}</span>
+                    <span className={`text-xs px-2 py-1 rounded-full ${
+                      selectedCategory === category.id
+                        ? 'bg-white/20 text-white'
+                        : 'bg-[#00796b]/10 text-[#00796b]'
+                    }`}>
+                      {imageCount}
+                    </span>
+                  </button>
+                );
+              })}
             </motion.div>
           </div>
         </section>
@@ -249,6 +394,39 @@ export default function Gallery() {
         {/* Gallery Grid */}
         <section className="py-8 px-4 sm:px-6">
           <div className="max-w-7xl mx-auto">
+            
+            {/* Filter Status */}
+            {!loading && (
+              <motion.div
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 p-4 bg-white rounded-lg shadow-sm border"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                <div className="flex items-center gap-2">
+                  <h3 className="text-lg font-semibold text-[#00796b]">
+                    {selectedCategory === "all" ? "All Gallery Images" : 
+                     `${categories.find(c => c.id === selectedCategory)?.name} Collection`}
+                  </h3>
+                  <span className="bg-[#00796b] text-white text-sm px-3 py-1 rounded-full">
+                    {filteredImages.length} {filteredImages.length === 1 ? 'image' : 'images'}
+                  </span>
+                </div>
+                
+                {selectedCategory !== "all" && (
+                  <button
+                    onClick={() => {
+                      setSelectedCategory("all");
+                      setVisibleImages(8); // Reset to initial load
+                    }}
+                    className="text-sm text-gray-500 hover:text-[#00796b] underline"
+                  >
+                    View All Categories
+                  </button>
+                )}
+              </motion.div>
+            )}
+
             {loading ? (
               <div className="text-center py-12">
                 <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#00796b] mx-auto mb-4"></div>
@@ -312,12 +490,36 @@ export default function Gallery() {
                 {/* Load More Button */}
                 {displayedImages.length < filteredImages.length && (
                   <div className="text-center mt-8">
-                    <button
+                    <motion.button
                       onClick={handleLoadMore}
-                      className="bg-[#00796b] text-white px-8 py-3 rounded-full hover:bg-[#d4af37] transition-all duration-300 font-medium"
+                      disabled={loadingMore}
+                      className={`px-8 py-3 rounded-full transition-all duration-300 font-medium shadow-lg ${
+                        loadingMore 
+                          ? 'bg-gray-400 cursor-not-allowed' 
+                          : 'bg-[#00796b] hover:bg-[#d4af37] text-white'
+                      }`}
+                      whileHover={!loadingMore ? { scale: 1.05 } : {}}
+                      whileTap={!loadingMore ? { scale: 0.95 } : {}}
                     >
-                      Load More Images
-                    </button>
+                      {loadingMore ? (
+                        <div className="flex items-center gap-2">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          <span>Loading Images...</span>
+                        </div>
+                      ) : (
+                        `Load More Images (${filteredImages.length - displayedImages.length} remaining)`
+                      )}
+                    </motion.button>
+                    
+                    {/* Image count info */}
+                    <p className="text-gray-600 text-sm mt-3">
+                      Showing {displayedImages.length} of {filteredImages.length} images
+                      {selectedCategory !== "all" && (
+                        <span className="ml-1">
+                          in {categories.find(c => c.id === selectedCategory)?.name}
+                        </span>
+                      )}
+                    </p>
                   </div>
                 )}
 
