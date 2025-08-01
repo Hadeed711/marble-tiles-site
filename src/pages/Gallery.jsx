@@ -189,7 +189,7 @@ export default function Gallery() {
         const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
         
         // Try to fetch gallery images
-        const imagesResponse = await fetch(`${BACKEND_URL}/api/gallery/`, {
+        const imagesResponse = await fetch(`${BACKEND_URL}/api/gallery/images/`, {
           signal: controller.signal,
         });
         
