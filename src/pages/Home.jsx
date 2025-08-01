@@ -14,6 +14,13 @@ import stair from "../assets/stairs/gallery65.jpg";
 import surface from "../assets/others/gallery61.jpg";
 import mosaic from "../assets/mosaic/gallery63.jpg";
 
+// Import product images
+import black_gold from "../assets/products/black_gold.jpg";
+import star_black from "../assets/products/star_black.jpg";
+import sunny_white from "../assets/products/sunny_white.jpg";
+import sunny_grey from "../assets/products/sunny_grey.jpg";
+import tropical_grey from "../assets/products/tropical_grey.png";
+
 
 // High-quality marble and stone images
 const sliderImages = [slider1, slider2, slider3];
@@ -29,6 +36,36 @@ export default function Home() {
   const [currentCardsToShow, setCurrentCardsToShow] = useState(
     cardsToShow.desktop
   );
+  const [backendFeaturedProducts, setBackendFeaturedProducts] = useState([]);
+  const [useBackendProducts, setUseBackendProducts] = useState(false);
+
+  // Try to fetch featured products from backend
+  useEffect(() => {
+    const fetchFeaturedProducts = async () => {
+      try {
+        const response = await fetch('https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net/api/products/');
+        if (response.ok) {
+          const data = await response.json();
+          const products = data.results || data;
+          // Get only featured products or first 5 if no featured flag
+          const featured = products.filter(p => p.is_featured).slice(0, 5);
+          if (featured.length > 0) {
+            setBackendFeaturedProducts(featured.map(p => ({
+              image: `https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net${p.image}`,
+              name: p.name,
+              price: `₹${p.price}/sq ft`
+            })));
+            setUseBackendProducts(true);
+          }
+        }
+      } catch (error) {
+        console.log('Using fallback featured products:', error);
+        // Will use hardcoded products as fallback
+      }
+    };
+
+    fetchFeaturedProducts();
+  }, []);
 
   // Helper to start interval
   const startSliderInterval = () => {
@@ -139,33 +176,41 @@ export default function Home() {
 
   const featuredProducts = [
     {
-      image: slider1,
-      name: "Carrara White Marble",
-      
+      image: black_gold,
+      name: "Black Gold Marble",
+      price: "₹12,000/sq ft"
     },
     {
-      image: slider1,
-      name: "Black Galaxy Granite",
-      
+      image: star_black,
+      name: "Star Black Marble",
+      price: "₹8,500/sq ft"
     },
     {
-      image: slider1,
-      name: "Calacatta Gold Marble",
+      image: sunny_white,
+      name: "Sunny White Marble",
+      price: "₹6,800/sq ft"
     },
     {
-      image: slider1,
-      name: "Kashmir White Granite",
+      image: sunny_grey,
+      name: "Sunny Grey Marble",
+      price: "₹7,200/sq ft"
     },
     {
-      image: slider1,
-      name: "Emperador Dark Marble",
+      image: tropical_grey,
+      name: "Tropical Grey Granite",
+      price: "₹9,500/sq ft"
     },
   ];
+
+  // Get current featured products (backend or fallback)
+  const currentFeaturedProducts = useBackendProducts && backendFeaturedProducts.length > 0 
+    ? backendFeaturedProducts 
+    : featuredProducts;
 
   // Calculate max index for the product slider - responsive
   const maxProductIndex = Math.max(
     0,
-    featuredProducts.length - currentCardsToShow
+    currentFeaturedProducts.length - currentCardsToShow
   );
 
   // Handle previous product navigation
@@ -595,8 +640,8 @@ export default function Home() {
                 className="flex gap-4 sm:gap-6"
                 style={{
                   width: `${
-                    cardWidth * featuredProducts.length +
-                    24 * (featuredProducts.length - 1)
+                    cardWidth * currentFeaturedProducts.length +
+                    24 * (currentFeaturedProducts.length - 1)
                   }px`,
                 }}
                 animate={{
@@ -607,7 +652,7 @@ export default function Home() {
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
               >
-                {featuredProducts.map((product) => (
+                {currentFeaturedProducts.map((product) => (
                   <div
                     key={product.name}
                     className="w-80 sm:w-80 flex-shrink-0 h-full"
@@ -615,6 +660,7 @@ export default function Home() {
                     <Card
                       image={product.image}
                       name={product.name}
+                      price={product.price}
                       description={product.description}
                     />
                   </div>
