@@ -92,7 +92,7 @@ export default function Gallery() {
   const [visibleImages, setVisibleImages] = useState(8); // Start with 8 images for faster loading
   const [loadingMore, setLoadingMore] = useState(false); // Loading state for load more
 
-  const BACKEND_URL = 'https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net';
+  const BACKEND_URL = 'https://sundarmarbles.live';
 
   // Comprehensive fallback gallery images with ALL your assets
   const fallbackGalleryImages = [

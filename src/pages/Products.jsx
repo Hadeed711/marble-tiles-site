@@ -31,7 +31,7 @@ export default function Products() {
   const [visibleProducts, setVisibleProducts] = useState(4); // Show only 4 products initially (1 row)
   const [loadingMore, setLoadingMore] = useState(false); // Loading state for load more
 
-  const BACKEND_URL = 'https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net';
+  const BACKEND_URL = 'https://sundarmarbles.live';
 
   // Fallback products with your original images and data
   const fallbackProducts = [
