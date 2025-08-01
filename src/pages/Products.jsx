@@ -27,27 +27,41 @@ export default function Products() {
     const fetchData = async () => {
       try {
         setLoading(true);
+        setError(null);
+        
+        console.log('Fetching products from:', `${BACKEND_URL}/api/products/`);
         
         // Fetch products
-        const productsResponse = await fetch(`${BACKEND_URL}/api/products/products/`);
+        const productsResponse = await fetch(`${BACKEND_URL}/api/products/`);
+        console.log('Products response status:', productsResponse.status);
+        
         if (productsResponse.ok) {
           const productsData = await productsResponse.json();
+          console.log('Products data:', productsData);
           setProducts(productsData.results || productsData);
         } else {
-          console.error('Failed to fetch products');
+          const errorText = await productsResponse.text();
+          console.error('Failed to fetch products:', errorText);
+          setError(`Failed to fetch products: ${productsResponse.status}`);
         }
 
+        console.log('Fetching categories from:', `${BACKEND_URL}/api/products/categories/`);
+        
         // Fetch categories
         const categoriesResponse = await fetch(`${BACKEND_URL}/api/products/categories/`);
+        console.log('Categories response status:', categoriesResponse.status);
+        
         if (categoriesResponse.ok) {
           const categoriesData = await categoriesResponse.json();
+          console.log('Categories data:', categoriesData);
           const formattedCategories = [
             { id: "all", name: "All Products" },
             ...categoriesData.map(cat => ({ id: cat.slug, name: cat.name }))
           ];
           setCategories(formattedCategories);
         } else {
-          console.error('Failed to fetch categories');
+          const errorText = await categoriesResponse.text();
+          console.error('Failed to fetch categories:', errorText);
         }
 
       } catch (error) {
