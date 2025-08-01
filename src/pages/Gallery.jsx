@@ -6,6 +6,20 @@ import HoverShadowBg from "../components/HoverShadowBg";
 import slider1 from "../assets/slider1.jpg";
 import hero from "../assets/hero_img1.jpg";
 
+// Import some of your original gallery images
+import stairs1 from "../assets/stairs/gallery65.jpg";
+import stairs2 from "../assets/stairs/gallery66.jpg";
+import stairs3 from "../assets/stairs/gallery5.jpg";
+import stairs4 from "../assets/stairs/gallery7.jpg";
+import floors1 from "../assets/floors/gallery64.jpg";
+import floors2 from "../assets/floors/gallery6.jpg";
+import floors3 from "../assets/floors/gallery8.jpg";
+import floors4 from "../assets/floors/gallery9.jpg";
+import mosaic1 from "../assets/mosaic/gallery63.jpg";
+import mosaic2 from "../assets/mosaic/gallery17.jpg";
+import others1 from "../assets/others/gallery61.jpg";
+import others2 from "../assets/others/gallery1.jpg";
+
 export default function Gallery() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -18,41 +32,82 @@ export default function Gallery() {
 
   const BACKEND_URL = 'https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net';
 
-  // Fetch gallery images and categories from backend
+  // Fallback gallery images
+  const fallbackGalleryImages = [
+    { id: 1, title: "Elegant Marble Staircase", image: stairs1, category: { slug: "stairs", name: "Stairs" }, project_location: "Faisalabad" },
+    { id: 2, title: "Modern Stair Design", image: stairs2, category: { slug: "stairs", name: "Stairs" }, project_location: "Lahore" },
+    { id: 3, title: "Classic Stairs", image: stairs3, category: { slug: "stairs", name: "Stairs" }, project_location: "Karachi" },
+    { id: 4, title: "Premium Staircase", image: stairs4, category: { slug: "stairs", name: "Stairs" }, project_location: "Islamabad" },
+    { id: 5, title: "Luxury Floor Installation", image: floors1, category: { slug: "floors", name: "Floors" }, project_location: "Faisalabad" },
+    { id: 6, title: "Modern Flooring", image: floors2, category: { slug: "floors", name: "Floors" }, project_location: "Lahore" },
+    { id: 7, title: "Premium Floor Design", image: floors3, category: { slug: "floors", name: "Floors" }, project_location: "Karachi" },
+    { id: 8, title: "Elegant Flooring", image: floors4, category: { slug: "floors", name: "Floors" }, project_location: "Islamabad" },
+    { id: 9, title: "Artistic Mosaic Work", image: mosaic1, category: { slug: "mosaic", name: "Mosaic" }, project_location: "Faisalabad" },
+    { id: 10, title: "Decorative Mosaic", image: mosaic2, category: { slug: "mosaic", name: "Mosaic" }, project_location: "Lahore" },
+    { id: 11, title: "Custom Installation", image: others1, category: { slug: "others", name: "Others" }, project_location: "Faisalabad" },
+    { id: 12, title: "Special Project", image: others2, category: { slug: "others", name: "Others" }, project_location: "Lahore" },
+  ];
+
+  const fallbackCategories = [
+    { id: "all", name: "All", icon: "🏛️" },
+    { id: "stairs", name: "Stairs", icon: "🪜" },
+    { id: "floors", name: "Floors", icon: "🏢" },
+    { id: "mosaic", name: "Mosaic", icon: "🎨" },
+    { id: "others", name: "Others", icon: "🔹" },
+  ];
+
+  // Fetch gallery images and categories from backend with fallback
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         
-        // Fetch gallery images
-        const imagesResponse = await fetch(`${BACKEND_URL}/api/gallery/images/`);
+        console.log('Trying to fetch gallery from backend...');
+        
+        // Try to fetch gallery images
+        const imagesResponse = await fetch(`${BACKEND_URL}/api/gallery/`);
         if (imagesResponse.ok) {
           const imagesData = await imagesResponse.json();
-          setGalleryImages(imagesData.results || imagesData);
+          const backendImages = imagesData.results || imagesData;
+          
+          if (backendImages && backendImages.length > 0) {
+            console.log('Using backend gallery images');
+            setGalleryImages(backendImages);
+          } else {
+            console.log('No backend images, using fallback gallery');
+            setGalleryImages(fallbackGalleryImages);
+          }
         } else {
-          console.error('Failed to fetch gallery images');
+          console.log('Backend gallery failed, using fallback');
+          setGalleryImages(fallbackGalleryImages);
         }
 
-        // Fetch categories
+        // Try to fetch categories
         const categoriesResponse = await fetch(`${BACKEND_URL}/api/gallery/categories/`);
         if (categoriesResponse.ok) {
           const categoriesData = await categoriesResponse.json();
-          const formattedCategories = [
-            { id: "all", name: "All", icon: "🏛️" },
-            ...categoriesData.map(cat => ({ 
-              id: cat.slug, 
-              name: cat.name,
-              icon: getCategoryIcon(cat.name)
-            }))
-          ];
-          setCategories(formattedCategories);
+          if (categoriesData && categoriesData.length > 0) {
+            const formattedCategories = [
+              { id: "all", name: "All", icon: "🏛️" },
+              ...categoriesData.map(cat => ({ 
+                id: cat.slug, 
+                name: cat.name,
+                icon: getCategoryIcon(cat.name)
+              }))
+            ];
+            setCategories(formattedCategories);
+          } else {
+            setCategories(fallbackCategories);
+          }
         } else {
-          console.error('Failed to fetch categories');
+          console.log('Using fallback categories');
+          setCategories(fallbackCategories);
         }
 
       } catch (error) {
-        console.error('Error fetching data:', error);
-        setError('Failed to load gallery. Please try again later.');
+        console.log('Error fetching gallery, using fallback:', error);
+        setGalleryImages(fallbackGalleryImages);
+        setCategories(fallbackCategories);
       } finally {
         setLoading(false);
       }
@@ -228,7 +283,7 @@ export default function Gallery() {
                     >
                       <div className="aspect-square relative overflow-hidden">
                         <img
-                          src={image.image ? `${BACKEND_URL}${image.image}` : hero}
+                          src={image.image ? (image.image.startsWith('http') || image.image.startsWith('/media') ? `${BACKEND_URL}${image.image}` : image.image) : hero}
                           alt={image.title || 'Gallery image'}
                           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                           loading="lazy"
@@ -299,7 +354,7 @@ export default function Gallery() {
                 onClick={(e) => e.stopPropagation()}
               >
                 <img
-                  src={lightboxImage.image ? `${BACKEND_URL}${lightboxImage.image}` : hero}
+                  src={lightboxImage.image ? (lightboxImage.image.startsWith('http') || lightboxImage.image.startsWith('/media') ? `${BACKEND_URL}${lightboxImage.image}` : lightboxImage.image) : hero}
                   alt={lightboxImage.title || 'Gallery image'}
                   className="max-w-full max-h-[80vh] object-contain rounded-lg"
                 />

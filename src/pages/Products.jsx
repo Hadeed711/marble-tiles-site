@@ -9,6 +9,16 @@ import PremiumButton from "../components/PremiumButton";
 import slider1 from "../assets/slider1.jpg";
 import hero from "../assets/hero_img1.jpg";
 
+// Import your original product images
+import black_gold from "../assets/products/black_gold.jpg";
+import booti_seena from "../assets/products/booti_seena.png";
+import jet_black from "../assets/products/jet_black.png";
+import star_black from "../assets/products/star_black.jpg";
+import taweera from "../assets/products/taweera.png";
+import tropical_grey from "../assets/products/tropical_grey.png";
+import sunny_white from "../assets/products/sunny_white.jpg";
+import sunny_grey from "../assets/products/sunny_grey.jpg";
+
 export default function Products() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [searchTerm, setSearchTerm] = useState("");
@@ -22,51 +32,132 @@ export default function Products() {
 
   const BACKEND_URL = 'https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net';
 
-  // Fetch products and categories from backend
+  // Fallback products with your original images and data
+  const fallbackProducts = [
+    { 
+      id: 1,
+      image: black_gold, 
+      name: "Black Gold Marble", 
+      price: "12,000",
+      category: { slug: "marble", name: "Marble" },
+      description: "Premium black marble with gold veining"
+    },
+    { 
+      id: 2,
+      image: star_black, 
+      name: "Star Black Marble", 
+      price: "8,500",
+      category: { slug: "marble", name: "Marble" },
+      description: "Elegant black marble with star patterns"
+    },
+    { 
+      id: 3,
+      image: taweera, 
+      name: "Taweera Granite", 
+      price: "9,200",
+      category: { slug: "granite", name: "Granite" },
+      description: "Durable granite with natural patterns"
+    },
+    { 
+      id: 4,
+      image: jet_black, 
+      name: "Jet Black Marble", 
+      price: "7,800",
+      category: { slug: "marble", name: "Marble" },
+      description: "Deep black marble for modern designs"
+    },
+    { 
+      id: 5,
+      image: tropical_grey, 
+      name: "Tropical Grey Granite", 
+      price: "10,500",
+      category: { slug: "granite", name: "Granite" },
+      description: "Grey granite with tropical patterns"
+    },
+    { 
+      id: 6,
+      image: booti_seena, 
+      name: "Booti Seena Granite", 
+      price: "8,200",
+      category: { slug: "granite", name: "Granite" },
+      description: "Classic granite with speckled finish"
+    },
+    { 
+      id: 7,
+      image: sunny_white, 
+      name: "Sunny White Marble", 
+      price: "6,800",
+      category: { slug: "marble", name: "Marble" },
+      description: "Bright white marble for luxury spaces"
+    },
+    { 
+      id: 8,
+      image: sunny_grey, 
+      name: "Sunny Grey Marble", 
+      price: "7,200",
+      category: { slug: "marble", name: "Marble" },
+      description: "Sophisticated grey marble with subtle veining"
+    },
+  ];
+
+  const fallbackCategories = [
+    { id: "all", name: "All Products" },
+    { id: "marble", name: "Marble" },
+    { id: "granite", name: "Granite" },
+  ];
+
+  // Fetch products and categories from backend with fallback
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         setError(null);
         
-        console.log('Fetching products from:', `${BACKEND_URL}/api/products/`);
+        console.log('Trying to fetch from backend...');
         
-        // Fetch products
+        // Try to fetch products from backend
         const productsResponse = await fetch(`${BACKEND_URL}/api/products/`);
-        console.log('Products response status:', productsResponse.status);
         
         if (productsResponse.ok) {
           const productsData = await productsResponse.json();
-          console.log('Products data:', productsData);
-          setProducts(productsData.results || productsData);
+          const backendProducts = productsData.results || productsData;
+          
+          // Check if we have valid products with images
+          if (backendProducts && backendProducts.length > 0) {
+            console.log('Using backend products:', backendProducts);
+            setProducts(backendProducts);
+          } else {
+            console.log('No backend products found, using fallback');
+            setProducts(fallbackProducts);
+          }
         } else {
-          const errorText = await productsResponse.text();
-          console.error('Failed to fetch products:', errorText);
-          setError(`Failed to fetch products: ${productsResponse.status}`);
+          console.log('Backend failed, using fallback products');
+          setProducts(fallbackProducts);
         }
 
-        console.log('Fetching categories from:', `${BACKEND_URL}/api/products/categories/`);
-        
-        // Fetch categories
+        // Try to fetch categories from backend
         const categoriesResponse = await fetch(`${BACKEND_URL}/api/products/categories/`);
-        console.log('Categories response status:', categoriesResponse.status);
         
         if (categoriesResponse.ok) {
           const categoriesData = await categoriesResponse.json();
-          console.log('Categories data:', categoriesData);
-          const formattedCategories = [
-            { id: "all", name: "All Products" },
-            ...categoriesData.map(cat => ({ id: cat.slug, name: cat.name }))
-          ];
-          setCategories(formattedCategories);
+          if (categoriesData && categoriesData.length > 0) {
+            const formattedCategories = [
+              { id: "all", name: "All Products" },
+              ...categoriesData.map(cat => ({ id: cat.slug, name: cat.name }))
+            ];
+            setCategories(formattedCategories);
+          } else {
+            setCategories(fallbackCategories);
+          }
         } else {
-          const errorText = await categoriesResponse.text();
-          console.error('Failed to fetch categories:', errorText);
+          console.log('Using fallback categories');
+          setCategories(fallbackCategories);
         }
 
       } catch (error) {
-        console.error('Error fetching data:', error);
-        setError('Failed to load products. Please try again later.');
+        console.log('Error fetching from backend, using fallback:', error);
+        setProducts(fallbackProducts);
+        setCategories(fallbackCategories);
       } finally {
         setLoading(false);
       }
@@ -341,9 +432,9 @@ export default function Products() {
                 className="h-full"
               >
                 <Card 
-                  image={product.image ? `${BACKEND_URL}${product.image}` : hero} 
+                  image={product.image && product.image.startsWith('/') ? `${BACKEND_URL}${product.image}` : product.image || hero} 
                   name={product.name} 
-                  price={product.price ? `PKR ${product.price}` : 'Contact for price'}
+                  price={product.price ? (typeof product.price === 'string' ? `PKR ${product.price}` : `PKR ${product.price}`) : 'Contact for price'}
                   onImageClick={handleImageClick}
                 />
               </motion.div>
