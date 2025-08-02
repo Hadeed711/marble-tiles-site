@@ -192,88 +192,110 @@ export default function Gallery() {
         
         console.log('Trying to fetch gallery from backend...');
         
-        // Try to fetch gallery images
-        const imagesResponse = await fetch(`${BACKEND_URL}/api/gallery/images/?page_size=100`);
-        if (imagesResponse.ok) {
-          const imagesData = await imagesResponse.json();
-          const backendImages = imagesData.results || imagesData;
-          
-          if (backendImages && backendImages.length > 0) {
-            console.log('Using backend gallery images:', backendImages.length);
+        // Try to fetch ALL gallery images (increase page_size to ensure we get all 63+ images)
+        let allImages = [];
+        let nextUrl = `${BACKEND_URL}/api/gallery/images/?page_size=200`;
+        
+        // Fetch all pages if the API is paginated
+        while (nextUrl) {
+          const imagesResponse = await fetch(nextUrl);
+          if (imagesResponse.ok) {
+            const imagesData = await imagesResponse.json();
+            console.log('Backend response structure:', imagesData);
             
-            // Process backend images and assign categories based on image names
-            const processedImages = backendImages.map((img, index) => {
-              // Extract image number from filename (e.g., "gallery15.jpg" -> 15)
-              let imgNum = index + 1;
-              if (img.image && typeof img.image === 'string') {
-                const match = img.image.match(/gallery(\d+)/);
-                if (match) {
-                  imgNum = parseInt(match[1]);
-                }
-              }
-              
-              // Categorize based on assets folder structure
-              let category;
-              
-              // Stairs: gallery16, gallery33, gallery34, gallery35, gallery39, gallery41, gallery47, gallery48, gallery49, gallery5, gallery52, gallery53, gallery54, gallery55, gallery56, gallery65, gallery66, gallery7
-              const stairsImages = [16, 33, 34, 35, 39, 41, 47, 48, 49, 5, 52, 53, 54, 55, 56, 65, 66, 7];
-              
-              // Floors: gallery10, gallery11, gallery12, gallery13, gallery14, gallery15, gallery25, gallery31, gallery32, gallery37, gallery38, gallery4, gallery42, gallery44, gallery46, gallery57, gallery6, gallery64, gallery8, gallery9
-              const floorsImages = [10, 11, 12, 13, 14, 15, 25, 31, 32, 37, 38, 4, 42, 44, 46, 57, 6, 64, 8, 9];
-              
-              // Mosaic: gallery17, gallery19, gallery20, gallery21, gallery22, gallery23, gallery24, gallery29, gallery30, gallery36, gallery40, gallery63
-              const mosaicImages = [17, 19, 20, 21, 22, 23, 24, 29, 30, 36, 40, 63];
-              
-              // Others: gallery1, gallery18, gallery2, gallery26, gallery27, gallery28, gallery3, gallery43, gallery45, gallery50, gallery51, gallery58, gallery61
-              const othersImages = [1, 18, 2, 26, 27, 28, 3, 43, 45, 50, 51, 58, 61];
-              
-              if (stairsImages.includes(imgNum)) {
-                category = { slug: "stairs", name: "Stairs" };
-              } else if (floorsImages.includes(imgNum)) {
-                category = { slug: "floors", name: "Floors" };
-              } else if (mosaicImages.includes(imgNum)) {
-                category = { slug: "mosaic", name: "Mosaic" };
-              } else if (othersImages.includes(imgNum)) {
-                category = { slug: "others", name: "Others" };
-              } else {
-                // Default to others for any unmatched images
-                category = { slug: "others", name: "Others" };
-              }
-              
-              return {
-                ...img,
-                category: category,
-                id: img.id || imgNum,
-                title: img.title || `${category.name} Project ${imgNum}`,
-                project_location: img.project_location || "Faisalabad"
-              };
-            });
-            
-            setGalleryImages(processedImages);
-            
-            // Calculate counts from processed images
-            const stairsCount = processedImages.filter(img => img.category?.slug === "stairs").length;
-            const floorsCount = processedImages.filter(img => img.category?.slug === "floors").length;
-            const mosaicCount = processedImages.filter(img => img.category?.slug === "mosaic").length;
-            const othersCount = processedImages.filter(img => img.category?.slug === "others").length;
-            const totalCount = processedImages.length;
-            
-            const calculatedCategories = [
-              { id: "all", name: "All", icon: "🏛️", count: totalCount },
-              { id: "stairs", name: "Stairs", icon: "🪜", count: stairsCount },
-              { id: "floors", name: "Floors", icon: "🏢", count: floorsCount },
-              { id: "mosaic", name: "Mosaic", icon: "🎨", count: mosaicCount },
-              { id: "others", name: "Others", icon: "🔹", count: othersCount },
-            ];
-            
-            setCategories(calculatedCategories);
+            // Handle both paginated and non-paginated responses
+            if (imagesData.results) {
+              // Paginated response
+              allImages = [...allImages, ...imagesData.results];
+              nextUrl = imagesData.next; // Next page URL or null
+            } else if (Array.isArray(imagesData)) {
+              // Non-paginated array response
+              allImages = [...allImages, ...imagesData];
+              nextUrl = null;
+            } else {
+              // Unknown format
+              console.log('Unknown API response format');
+              break;
+            }
           } else {
-            console.log('Backend gallery empty, using fallback');
-            setGalleryImages(fallbackGalleryImages);
-            setCategories(fallbackCategories);
+            console.log('Failed to fetch page:', nextUrl);
+            break;
           }
+        }
+        
+        const backendImages = allImages;
+          
+        if (backendImages && backendImages.length > 0) {
+          console.log('Using backend gallery images:', backendImages.length);
+          
+          // Process backend images and assign categories based on image names
+          const processedImages = backendImages.map((img, index) => {
+            // Extract image number from filename (e.g., "gallery15.jpg" -> 15)
+            let imgNum = index + 1;
+            if (img.image && typeof img.image === 'string') {
+              const match = img.image.match(/gallery(\d+)/);
+              if (match) {
+                imgNum = parseInt(match[1]);
+              }
+            }
+            
+            // Categorize based on assets folder structure
+            let category;
+            
+            // Stairs: gallery16, gallery33, gallery34, gallery35, gallery39, gallery41, gallery47, gallery48, gallery49, gallery5, gallery52, gallery53, gallery54, gallery55, gallery56, gallery65, gallery66, gallery7
+            const stairsImages = [16, 33, 34, 35, 39, 41, 47, 48, 49, 5, 52, 53, 54, 55, 56, 65, 66, 7];
+            
+            // Floors: gallery10, gallery11, gallery12, gallery13, gallery14, gallery15, gallery25, gallery31, gallery32, gallery37, gallery38, gallery4, gallery42, gallery44, gallery46, gallery57, gallery6, gallery64, gallery8, gallery9
+            const floorsImages = [10, 11, 12, 13, 14, 15, 25, 31, 32, 37, 38, 4, 42, 44, 46, 57, 6, 64, 8, 9];
+            
+            // Mosaic: gallery17, gallery19, gallery20, gallery21, gallery22, gallery23, gallery24, gallery29, gallery30, gallery36, gallery40, gallery63
+            const mosaicImages = [17, 19, 20, 21, 22, 23, 24, 29, 30, 36, 40, 63];
+            
+            // Others: gallery1, gallery18, gallery2, gallery26, gallery27, gallery28, gallery3, gallery43, gallery45, gallery50, gallery51, gallery58, gallery61
+            const othersImages = [1, 18, 2, 26, 27, 28, 3, 43, 45, 50, 51, 58, 61];
+            
+            if (stairsImages.includes(imgNum)) {
+              category = { slug: "stairs", name: "Stairs" };
+            } else if (floorsImages.includes(imgNum)) {
+              category = { slug: "floors", name: "Floors" };
+            } else if (mosaicImages.includes(imgNum)) {
+              category = { slug: "mosaic", name: "Mosaic" };
+            } else if (othersImages.includes(imgNum)) {
+              category = { slug: "others", name: "Others" };
+            } else {
+              // Default to others for any unmatched images
+              category = { slug: "others", name: "Others" };
+            }
+            
+            return {
+              ...img,
+              category: category,
+              id: img.id || imgNum,
+              title: img.title || `${category.name} Project ${imgNum}`,
+              project_location: img.project_location || "Faisalabad"
+            };
+          });
+          
+          setGalleryImages(processedImages);
+          
+          // Calculate counts from processed images
+          const stairsCount = processedImages.filter(img => img.category?.slug === "stairs").length;
+          const floorsCount = processedImages.filter(img => img.category?.slug === "floors").length;
+          const mosaicCount = processedImages.filter(img => img.category?.slug === "mosaic").length;
+          const othersCount = processedImages.filter(img => img.category?.slug === "others").length;
+          const totalCount = processedImages.length;
+          
+          const calculatedCategories = [
+            { id: "all", name: "All", icon: "🏛️", count: totalCount },
+            { id: "stairs", name: "Stairs", icon: "🪜", count: stairsCount },
+            { id: "floors", name: "Floors", icon: "🏢", count: floorsCount },
+            { id: "mosaic", name: "Mosaic", icon: "🎨", count: mosaicCount },
+            { id: "others", name: "Others", icon: "🔹", count: othersCount },
+          ];
+          
+          setCategories(calculatedCategories);
         } else {
-          console.log('Backend gallery failed, using fallback');
+          console.log('Backend gallery empty, using fallback');
           setGalleryImages(fallbackGalleryImages);
           setCategories(fallbackCategories);
         }
