@@ -87,11 +87,124 @@ export default function Gallery() {
   const [galleryImages, setGalleryImages] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(null);
   const [lightboxImage, setLightboxImage] = useState(null);
-  const [visibleImages, setVisibleImages] = useState(8);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMoreImages, setHasMoreImages] = useState(true);
+  const IMAGES_PER_PAGE = 8;
 
   const BACKEND_URL = 'https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net';
+
+  // Function to categorize images based on assets folder structure
+  const categorizeImage = (img, index) => {
+    // Extract image number from filename (e.g., "gallery15.jpg" -> 15)
+    let imgNum = index + 1;
+    if (img.image && typeof img.image === 'string') {
+      const match = img.image.match(/gallery(\d+)/);
+      if (match) {
+        imgNum = parseInt(match[1]);
+      }
+    }
+    
+    // Categorize based on assets folder structure
+    let category;
+    
+    // Stairs: gallery16, gallery33, gallery34, gallery35, gallery39, gallery41, gallery47, gallery48, gallery49, gallery5, gallery52, gallery53, gallery54, gallery55, gallery56, gallery65, gallery66, gallery7
+    const stairsImages = [16, 33, 34, 35, 39, 41, 47, 48, 49, 5, 52, 53, 54, 55, 56, 65, 66, 7];
+    
+    // Floors: gallery10, gallery11, gallery12, gallery13, gallery14, gallery15, gallery25, gallery31, gallery32, gallery37, gallery38, gallery4, gallery42, gallery44, gallery46, gallery57, gallery6, gallery64, gallery8, gallery9
+    const floorsImages = [10, 11, 12, 13, 14, 15, 25, 31, 32, 37, 38, 4, 42, 44, 46, 57, 6, 64, 8, 9];
+    
+    // Mosaic: gallery17, gallery19, gallery20, gallery21, gallery22, gallery23, gallery24, gallery29, gallery30, gallery36, gallery40, gallery63
+    const mosaicImages = [17, 19, 20, 21, 22, 23, 24, 29, 30, 36, 40, 63];
+    
+    // Others: gallery1, gallery18, gallery2, gallery26, gallery27, gallery28, gallery3, gallery43, gallery45, gallery50, gallery51, gallery58, gallery61
+    const othersImages = [1, 18, 2, 26, 27, 28, 3, 43, 45, 50, 51, 58, 61];
+    
+    if (stairsImages.includes(imgNum)) {
+      category = { slug: "stairs", name: "Stairs" };
+    } else if (floorsImages.includes(imgNum)) {
+      category = { slug: "floors", name: "Floors" };
+    } else if (mosaicImages.includes(imgNum)) {
+      category = { slug: "mosaic", name: "Mosaic" };
+    } else if (othersImages.includes(imgNum)) {
+      category = { slug: "others", name: "Others" };
+    } else {
+      // Default to others for any unmatched images
+      category = { slug: "others", name: "Others" };
+    }
+    
+    return {
+      ...img,
+      category: category,
+      id: img.id || imgNum,
+      title: img.title || `${category.name} Project ${imgNum}`,
+      project_location: img.project_location || "Faisalabad"
+    };
+  };
+
+  // Function to load images with pagination
+  const loadImages = async (page = 1, append = false) => {
+    try {
+      if (page === 1) {
+        setLoading(true);
+      } else {
+        setLoadingMore(true);
+      }
+      
+      console.log(`Loading page ${page} with ${IMAGES_PER_PAGE} images...`);
+      
+      const response = await fetch(`${BACKEND_URL}/api/gallery/images/?page=${page}&page_size=${IMAGES_PER_PAGE}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        const images = data.results || [];
+        
+        console.log(`Loaded ${images.length} images from page ${page}`);
+        
+        if (images.length > 0) {
+          // Process and categorize images
+          const processedImages = images.map((img, index) => 
+            categorizeImage(img, (page - 1) * IMAGES_PER_PAGE + index)
+          );
+          
+          if (append) {
+            // Append new images to existing ones
+            setGalleryImages(prev => [...prev, ...processedImages]);
+          } else {
+            // Replace all images (first load)
+            setGalleryImages(processedImages);
+          }
+          
+          // Check if there are more images
+          setHasMoreImages(data.next ? true : false);
+          setCurrentPage(page);
+        } else {
+          setHasMoreImages(false);
+        }
+        
+        return images.length;
+      } else {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Error loading images:', error);
+      if (page === 1) {
+        // On first load error, use fallback
+        setGalleryImages(fallbackGalleryImages.slice(0, IMAGES_PER_PAGE));
+        setCategories(fallbackCategories);
+      }
+      setHasMoreImages(false);
+      throw error;
+    } finally {
+      if (page === 1) {
+        setLoading(false);
+      } else {
+        setLoadingMore(false);
+      }
+    }
+  };
 
   // Comprehensive fallback gallery images with ALL your assets
   const fallbackGalleryImages = [
@@ -174,131 +287,47 @@ export default function Gallery() {
   const othersCount = fallbackGalleryImages.filter(img => img.category.slug === "others").length;
   const totalCount = fallbackGalleryImages.length;
 
-  // Calculate counts for fallback categories (all in stairs temporarily)
+  // Calculate counts for fallback categories (based on actual assets structure)
   const fallbackCategories = [
     { id: "all", name: "All", icon: "🏛️", count: 63 }, // Total images in Azure blob
-    { id: "stairs", name: "Stairs", icon: "🪜", count: 63 }, // All images in stairs for now
-    { id: "floors", name: "Floors", icon: "🏢", count: 0 }, 
-    { id: "mosaic", name: "Mosaic", icon: "🎨", count: 0 }, 
-    { id: "others", name: "Others", icon: "🔹", count: 0 }, 
+    { id: "stairs", name: "Stairs", icon: "🪜", count: 18 }, // 18 stairs images
+    { id: "floors", name: "Floors", icon: "🏢", count: 20 }, // 20 floors images  
+    { id: "mosaic", name: "Mosaic", icon: "🎨", count: 12 }, // 12 mosaic images
+    { id: "others", name: "Others", icon: "🔹", count: 13 }, // 13 others images
   ];
 
-  // Fetch gallery images and categories from backend with fallback
+  // Fetch gallery images and categories from backend with pagination
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setLoading(true);
+        console.log('Fetching initial gallery images...');
         
-        console.log('Trying to fetch gallery from backend...');
+        // Load first page of images (8 images)
+        await loadImages(1, false);
         
-        // Try multiple approaches to get ALL images
-        let allImages = [];
-        
-        // Method 1: Try with very large page_size
-        console.log('Method 1: Trying large page_size...');
-        let imagesResponse = await fetch(`${BACKEND_URL}/api/gallery/images/?page_size=1000`);
-        
-        if (imagesResponse.ok) {
-          const imagesData = await imagesResponse.json();
-          console.log('Large page_size response:', imagesData);
-          allImages = imagesData.results || imagesData || [];
-        }
-        
-        // Method 2: If still not enough, try pagination
-        if (allImages.length < 50) {
-          console.log('Method 2: Trying pagination...');
-          let page = 1;
-          let hasMore = true;
-          
-          while (hasMore && page <= 10) { // Max 10 pages to avoid infinite loop
-            try {
-              const pageResponse = await fetch(`${BACKEND_URL}/api/gallery/images/?page=${page}&page_size=20`);
-              if (pageResponse.ok) {
-                const pageData = await pageResponse.json();
-                const pageImages = pageData.results || [];
-                
-                console.log(`Page ${page}: ${pageImages.length} images`);
-                
-                if (pageImages.length > 0) {
-                  // Avoid duplicates
-                  const newImages = pageImages.filter(img => 
-                    !allImages.some(existing => existing.id === img.id)
-                  );
-                  allImages = [...allImages, ...newImages];
-                  page++;
-                  
-                  // Check if there's a next page
-                  hasMore = pageData.next ? true : false;
-                } else {
-                  hasMore = false;
-                }
-              } else {
-                hasMore = false;
-              }
-            } catch (error) {
-              console.log(`Error fetching page ${page}:`, error);
-              hasMore = false;
+        // Calculate categories from all available images
+        try {
+          const categoriesResponse = await fetch(`${BACKEND_URL}/api/gallery/categories/with-count/`);
+          if (categoriesResponse.ok) {
+            const categoriesData = await categoriesResponse.json();
+            if (categoriesData && categoriesData.length > 0) {
+              console.log('Using backend categories');
+              setCategories(categoriesData);
+            } else {
+              setCategories(fallbackCategories);
             }
-          }
-        }
-        
-        console.log('Final images count from backend:', allImages.length);
-        
-        if (allImages && allImages.length > 0) {
-            console.log('Using backend gallery images:', allImages.length);
-            
-            // Process backend images and assign ALL to stairs category temporarily
-            const processedImages = allImages.map((img, index) => {
-              // Extract image number from filename (e.g., "gallery15.jpg" -> 15)
-              let imgNum = index + 1;
-              if (img.image && typeof img.image === 'string') {
-                const match = img.image.match(/gallery(\d+)/);
-                if (match) {
-                  imgNum = parseInt(match[1]);
-                }
-              }
-              
-              // PUT ALL IMAGES IN STAIRS CATEGORY FOR NOW
-              const category = { slug: "stairs", name: "Stairs" };
-              
-              return {
-                ...img,
-                category: category,
-                id: img.id || imgNum,
-                title: img.title || `Gallery Project ${imgNum}`,
-                project_location: img.project_location || "Faisalabad"
-              };
-            });
-            
-            setGalleryImages(processedImages);
-            
-            // Calculate counts from processed images (all in stairs for now)
-            const stairsCount = processedImages.length; // All images are in stairs now
-            const floorsCount = 0;
-            const mosaicCount = 0;
-            const othersCount = 0;
-            const totalCount = processedImages.length;
-            
-            const calculatedCategories = [
-              { id: "all", name: "All", icon: "🏛️", count: totalCount },
-              { id: "stairs", name: "Stairs", icon: "🪜", count: stairsCount },
-              { id: "floors", name: "Floors", icon: "🏢", count: floorsCount },
-              { id: "mosaic", name: "Mosaic", icon: "🎨", count: mosaicCount },
-              { id: "others", name: "Others", icon: "🔹", count: othersCount },
-            ];
-            
-            setCategories(calculatedCategories);
           } else {
-            console.log('Backend gallery empty, using fallback');
-            setGalleryImages(fallbackGalleryImages);
             setCategories(fallbackCategories);
           }
+        } catch (error) {
+          console.log('Categories fetch failed, using fallback');
+          setCategories(fallbackCategories);
+        }
 
       } catch (error) {
         console.log('Error fetching gallery, using fallback:', error);
-        setGalleryImages(fallbackGalleryImages);
+        setGalleryImages(fallbackGalleryImages.slice(0, IMAGES_PER_PAGE));
         setCategories(fallbackCategories);
-      } finally {
         setLoading(false);
       }
     };
@@ -334,15 +363,26 @@ export default function Gallery() {
 
   console.log(`Gallery Debug: selectedCategory=${selectedCategory}, totalImages=${galleryImages.length}, filteredImages=${filteredImages.length}`);
 
-  const displayedImages = filteredImages.slice(0, visibleImages);
+  const displayedImages = filteredImages;
 
-  const handleLoadMore = () => {
-    setVisibleImages(prev => prev + 8); // Load 8 more images incrementally
+  const handleLoadMore = async () => {
+    if (hasMoreImages && !loadingMore) {
+      try {
+        await loadImages(currentPage + 1, true);
+      } catch (error) {
+        console.error('Error loading more images:', error);
+      }
+    }
   };
 
   const handleCategoryChange = (categoryId) => {
     setSelectedCategory(categoryId);
-    setVisibleImages(8); // Reset to show first 8 images when changing category
+    // Reset pagination when changing category
+    if (categoryId !== "all") {
+      // When selecting a specific category, we might need to load more images
+      // to ensure we have enough of that category type
+      console.log(`Switched to category: ${categoryId}`);
+    }
   };
 
   const openLightbox = (image) => {
@@ -592,14 +632,25 @@ export default function Gallery() {
                 </motion.div>
 
                 {/* Load More Button */}
-                {displayedImages.length < filteredImages.length && (
+                {(hasMoreImages || selectedCategory !== "all") && !loadingMore && (
                   <div className="text-center mt-8">
                     <button
                       onClick={handleLoadMore}
-                      className="bg-[#00796b] text-white px-8 py-3 rounded-full hover:bg-[#d4af37] transition-all duration-300 font-medium"
+                      disabled={loadingMore}
+                      className="bg-[#00796b] text-white px-8 py-3 rounded-full hover:bg-[#d4af37] transition-all duration-300 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Load More ({filteredImages.length - displayedImages.length} remaining)
+                      {loadingMore ? 'Loading...' : `Load More${hasMoreImages ? ' Images' : ''}`}
                     </button>
+                  </div>
+                )}
+
+                {/* Loading More Indicator */}
+                {loadingMore && (
+                  <div className="text-center mt-8">
+                    <div className="inline-flex items-center gap-2 text-[#00796b]">
+                      <div className="w-4 h-4 border-2 border-[#00796b] border-t-transparent rounded-full animate-spin"></div>
+                      <span>Loading more images...</span>
+                    </div>
                   </div>
                 )}
 
