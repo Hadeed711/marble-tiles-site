@@ -191,26 +191,64 @@ export default function Gallery() {
         
         console.log('Trying to fetch gallery from backend...');
         
-        // Try to fetch gallery images with larger page size
-        let imagesResponse = await fetch(`${BACKEND_URL}/api/gallery/images/?page_size=100`);
-        if (!imagesResponse.ok) {
-          // Fallback to default endpoint
-          imagesResponse = await fetch(`${BACKEND_URL}/api/gallery/images/`);
-        }
+        // Try multiple approaches to get ALL images
+        let allImages = [];
+        
+        // Method 1: Try with very large page_size
+        console.log('Method 1: Trying large page_size...');
+        let imagesResponse = await fetch(`${BACKEND_URL}/api/gallery/images/?page_size=1000`);
         
         if (imagesResponse.ok) {
           const imagesData = await imagesResponse.json();
-          console.log('Raw backend response:', imagesData);
+          console.log('Large page_size response:', imagesData);
+          allImages = imagesData.results || imagesData || [];
+        }
+        
+        // Method 2: If still not enough, try pagination
+        if (allImages.length < 50) {
+          console.log('Method 2: Trying pagination...');
+          let page = 1;
+          let hasMore = true;
           
-          const backendImages = imagesData.results || imagesData;
-          console.log('Backend images array:', backendImages);
-          console.log('Backend images count:', backendImages?.length || 0);
-          
-          if (backendImages && backendImages.length > 0) {
-            console.log('Using backend gallery images:', backendImages.length);
+          while (hasMore && page <= 10) { // Max 10 pages to avoid infinite loop
+            try {
+              const pageResponse = await fetch(`${BACKEND_URL}/api/gallery/images/?page=${page}&page_size=20`);
+              if (pageResponse.ok) {
+                const pageData = await pageResponse.json();
+                const pageImages = pageData.results || [];
+                
+                console.log(`Page ${page}: ${pageImages.length} images`);
+                
+                if (pageImages.length > 0) {
+                  // Avoid duplicates
+                  const newImages = pageImages.filter(img => 
+                    !allImages.some(existing => existing.id === img.id)
+                  );
+                  allImages = [...allImages, ...newImages];
+                  page++;
+                  
+                  // Check if there's a next page
+                  hasMore = pageData.next ? true : false;
+                } else {
+                  hasMore = false;
+                }
+              } else {
+                hasMore = false;
+              }
+            } catch (error) {
+              console.log(`Error fetching page ${page}:`, error);
+              hasMore = false;
+            }
+          }
+        }
+        
+        console.log('Final images count from backend:', allImages.length);
+        
+        if (allImages && allImages.length > 0) {
+            console.log('Using backend gallery images:', allImages.length);
             
             // Process backend images and assign ALL to stairs category temporarily
-            const processedImages = backendImages.map((img, index) => {
+            const processedImages = allImages.map((img, index) => {
               // Extract image number from filename (e.g., "gallery15.jpg" -> 15)
               let imgNum = index + 1;
               if (img.image && typeof img.image === 'string') {
@@ -255,11 +293,6 @@ export default function Gallery() {
             setGalleryImages(fallbackGalleryImages);
             setCategories(fallbackCategories);
           }
-        } else {
-          console.log('Backend gallery failed, using fallback');
-          setGalleryImages(fallbackGalleryImages);
-          setCategories(fallbackCategories);
-        }
 
       } catch (error) {
         console.log('Error fetching gallery, using fallback:', error);
