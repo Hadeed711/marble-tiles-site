@@ -174,12 +174,14 @@ export default function Gallery() {
   const othersCount = fallbackGalleryImages.filter(img => img.category.slug === "others").length;
   const totalCount = fallbackGalleryImages.length;
 
+  // Calculate counts for fallback categories (based on Azure blob structure)
+  // You have 63 images in Azure: gallery1.jpg to gallery63.jpg (with some gaps like gallery59.jpg, gallery60.jpg missing)
   const fallbackCategories = [
-    { id: "all", name: "All", icon: "🏛️", count: totalCount },
-    { id: "mosaic", name: "Mosaic", icon: "🎨", count: mosaicCount },
-    { id: "floors", name: "Floors", icon: "🏢", count: floorsCount },
-    { id: "stairs", name: "Stairs", icon: "🪜", count: stairsCount },
-    { id: "others", name: "Others", icon: "🔹", count: othersCount },
+    { id: "all", name: "All", icon: "🏛️", count: 63 }, // Total images in Azure blob
+    { id: "mosaic", name: "Mosaic", icon: "🎨", count: 12 }, // Images 39-50 (12 images)
+    { id: "floors", name: "Floors", icon: "🏢", count: 20 }, // Images 19-38 (20 images)
+    { id: "stairs", name: "Stairs", icon: "🪜", count: 18 }, // Images 1-18 (18 images)
+    { id: "others", name: "Others", icon: "🔹", count: 13 }, // Images 51-63 (13 images)
   ];
 
   // Fetch gallery images and categories from backend with fallback
@@ -197,53 +199,59 @@ export default function Gallery() {
           const backendImages = imagesData.results || imagesData;
           
           if (backendImages && backendImages.length > 0) {
-            console.log('Using backend gallery images');
-            setGalleryImages(backendImages);
+            console.log('Using backend gallery images:', backendImages.length);
+            
+            // Process backend images and assign categories based on image names or create proper structure
+            const processedImages = backendImages.map((img, index) => {
+              // Determine category based on image name or position
+              let category;
+              const imgNum = index + 1;
+              
+              if (imgNum <= 18) {
+                category = { slug: "stairs", name: "Stairs" };
+              } else if (imgNum <= 38) {
+                category = { slug: "floors", name: "Floors" };
+              } else if (imgNum <= 50) {
+                category = { slug: "mosaic", name: "Mosaic" };
+              } else {
+                category = { slug: "others", name: "Others" };
+              }
+              
+              return {
+                ...img,
+                category: category,
+                id: img.id || index + 1,
+                title: img.title || `${category.name} Project ${imgNum}`,
+                project_location: img.project_location || "Faisalabad"
+              };
+            });
+            
+            setGalleryImages(processedImages);
+            
+            // Calculate counts from processed images
+            const stairsCount = processedImages.filter(img => img.category?.slug === "stairs").length;
+            const floorsCount = processedImages.filter(img => img.category?.slug === "floors").length;
+            const mosaicCount = processedImages.filter(img => img.category?.slug === "mosaic").length;
+            const othersCount = processedImages.filter(img => img.category?.slug === "others").length;
+            const totalCount = processedImages.length;
+            
+            const calculatedCategories = [
+              { id: "all", name: "All", icon: "🏛️", count: totalCount },
+              { id: "mosaic", name: "Mosaic", icon: "🎨", count: mosaicCount },
+              { id: "floors", name: "Floors", icon: "🏢", count: floorsCount },
+              { id: "stairs", name: "Stairs", icon: "🪜", count: stairsCount },
+              { id: "others", name: "Others", icon: "🔹", count: othersCount },
+            ];
+            
+            setCategories(calculatedCategories);
           } else {
-            console.log('No backend images, using fallback gallery');
+            console.log('Backend gallery empty, using fallback');
             setGalleryImages(fallbackGalleryImages);
+            setCategories(fallbackCategories);
           }
         } else {
           console.log('Backend gallery failed, using fallback');
           setGalleryImages(fallbackGalleryImages);
-        }
-
-        // Try to fetch categories with image counts - filter to only 4 categories
-        const categoriesResponse = await fetch(`${BACKEND_URL}/api/gallery/categories/with-count/`);
-        if (categoriesResponse.ok) {
-          const categoriesData = await categoriesResponse.json();
-          if (categoriesData && categoriesData.length > 0) {
-            // Filter to only the 4 categories we want: mosaic, floors, stairs, others
-            const allowedCategories = ['mosaic', 'floors', 'stairs', 'others'];
-            const filteredCategories = categoriesData.filter(cat => 
-              allowedCategories.includes(cat.slug.toLowerCase()) || 
-              allowedCategories.includes(cat.name.toLowerCase())
-            );
-            
-            const totalImages = filteredCategories.reduce((sum, cat) => sum + cat.image_count, 0);
-            const formattedCategories = [
-              { id: "all", name: "All", icon: "🏛️", count: totalImages },
-              // Order: Mosaic, Floors, Stairs, Others
-              ...filteredCategories
-                .sort((a, b) => {
-                  const order = ['mosaic', 'floors', 'stairs', 'others'];
-                  const aIndex = order.indexOf(a.slug.toLowerCase());
-                  const bIndex = order.indexOf(b.slug.toLowerCase());
-                  return aIndex - bIndex;
-                })
-                .map(cat => ({ 
-                  id: cat.slug, 
-                  name: cat.name,
-                  icon: getCategoryIcon(cat.name),
-                  count: cat.image_count
-                }))
-            ];
-            setCategories(formattedCategories);
-          } else {
-            setCategories(fallbackCategories);
-          }
-        } else {
-          console.log('Using fallback categories');
           setCategories(fallbackCategories);
         }
 
@@ -275,13 +283,20 @@ export default function Gallery() {
   // Filter images based on selected category
   const filteredImages = selectedCategory === "all" 
     ? galleryImages 
-    : galleryImages.filter(img => 
-        img.category && (
+    : galleryImages.filter(img => {
+        const hasCategory = img.category && (
           img.category.slug === selectedCategory || 
           (img.category.name && img.category.name.toLowerCase() === selectedCategory) ||
           (typeof img.category === 'string' && img.category.toLowerCase() === selectedCategory)
-        )
-      );
+        );
+        
+        // Debug logging for category filtering
+        if (selectedCategory !== "all") {
+          console.log(`Filtering image ${img.id}: category=${JSON.stringify(img.category)}, selectedCategory=${selectedCategory}, matches=${hasCategory}`);
+        }
+        
+        return hasCategory;
+      });
 
   const displayedImages = filteredImages.slice(0, visibleImages);
 
