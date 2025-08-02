@@ -198,6 +198,7 @@ export default function Gallery() {
         
         // Fetch all pages if the API is paginated
         while (nextUrl) {
+          console.log('Fetching URL:', nextUrl); // Debug: Log the actual URL being fetched
           const imagesResponse = await fetch(nextUrl);
           if (imagesResponse.ok) {
             const imagesData = await imagesResponse.json();
@@ -207,7 +208,9 @@ export default function Gallery() {
             if (imagesData.results) {
               // Paginated response
               allImages = [...allImages, ...imagesData.results];
-              nextUrl = imagesData.next; // Next page URL or null
+              // Ensure next URL uses HTTPS
+              nextUrl = imagesData.next ? imagesData.next.replace('http://', 'https://') : null;
+              console.log('Next URL:', nextUrl); // Debug: Log next URL
             } else if (Array.isArray(imagesData)) {
               // Non-paginated array response
               allImages = [...allImages, ...imagesData];
