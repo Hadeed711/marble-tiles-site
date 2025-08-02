@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import HoverShadowBg from "../components/HoverShadowBg";
+import slider1 from "../assets/slider1.jpg";
 import hero from "../assets/hero_img1.jpg";
 
 // Import ALL stairs images
@@ -89,10 +90,9 @@ export default function Gallery() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [lightboxImage, setLightboxImage] = useState(null);
-  const [visibleImages, setVisibleImages] = useState(8); // Start with 8 images for faster loading
-  const [loadingMore, setLoadingMore] = useState(false); // Loading state for load more
+  const [visibleImages, setVisibleImages] = useState(12);
 
-  const BACKEND_URL = 'https://sundarmarbles.live';
+  const BACKEND_URL = 'https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net';
 
   // Comprehensive fallback gallery images with ALL your assets
   const fallbackGalleryImages = [
@@ -184,15 +184,8 @@ export default function Gallery() {
         
         console.log('Trying to fetch gallery from backend...');
         
-        // Add timeout for gallery requests
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
-        
         // Try to fetch gallery images
-        const imagesResponse = await fetch(`${BACKEND_URL}/api/gallery/images/`, {
-          signal: controller.signal,
-        });
-        
+        const imagesResponse = await fetch(`${BACKEND_URL}/api/gallery/`);
         if (imagesResponse.ok) {
           const imagesData = await imagesResponse.json();
           const backendImages = imagesData.results || imagesData;
@@ -210,11 +203,7 @@ export default function Gallery() {
         }
 
         // Try to fetch categories
-        const categoriesResponse = await fetch(`${BACKEND_URL}/api/gallery/categories/`, {
-          signal: controller.signal,
-        });
-        clearTimeout(timeoutId);
-        
+        const categoriesResponse = await fetch(`${BACKEND_URL}/api/gallery/categories/`);
         if (categoriesResponse.ok) {
           const categoriesData = await categoriesResponse.json();
           if (categoriesData && categoriesData.length > 0) {
@@ -236,11 +225,7 @@ export default function Gallery() {
         }
 
       } catch (error) {
-        if (error.name === 'AbortError') {
-          console.log('Gallery request timed out, using fallback');
-        } else {
-          console.log('Error fetching gallery, using fallback:', error);
-        }
+        console.log('Error fetching gallery, using fallback:', error);
         setGalleryImages(fallbackGalleryImages);
         setCategories(fallbackCategories);
       } finally {
@@ -273,23 +258,8 @@ export default function Gallery() {
 
   const displayedImages = filteredImages.slice(0, visibleImages);
 
-  // Function to get image count for each category
-  const getCategoryImageCount = (categoryId) => {
-    if (categoryId === "all") {
-      return galleryImages.length;
-    }
-    return galleryImages.filter(img => 
-      img.category && (img.category.slug === categoryId || img.category.name.toLowerCase() === categoryId)
-    ).length;
-  };
-
   const handleLoadMore = () => {
-    setLoadingMore(true);
-    // Reduced loading time for better performance
-    setTimeout(() => {
-      setVisibleImages(prev => prev + 8); // Load 8 more images at a time
-      setLoadingMore(false);
-    }, 300); // Reduced from 1000ms to 300ms
+    setVisibleImages(prev => prev + 12);
   };
 
   const openLightbox = (image) => {
@@ -375,33 +345,23 @@ export default function Gallery() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              {categories.map((category) => {
-                const imageCount = getCategoryImageCount(category.id);
-                return (
-                  <button
-                    key={category.id}
-                    onClick={() => {
-                      setSelectedCategory(category.id);
-                      setVisibleImages(8); // Reset to initial load
-                    }}
-                    className={`px-4 py-2 rounded-full transition-all duration-300 flex items-center gap-2 ${
-                      selectedCategory === category.id
-                        ? 'bg-[#00796b] text-white shadow-lg transform scale-105'
-                        : 'bg-white text-[#00796b] border border-[#00796b] hover:bg-[#00796b] hover:text-white'
-                    }`}
-                  >
-                    <span>{category.icon}</span>
-                    <span className="font-medium">{category.name}</span>
-                    <span className={`text-xs px-2 py-1 rounded-full ${
-                      selectedCategory === category.id
-                        ? 'bg-white/20 text-white'
-                        : 'bg-[#00796b]/10 text-[#00796b]'
-                    }`}>
-                      {imageCount}
-                    </span>
-                  </button>
-                );
-              })}
+              {categories.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => {
+                    setSelectedCategory(category.id);
+                    setVisibleImages(12);
+                  }}
+                  className={`px-4 py-2 rounded-full transition-all duration-300 flex items-center gap-2 ${
+                    selectedCategory === category.id
+                      ? 'bg-[#00796b] text-white shadow-lg transform scale-105'
+                      : 'bg-white text-[#00796b] border border-[#00796b] hover:bg-[#00796b] hover:text-white'
+                  }`}
+                >
+                  <span>{category.icon}</span>
+                  <span className="font-medium">{category.name}</span>
+                </button>
+              ))}
             </motion.div>
           </div>
         </section>
@@ -409,39 +369,6 @@ export default function Gallery() {
         {/* Gallery Grid */}
         <section className="py-8 px-4 sm:px-6">
           <div className="max-w-7xl mx-auto">
-            
-            {/* Filter Status */}
-            {!loading && (
-              <motion.div
-                className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 p-4 bg-white rounded-lg shadow-sm border"
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-              >
-                <div className="flex items-center gap-2">
-                  <h3 className="text-lg font-semibold text-[#00796b]">
-                    {selectedCategory === "all" ? "All Gallery Images" : 
-                     `${categories.find(c => c.id === selectedCategory)?.name} Collection`}
-                  </h3>
-                  <span className="bg-[#00796b] text-white text-sm px-3 py-1 rounded-full">
-                    {filteredImages.length} {filteredImages.length === 1 ? 'image' : 'images'}
-                  </span>
-                </div>
-                
-                {selectedCategory !== "all" && (
-                  <button
-                    onClick={() => {
-                      setSelectedCategory("all");
-                      setVisibleImages(8); // Reset to initial load
-                    }}
-                    className="text-sm text-gray-500 hover:text-[#00796b] underline"
-                  >
-                    View All Categories
-                  </button>
-                )}
-              </motion.div>
-            )}
-
             {loading ? (
               <div className="text-center py-12">
                 <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#00796b] mx-auto mb-4"></div>
@@ -505,36 +432,12 @@ export default function Gallery() {
                 {/* Load More Button */}
                 {displayedImages.length < filteredImages.length && (
                   <div className="text-center mt-8">
-                    <motion.button
+                    <button
                       onClick={handleLoadMore}
-                      disabled={loadingMore}
-                      className={`px-8 py-3 rounded-full transition-all duration-300 font-medium shadow-lg ${
-                        loadingMore 
-                          ? 'bg-gray-400 cursor-not-allowed' 
-                          : 'bg-[#00796b] hover:bg-[#d4af37] text-white'
-                      }`}
-                      whileHover={!loadingMore ? { scale: 1.05 } : {}}
-                      whileTap={!loadingMore ? { scale: 0.95 } : {}}
+                      className="bg-[#00796b] text-white px-8 py-3 rounded-full hover:bg-[#d4af37] transition-all duration-300 font-medium"
                     >
-                      {loadingMore ? (
-                        <div className="flex items-center gap-2">
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                          <span>Loading Images...</span>
-                        </div>
-                      ) : (
-                        `Load More Images (${filteredImages.length - displayedImages.length} remaining)`
-                      )}
-                    </motion.button>
-                    
-                    {/* Image count info */}
-                    <p className="text-gray-600 text-sm mt-3">
-                      Showing {displayedImages.length} of {filteredImages.length} images
-                      {selectedCategory !== "all" && (
-                        <span className="ml-1">
-                          in {categories.find(c => c.id === selectedCategory)?.name}
-                        </span>
-                      )}
-                    </p>
+                      Load More Images
+                    </button>
                   </div>
                 )}
 

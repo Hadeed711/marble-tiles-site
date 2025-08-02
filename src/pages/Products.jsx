@@ -6,6 +6,7 @@ import Footer from "../components/Footer";
 import HoverShadowBg from "../components/HoverShadowBg";
 import Card from "../components/Card";
 import PremiumButton from "../components/PremiumButton";
+import slider1 from "../assets/slider1.jpg";
 import hero from "../assets/hero_img1.jpg";
 
 // Import your original product images
@@ -28,10 +29,9 @@ export default function Products() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [visibleProducts, setVisibleProducts] = useState(4); // Show only 4 products initially (1 row)
-  const [loadingMore, setLoadingMore] = useState(false); // Loading state for load more
+  const [visibleProducts, setVisibleProducts] = useState(8); // Show only 8 products initially (2 rows)
 
-  const BACKEND_URL = 'https://sundarmarbles.live';
+  const BACKEND_URL = 'https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net';
 
   // Fallback products with your original images and data
   const fallbackProducts = [
@@ -39,6 +39,7 @@ export default function Products() {
       id: 1,
       image: black_gold, 
       name: "Black Gold Marble", 
+      price: "12,000",
       category: { slug: "marble", name: "Marble" },
       description: "Premium black marble with gold veining"
     },
@@ -46,6 +47,7 @@ export default function Products() {
       id: 2,
       image: star_black, 
       name: "Star Black Marble", 
+      price: "8,500",
       category: { slug: "marble", name: "Marble" },
       description: "Elegant black marble with star patterns"
     },
@@ -53,6 +55,7 @@ export default function Products() {
       id: 3,
       image: taweera, 
       name: "Taweera Granite", 
+      price: "9,200",
       category: { slug: "granite", name: "Granite" },
       description: "Durable granite with natural patterns"
     },
@@ -60,6 +63,7 @@ export default function Products() {
       id: 4,
       image: jet_black, 
       name: "Jet Black Marble", 
+      price: "7,800",
       category: { slug: "marble", name: "Marble" },
       description: "Deep black marble for modern designs"
     },
@@ -67,6 +71,7 @@ export default function Products() {
       id: 5,
       image: tropical_grey, 
       name: "Tropical Grey Granite", 
+      price: "10,500",
       category: { slug: "granite", name: "Granite" },
       description: "Grey granite with tropical patterns"
     },
@@ -74,6 +79,7 @@ export default function Products() {
       id: 6,
       image: booti_seena, 
       name: "Booti Seena Granite", 
+      price: "8,200",
       category: { slug: "granite", name: "Granite" },
       description: "Classic granite with speckled finish"
     },
@@ -81,6 +87,7 @@ export default function Products() {
       id: 7,
       image: sunny_white, 
       name: "Sunny White Marble", 
+      price: "6,800",
       category: { slug: "marble", name: "Marble" },
       description: "Bright white marble for luxury spaces"
     },
@@ -88,6 +95,7 @@ export default function Products() {
       id: 8,
       image: sunny_grey, 
       name: "Sunny Grey Marble", 
+      price: "7,200",
       category: { slug: "marble", name: "Marble" },
       description: "Sophisticated grey marble with subtle veining"
     },
@@ -108,14 +116,8 @@ export default function Products() {
         
         console.log('Trying to fetch from backend...');
         
-        // Try to fetch products from backend with timeout
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
-        
-        const productsResponse = await fetch(`${BACKEND_URL}/api/products/`, {
-          signal: controller.signal,
-        });
-        clearTimeout(timeoutId);
+        // Try to fetch products from backend
+        const productsResponse = await fetch(`${BACKEND_URL}/api/products/`);
         
         if (productsResponse.ok) {
           const productsData = await productsResponse.json();
@@ -135,9 +137,7 @@ export default function Products() {
         }
 
         // Try to fetch categories from backend
-        const categoriesResponse = await fetch(`${BACKEND_URL}/api/products/categories/`, {
-          signal: controller.signal,
-        });
+        const categoriesResponse = await fetch(`${BACKEND_URL}/api/products/categories/`);
         
         if (categoriesResponse.ok) {
           const categoriesData = await categoriesResponse.json();
@@ -156,11 +156,7 @@ export default function Products() {
         }
 
       } catch (error) {
-        if (error.name === 'AbortError') {
-          console.log('Request timed out, using fallback');
-        } else {
-          console.log('Error fetching from backend, using fallback:', error);
-        }
+        console.log('Error fetching from backend, using fallback:', error);
         setProducts(fallbackProducts);
         setCategories(fallbackCategories);
       } finally {
@@ -192,12 +188,7 @@ export default function Products() {
   const displayedProducts = filteredProducts.slice(0, visibleProducts);
 
   const handleLoadMore = () => {
-    setLoadingMore(true);
-    // Reduced loading time for better performance
-    setTimeout(() => {
-      setVisibleProducts(prev => prev + 4); // Load 4 more products
-      setLoadingMore(false);
-    }, 300); // Reduced from 800ms to 300ms
+    setVisibleProducts(prev => prev + 8); // Load 8 more products
   };
 
   // Handle image zoom
@@ -358,7 +349,7 @@ export default function Products() {
               onClick={() => {
                 handleSearchChange("");
                 setSelectedCategory("all");
-                setVisibleProducts(4); // Reset to initial load
+                setVisibleProducts(8); // Reset to initial load
               }}
               className="text-xs sm:text-sm text-gray-500 hover:text-[#00796b] underline mx-auto sm:mx-0"
             >
@@ -453,7 +444,7 @@ export default function Products() {
                   <Card 
                     image={product.image && (product.image.startsWith('http') || product.image.startsWith('/media')) ? `${BACKEND_URL}${product.image}` : product.image || hero} 
                     name={product.name} 
-                    description={product.description}
+                    price={product.price ? (typeof product.price === 'string' ? `PKR ${product.price}` : `PKR ${product.price}`) : 'Contact for price'}
                     onImageClick={handleImageClick}
                   />
                 </motion.div>
@@ -464,23 +455,11 @@ export default function Products() {
                 <div className="col-span-full text-center mt-8">
                   <motion.button
                     onClick={handleLoadMore}
-                    disabled={loadingMore}
-                    className={`px-8 py-3 rounded-full transition-all duration-300 font-medium shadow-lg ${
-                      loadingMore 
-                        ? 'bg-gray-400 cursor-not-allowed' 
-                        : 'bg-[#00796b] hover:bg-[#d4af37] text-white'
-                    }`}
-                    whileHover={!loadingMore ? { scale: 1.05 } : {}}
-                    whileTap={!loadingMore ? { scale: 0.95 } : {}}
+                    className="bg-[#00796b] text-white px-8 py-3 rounded-full hover:bg-[#d4af37] transition-all duration-300 font-medium shadow-lg"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                   >
-                    {loadingMore ? (
-                      <div className="flex items-center gap-2">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                        <span>Loading...</span>
-                      </div>
-                    ) : (
-                      `Load More Products (${filteredProducts.length - displayedProducts.length} remaining)`
-                    )}
+                    Load More Products ({filteredProducts.length - displayedProducts.length} remaining)
                   </motion.button>
                 </div>
               )}

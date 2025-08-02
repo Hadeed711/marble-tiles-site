@@ -1,10 +1,6 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
 
 export default function Card({ image, name, description, onImageClick }) {
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const [imageError, setImageError] = useState(false);
-
   const handleWhatsAppOrder = () => {
     const message = `Hi! I'm interested in ordering ${name}! Please provide more details.`;
     const whatsappUrl = `https://wa.me/923206040196?text=${encodeURIComponent(message)}`;
@@ -22,38 +18,13 @@ export default function Card({ image, name, description, onImageClick }) {
         initial={{ scale: 1 }}
         whileHover={{ scale: 1.1 }}
         transition={{ duration: 0.4 }}
-        className="overflow-hidden flex-shrink-0 cursor-pointer relative"
+        className="overflow-hidden flex-shrink-0 cursor-pointer"
         onClick={() => onImageClick && onImageClick(image, name)}
       >
-        {/* Loading placeholder */}
-        {!imageLoaded && !imageError && (
-          <div className="w-full h-44 sm:h-56 bg-gray-200 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#00796b]"></div>
-          </div>
-        )}
-        
-        {/* Error placeholder */}
-        {imageError && (
-          <div className="w-full h-44 sm:h-56 bg-gray-100 flex items-center justify-center">
-            <div className="text-center text-gray-400">
-              <svg className="mx-auto h-12 w-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              <p className="text-xs">Image not available</p>
-            </div>
-          </div>
-        )}
-        
-        {/* Actual image */}
         <img
           src={image}
           alt={name}
-          loading="eager" // Changed from lazy to eager for faster loading
-          className={`w-full h-44 sm:h-56 object-cover group-hover:brightness-110 transition-all duration-300 ${
-            imageLoaded ? 'opacity-100' : 'opacity-0 absolute'
-          }`}
-          onLoad={() => setImageLoaded(true)}
-          onError={() => setImageError(true)}
+          className="w-full h-44 sm:h-56 object-cover group-hover:brightness-110 transition-all duration-300"
         />
       </motion.div>
 

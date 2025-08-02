@@ -160,7 +160,7 @@ export default function NotFound() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.3 }}
         >
-          <Link to="/">
+          <Link to="/products">
             <motion.button
               className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-full shadow-lg hover:shadow-purple-500/25 transition-all duration-300 relative overflow-hidden group"
               whileHover={{ scale: 1.05 }}
