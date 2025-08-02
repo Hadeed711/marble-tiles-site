@@ -29,7 +29,7 @@ export default function Products() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [visibleProducts, setVisibleProducts] = useState(8); // Show only 8 products initially
+  const [visibleProducts, setVisibleProducts] = useState(8); // Show only 8 products initially (2 rows)
 
   const BACKEND_URL = 'https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net';
 

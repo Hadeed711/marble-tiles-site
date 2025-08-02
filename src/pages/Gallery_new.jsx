@@ -3,15 +3,15 @@ import ScrollToTop from "../components/ScrollToTop";
 
 // Import all gallery images
 import stairs1 from "../assets/stairs/gallery16.jpg";
-import stairs2 from "../assets/stairs/gallery33.jpg";
-import stairs3 from "../assets/stairs/gallery34.jpg";
-import stairs4 from "../assets/stairs/gallery35.jpg";
-import stairs5 from "../assets/stairs/gallery39.jpg";
-import stairs6 from "../assets/stairs/gallery41.jpg";
-import stairs7 from "../assets/stairs/gallery47.jpg";
-import stairs8 from "../assets/stairs/gallery48.jpg";
-import stairs9 from "../assets/stairs/gallery49.jpg";
-import stairs10 from "../assets/stairs/gallery5.jpg";
+import stairs2 from "../assets/stairs/gallery18.jpg";
+import stairs3 from "../assets/stairs/gallery26.jpg";
+import stairs4 from "../assets/stairs/gallery27.jpg";
+import stairs5 from "../assets/stairs/gallery28.jpg";
+import stairs6 from "../assets/stairs/gallery33.jpg";
+import stairs7 from "../assets/stairs/gallery34.jpg";
+import stairs8 from "../assets/stairs/gallery35.jpg";
+import stairs9 from "../assets/stairs/gallery36.jpg";
+import stairs10 from "../assets/stairs/gallery39.jpg";
 import stairs11 from "../assets/stairs/gallery52.jpg";
 import stairs12 from "../assets/stairs/gallery53.jpg";
 import stairs13 from "../assets/stairs/gallery54.jpg";
@@ -53,24 +53,24 @@ import mosaic6 from "../assets/mosaic/gallery23.jpg";
 import mosaic7 from "../assets/mosaic/gallery24.jpg";
 import mosaic8 from "../assets/mosaic/gallery29.jpg";
 import mosaic9 from "../assets/mosaic/gallery30.jpg";
-import mosaic10 from "../assets/mosaic/gallery36.jpg";
-import mosaic11 from "../assets/mosaic/gallery40.jpg";
-import mosaic12 from "../assets/mosaic/gallery63.jpg";
+import mosaic10 from "../assets/mosaic/gallery40.jpg";
+import mosaic11 from "../assets/mosaic/gallery41.jpg";
+import mosaic12 from "../assets/mosaic/gallery5.jpg";
 
 // Import others images
 import other1 from "../assets/others/gallery1.jpg";
 import other2 from "../assets/others/gallery2.jpg";
 import other3 from "../assets/others/gallery3.jpg";
-import other4 from "../assets/others/gallery18.jpg";
-import other5 from "../assets/others/gallery26.jpg";
-import other6 from "../assets/others/gallery27.jpg";
-import other7 from "../assets/others/gallery28.jpg";
-import other8 from "../assets/others/gallery43.jpg";
-import other9 from "../assets/others/gallery45.jpg";
-import other10 from "../assets/others/gallery50.jpg";
-import other11 from "../assets/others/gallery51.jpg";
-import other12 from "../assets/others/gallery58.jpg";
-import other13 from "../assets/others/gallery61.jpg";
+import other4 from "../assets/others/gallery43.jpg";
+import other5 from "../assets/others/gallery45.jpg";
+import other6 from "../assets/others/gallery47.jpg";
+import other7 from "../assets/others/gallery48.jpg";
+import other8 from "../assets/others/gallery49.jpg";
+import other9 from "../assets/others/gallery50.jpg";
+import other10 from "../assets/others/gallery51.jpg";
+import other11 from "../assets/others/gallery58.jpg";
+import other12 from "../assets/others/gallery59.jpg";
+import other13 from "../assets/others/gallery60.jpg";
 
 export default function Gallery() {
   const [selectedCategory, setSelectedCategory] = useState("all");
