@@ -1,8 +1,20 @@
 {
   "rewrites": [
     {
+      "source": "/admin/:path*",
+      "destination": "https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net/admin/:path*"
+    },
+    {
+      "source": "/static/:path*",
+      "destination": "https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net/static/:path*"
+    },
+    {
       "source": "/api/:path*",
       "destination": "https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net/api/:path*"
+    },
+    {
+      "source": "/media/:path*",
+      "destination": "https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net/media/:path*"
     },
     {
       "source": "/(.*)",
