@@ -269,18 +269,22 @@ export default function Gallery() {
   const filteredImages = selectedCategory === "all" 
     ? galleryImages 
     : galleryImages.filter(img => 
-        img.category && (img.category.slug === selectedCategory || img.category.name.toLowerCase() === selectedCategory)
+        img.category && (
+          img.category.slug === selectedCategory || 
+          (img.category.name && img.category.name.toLowerCase() === selectedCategory) ||
+          (typeof img.category === 'string' && img.category.toLowerCase() === selectedCategory)
+        )
       );
 
   const displayedImages = filteredImages.slice(0, visibleImages);
 
   const handleLoadMore = () => {
-    setVisibleImages(prev => prev + 8); // Load 8 more images at a time
+    setVisibleImages(prev => prev + 8); // Load 8 more images incrementally
   };
 
   const handleCategoryChange = (categoryId) => {
     setSelectedCategory(categoryId);
-    setVisibleImages(8); // Reset to 8 images when changing category
+    setVisibleImages(8); // Reset to show first 8 images when changing category
   };
 
   const openLightbox = (image) => {
