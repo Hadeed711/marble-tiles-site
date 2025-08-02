@@ -424,7 +424,13 @@ export default function Gallery() {
                     >
                       <div className="aspect-square relative overflow-hidden">
                         <img
-                          src={image.image ? (image.image.startsWith('http') || image.image.startsWith('/media') ? `${BACKEND_URL}${image.image}` : image.image) : hero}
+                          src={image.image ? (
+                            image.image.startsWith('http') 
+                              ? image.image // Already a full URL (Azure Blob)
+                              : image.image.startsWith('/media') 
+                                ? `${BACKEND_URL}${image.image}` // Relative URL, prepend backend
+                                : image.image // Local import or other
+                          ) : hero}
                           alt={image.title || 'Gallery image'}
                           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                           loading="lazy"
@@ -502,7 +508,13 @@ export default function Gallery() {
                 onClick={(e) => e.stopPropagation()}
               >
                 <img
-                  src={lightboxImage.image ? (lightboxImage.image.startsWith('http') || lightboxImage.image.startsWith('/media') ? `${BACKEND_URL}${lightboxImage.image}` : lightboxImage.image) : hero}
+                  src={lightboxImage.image ? (
+                    lightboxImage.image.startsWith('http') 
+                      ? lightboxImage.image // Already a full URL (Azure Blob)
+                      : lightboxImage.image.startsWith('/media') 
+                        ? `${BACKEND_URL}${lightboxImage.image}` // Relative URL, prepend backend
+                        : lightboxImage.image // Local import or other
+                  ) : hero}
                   alt={lightboxImage.title || 'Gallery image'}
                   className="max-w-full max-h-[80vh] object-contain rounded-lg"
                 />

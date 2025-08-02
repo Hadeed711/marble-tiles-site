@@ -447,7 +447,13 @@ export default function Products() {
                   className="h-full"
                 >
                   <Card 
-                    image={product.image && (product.image.startsWith('http') || product.image.startsWith('/media')) ? `${BACKEND_URL}${product.image}` : product.image || hero} 
+                    image={product.image ? (
+                      product.image.startsWith('http') 
+                        ? product.image // Already a full URL (Azure Blob)
+                        : product.image.startsWith('/media') 
+                          ? `${BACKEND_URL}${product.image}` // Relative URL, prepend backend
+                          : product.image // Local import or other
+                    ) : hero} 
                     name={product.name} 
                     price={product.price ? (typeof product.price === 'string' ? `PKR ${product.price}` : `PKR ${product.price}`) : 'Contact for price'}
                     onImageClick={handleImageClick}
