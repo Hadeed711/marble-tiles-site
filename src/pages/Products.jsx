@@ -335,11 +335,10 @@ export default function Products() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          <p className="text-sm sm:text-base text-gray-600 text-center sm:text-left">
-            Showing {displayedProducts.length} of {totalCount} products
+          <div className="text-sm sm:text-base text-gray-600 text-center sm:text-left">
             {searchTerm && (
-              <span className="block sm:inline ml-0 sm:ml-2 text-[#00796b] font-medium">
-                for "{searchTerm}"
+              <span className="block sm:inline text-[#00796b] font-medium">
+                Results for "{searchTerm}"
               </span>
             )}
             {selectedCategory !== "all" && (
@@ -347,7 +346,7 @@ export default function Products() {
                 in {categories.find(c => c.id === selectedCategory)?.name}
               </span>
             )}
-          </p>
+          </div>
           
           {(searchTerm || selectedCategory !== "all") && (
             <button
@@ -422,9 +421,82 @@ export default function Products() {
           transition={{ duration: 0.8 }}
         >
           {loading ? (
-            <div className="col-span-full text-center py-12">
-              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#00796b] mx-auto mb-4"></div>
-              <p className="text-gray-600">Loading products...</p>
+            <div className="col-span-full text-center py-16">
+              <div className="flex flex-col items-center">
+                {/* Modern Spinner */}
+                <div className="relative">
+                  <motion.div
+                    className="w-16 h-16 rounded-full border-4 border-gray-200"
+                    animate={{ rotate: 360 }}
+                    transition={{
+                      repeat: Infinity,
+                      duration: 1.5,
+                      ease: "linear",
+                    }}
+                  >
+                    <motion.div
+                      className="absolute inset-0 rounded-full border-4 border-transparent border-t-[#00796b] border-r-[#00796b]"
+                      animate={{ rotate: 360 }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 1,
+                        ease: "linear",
+                      }}
+                    />
+                  </motion.div>
+                  
+                  {/* Center Icon */}
+                  <motion.div
+                    className="absolute inset-0 flex items-center justify-center"
+                    animate={{ scale: [1, 1.1, 1] }}
+                    transition={{
+                      repeat: Infinity,
+                      duration: 2,
+                      ease: "easeInOut",
+                    }}
+                  >
+                    <div className="w-4 h-4 bg-gradient-to-br from-[#00796b] to-[#d4af37] rounded-sm transform rotate-45"></div>
+                  </motion.div>
+                </div>
+
+                {/* Loading Text */}
+                <motion.div
+                  className="mt-6"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <motion.p
+                    className="text-[#00796b] font-semibold text-lg mb-2"
+                    animate={{ opacity: [0.7, 1, 0.7] }}
+                    transition={{
+                      repeat: Infinity,
+                      duration: 2,
+                      ease: "easeInOut",
+                    }}
+                  >
+                    Loading Premium Products
+                  </motion.p>
+                  <p className="text-gray-500 text-sm">Fetching marble & granite collection...</p>
+                </motion.div>
+
+                {/* Animated Dots */}
+                <div className="flex space-x-1 mt-4">
+                  {[0, 1, 2].map((index) => (
+                    <motion.div
+                      key={index}
+                      className="w-2 h-2 bg-[#d4af37] rounded-full"
+                      animate={{ y: [0, -6, 0] }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 1,
+                        ease: "easeInOut",
+                        delay: index * 0.15,
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
           ) : error ? (
             <div className="col-span-full text-center py-12">
@@ -470,15 +542,8 @@ export default function Products() {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    Load More Products ({filteredProducts.length - displayedProducts.length} remaining)
+                    Load More ({filteredProducts.length - displayedProducts.length} remaining)
                   </motion.button>
-                </div>
-              )}
-
-              {/* Show total count */}
-              {displayedProducts.length > 0 && (
-                <div className="col-span-full text-center mt-4 text-gray-600">
-                  Showing {displayedProducts.length} of {filteredProducts.length} products
                 </div>
               )}
             </>

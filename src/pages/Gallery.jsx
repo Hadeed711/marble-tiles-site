@@ -395,9 +395,82 @@ export default function Gallery() {
         <section className="py-8 px-4 sm:px-6">
           <div className="max-w-7xl mx-auto">
             {loading ? (
-              <div className="text-center py-12">
-                <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#00796b] mx-auto mb-4"></div>
-                <p className="text-gray-600">Loading gallery...</p>
+              <div className="text-center py-16">
+                <div className="flex flex-col items-center">
+                  {/* Modern Spinner */}
+                  <div className="relative">
+                    <motion.div
+                      className="w-16 h-16 rounded-full border-4 border-gray-200"
+                      animate={{ rotate: 360 }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 1.5,
+                        ease: "linear",
+                      }}
+                    >
+                      <motion.div
+                        className="absolute inset-0 rounded-full border-4 border-transparent border-t-[#00796b] border-r-[#00796b]"
+                        animate={{ rotate: 360 }}
+                        transition={{
+                          repeat: Infinity,
+                          duration: 1,
+                          ease: "linear",
+                        }}
+                      />
+                    </motion.div>
+                    
+                    {/* Center Icon */}
+                    <motion.div
+                      className="absolute inset-0 flex items-center justify-center"
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 2,
+                        ease: "easeInOut",
+                      }}
+                    >
+                      <div className="w-4 h-4 bg-gradient-to-br from-[#00796b] to-[#d4af37] rounded-sm transform rotate-45"></div>
+                    </motion.div>
+                  </div>
+
+                  {/* Loading Text */}
+                  <motion.div
+                    className="mt-6"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <motion.p
+                      className="text-[#00796b] font-semibold text-lg mb-2"
+                      animate={{ opacity: [0.7, 1, 0.7] }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 2,
+                        ease: "easeInOut",
+                      }}
+                    >
+                      Loading Gallery
+                    </motion.p>
+                    <p className="text-gray-500 text-sm">Fetching stunning project images...</p>
+                  </motion.div>
+
+                  {/* Animated Dots */}
+                  <div className="flex space-x-1 mt-4">
+                    {[0, 1, 2].map((index) => (
+                      <motion.div
+                        key={index}
+                        className="w-2 h-2 bg-[#d4af37] rounded-full"
+                        animate={{ y: [0, -6, 0] }}
+                        transition={{
+                          repeat: Infinity,
+                          duration: 1,
+                          ease: "easeInOut",
+                          delay: index * 0.15,
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
               </div>
             ) : error ? (
               <div className="text-center py-12">
@@ -467,15 +540,8 @@ export default function Gallery() {
                       onClick={handleLoadMore}
                       className="bg-[#00796b] text-white px-8 py-3 rounded-full hover:bg-[#d4af37] transition-all duration-300 font-medium"
                     >
-                      Load More Images ({filteredImages.length - displayedImages.length} remaining)
+                      Load More ({filteredImages.length - displayedImages.length} remaining)
                     </button>
-                  </div>
-                )}
-
-                {/* Show total count */}
-                {galleryImages.length > 0 && (
-                  <div className="text-center mt-4 text-gray-600">
-                    Showing {displayedImages.length} of {filteredImages.length} images
                   </div>
                 )}
 
