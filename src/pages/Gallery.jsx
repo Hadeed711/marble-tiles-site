@@ -167,12 +167,19 @@ export default function Gallery() {
     { id: 63, title: "Luxury Custom Project", image: other13, category: { slug: "others", name: "Others" }, project_location: "Hyderabad" },
   ];
 
+  // Calculate counts for fallback categories
+  const mosaicCount = fallbackGalleryImages.filter(img => img.category.slug === "mosaic").length;
+  const floorsCount = fallbackGalleryImages.filter(img => img.category.slug === "floors").length;
+  const stairsCount = fallbackGalleryImages.filter(img => img.category.slug === "stairs").length;
+  const othersCount = fallbackGalleryImages.filter(img => img.category.slug === "others").length;
+  const totalCount = fallbackGalleryImages.length;
+
   const fallbackCategories = [
-    { id: "all", name: "All", icon: "🏛️" },
-    { id: "stairs", name: "Stairs", icon: "🪜" },
-    { id: "floors", name: "Floors", icon: "🏢" },
-    { id: "mosaic", name: "Mosaic", icon: "🎨" },
-    { id: "others", name: "Others", icon: "🔹" },
+    { id: "all", name: "All", icon: "🏛️", count: totalCount },
+    { id: "mosaic", name: "Mosaic", icon: "🎨", count: mosaicCount },
+    { id: "floors", name: "Floors", icon: "🏢", count: floorsCount },
+    { id: "stairs", name: "Stairs", icon: "🪜", count: stairsCount },
+    { id: "others", name: "Others", icon: "🔹", count: othersCount },
   ];
 
   // Fetch gallery images and categories from backend with fallback

@@ -100,10 +100,15 @@ export default function Products() {
     },
   ];
 
+  // Calculate counts for fallback categories
+  const marbleCount = fallbackProducts.filter(product => product.category.slug === "marble").length;
+  const graniteCount = fallbackProducts.filter(product => product.category.slug === "granite").length;
+  const totalProductCount = fallbackProducts.length;
+
   const fallbackCategories = [
-    { id: "all", name: "All Products" },
-    { id: "marble", name: "Marble" },
-    { id: "granite", name: "Granite" },
+    { id: "all", name: "All Products", count: totalProductCount },
+    { id: "marble", name: "Marble", count: marbleCount },
+    { id: "granite", name: "Granite", count: graniteCount },
   ];
 
   // Fetch products and categories from backend with fallback
@@ -141,9 +146,15 @@ export default function Products() {
         if (categoriesResponse.ok) {
           const categoriesData = await categoriesResponse.json();
           if (categoriesData && categoriesData.length > 0) {
+            // Calculate total products count
+            const totalProducts = products.length || fallbackProducts.length;
             const formattedCategories = [
-              { id: "all", name: "All Products" },
-              ...categoriesData.map(cat => ({ id: cat.slug, name: cat.name }))
+              { id: "all", name: "All Products", count: totalProducts },
+              ...categoriesData.map(cat => ({ 
+                id: cat.slug, 
+                name: cat.name,
+                count: cat.product_count || 0
+              }))
             ];
             setCategories(formattedCategories);
           } else {
@@ -192,8 +203,10 @@ export default function Products() {
   };
 
   const handleCategoryChange = (categoryId) => {
+    console.log('Changing category to:', categoryId);
     setSelectedCategory(categoryId);
     setVisibleProducts(8); // Reset to 8 products when changing category
+    setSearchTerm(""); // Clear search when changing category
   };
 
   // Handle image zoom
@@ -316,13 +329,16 @@ export default function Products() {
               <button
                 key={category.id}
                 onClick={() => handleCategoryChange(category.id)}
-                className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 ${
+                className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
                   selectedCategory === category.id
                     ? "bg-[#00796b] text-white shadow-lg"
                     : "bg-white text-[#00796b] border border-[#00796b] hover:bg-[#00796b] hover:text-white"
                 }`}
               >
-                {category.name}
+                <span>{category.name}</span>
+                {category.count !== undefined && (
+                  <span className="text-xs opacity-75">({category.count})</span>
+                )}
               </button>
             ))}
           </motion.div>
