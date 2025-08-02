@@ -1,20 +1,20 @@
 {
   "rewrites": [
     {
-      "source": "/admin/(.*)",
-      "destination": "https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net/admin/$1"
+      "source": "/admin/:path*",
+      "destination": "https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net/admin/:path*"
     },
     {
-      "source": "/static/(.*)",
-      "destination": "https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net/static/$1"
+      "source": "/static/:path*",
+      "destination": "https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net/static/:path*"
     },
     {
-      "source": "/api/(.*)",
-      "destination": "https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net/api/$1"
+      "source": "/api/:path*",
+      "destination": "https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net/api/:path*"
     },
     {
-      "source": "/media/(.*)",
-      "destination": "https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net/media/$1"
+      "source": "/media/:path*",
+      "destination": "https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net/media/:path*"
     },
     {
       "source": "/(.*)",
@@ -22,3 +22,4 @@
     }
   ]
 }
+
