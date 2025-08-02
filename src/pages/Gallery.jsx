@@ -88,15 +88,11 @@ export default function Gallery() {
   const [galleryImages, setGalleryImages] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(null);
   const [lightboxImage, setLightboxImage] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const [totalCount, setTotalCount] = useState(0);
+  const [visibleImages, setVisibleImages] = useState(8); // Show only 8 images initially
 
   const BACKEND_URL = 'https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net';
-  const IMAGES_PER_PAGE = 8;
 
   // Comprehensive fallback gallery images with ALL your assets
   const fallbackGalleryImages = [
@@ -174,99 +170,67 @@ export default function Gallery() {
 
   const fallbackCategories = [
     { id: "all", name: "All", icon: "🏛️", count: 63 }, // Total count of all fallback images
-    { id: "stairs", name: "Stairs", icon: "🪜", count: 18 },
-    { id: "floors", name: "Floors", icon: "🏢", count: 20 },
     { id: "mosaic", name: "Mosaic", icon: "🎨", count: 12 },
+    { id: "floors", name: "Floors", icon: "🏢", count: 20 },
+    { id: "stairs", name: "Stairs", icon: "🪜", count: 18 },
     { id: "others", name: "Others", icon: "🔹", count: 13 },
   ];
 
-  // Fetch gallery images and categories from backend with pagination
-  const fetchGalleryImages = async (page = 1, category = "all", reset = false) => {
-    try {
-      if (page === 1) setLoading(true);
-      else setLoadingMore(true);
-      
-      console.log(`Fetching gallery page ${page} for category ${category}...`);
-      
-      // Build API URL with pagination and category filter
-      let apiUrl = `${BACKEND_URL}/api/gallery/images/?page=${page}&page_size=${IMAGES_PER_PAGE}`;
-      if (category !== "all") {
-        // Find category ID from categories list
-        const categoryObj = categories.find(cat => cat.id === category);
-        if (categoryObj && categoryObj.backendId) {
-          apiUrl += `&category=${categoryObj.backendId}`;
-        }
-      }
-      
-      const imagesResponse = await fetch(apiUrl);
-      if (imagesResponse.ok) {
-        const imagesData = await imagesResponse.json();
-        console.log('API Response:', imagesData);
-        
-        if (imagesData.results) {
-          // Server-side pagination response
-          if (reset || page === 1) {
-            setGalleryImages(imagesData.results);
-          } else {
-            setGalleryImages(prev => [...prev, ...imagesData.results]);
-          }
-          setHasMore(!!imagesData.next);
-          setTotalCount(imagesData.count || 0);
-        } else if (imagesData.length > 0) {
-          // Fallback for non-paginated response
-          if (reset || page === 1) {
-            setGalleryImages(imagesData);
-          } else {
-            setGalleryImages(prev => [...prev, ...imagesData]);
-          }
-          setHasMore(false);
-          setTotalCount(imagesData.length);
-        } else {
-          // No images from backend, use fallback
-          console.log('No backend images, using fallback gallery');
-          setGalleryImages(fallbackGalleryImages);
-          setHasMore(false);
-          setTotalCount(fallbackGalleryImages.length);
-        }
-      } else {
-        console.log('Backend gallery failed, using fallback');
-        setGalleryImages(fallbackGalleryImages);
-        setHasMore(false);
-        setTotalCount(fallbackGalleryImages.length);
-      }
-    } catch (error) {
-      console.log('Error fetching gallery, using fallback:', error);
-      setGalleryImages(fallbackGalleryImages);
-      setHasMore(false);
-      setTotalCount(fallbackGalleryImages.length);
-    } finally {
-      setLoading(false);
-      setLoadingMore(false);
-    }
-  };
-
+  // Fetch gallery images and categories from backend with fallback
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         
-        console.log('Fetching categories...');
+        console.log('Trying to fetch gallery from backend...');
+        
+        // Try to fetch gallery images
+        const imagesResponse = await fetch(`${BACKEND_URL}/api/gallery/images/`);
+        if (imagesResponse.ok) {
+          const imagesData = await imagesResponse.json();
+          const backendImages = imagesData.results || imagesData;
+          
+          if (backendImages && backendImages.length > 0) {
+            console.log('Using backend gallery images');
+            setGalleryImages(backendImages);
+          } else {
+            console.log('No backend images, using fallback gallery');
+            setGalleryImages(fallbackGalleryImages);
+          }
+        } else {
+          console.log('Backend gallery failed, using fallback');
+          setGalleryImages(fallbackGalleryImages);
+        }
 
-        // Try to fetch categories with image counts
+        // Try to fetch categories with image counts - filter to only 4 categories
         const categoriesResponse = await fetch(`${BACKEND_URL}/api/gallery/categories/with-count/`);
         if (categoriesResponse.ok) {
           const categoriesData = await categoriesResponse.json();
           if (categoriesData && categoriesData.length > 0) {
-            const totalImages = categoriesData.reduce((sum, cat) => sum + cat.image_count, 0);
+            // Filter to only the 4 categories we want: mosaic, floors, stairs, others
+            const allowedCategories = ['mosaic', 'floors', 'stairs', 'others'];
+            const filteredCategories = categoriesData.filter(cat => 
+              allowedCategories.includes(cat.slug.toLowerCase()) || 
+              allowedCategories.includes(cat.name.toLowerCase())
+            );
+            
+            const totalImages = filteredCategories.reduce((sum, cat) => sum + cat.image_count, 0);
             const formattedCategories = [
               { id: "all", name: "All", icon: "🏛️", count: totalImages },
-              ...categoriesData.map(cat => ({ 
-                id: cat.slug, 
-                name: cat.name,
-                icon: getCategoryIcon(cat.name),
-                count: cat.image_count,
-                backendId: cat.id // Store backend ID for filtering
-              }))
+              // Order: Mosaic, Floors, Stairs, Others
+              ...filteredCategories
+                .sort((a, b) => {
+                  const order = ['mosaic', 'floors', 'stairs', 'others'];
+                  const aIndex = order.indexOf(a.slug.toLowerCase());
+                  const bIndex = order.indexOf(b.slug.toLowerCase());
+                  return aIndex - bIndex;
+                })
+                .map(cat => ({ 
+                  id: cat.slug, 
+                  name: cat.name,
+                  icon: getCategoryIcon(cat.name),
+                  count: cat.image_count
+                }))
             ];
             setCategories(formattedCategories);
           } else {
@@ -277,15 +241,10 @@ export default function Gallery() {
           setCategories(fallbackCategories);
         }
 
-        // Fetch initial gallery images
-        await fetchGalleryImages(1, "all", true);
-
       } catch (error) {
-        console.log('Error fetching data:', error);
-        setCategories(fallbackCategories);
+        console.log('Error fetching gallery, using fallback:', error);
         setGalleryImages(fallbackGalleryImages);
-        setHasMore(false);
-        setTotalCount(fallbackGalleryImages.length);
+        setCategories(fallbackCategories);
       } finally {
         setLoading(false);
       }
@@ -307,22 +266,22 @@ export default function Gallery() {
     return icons[categoryName] || '📸';
   };
 
-  // Filter images based on selected category (now handled by backend)
-  const displayedImages = galleryImages;
+  // Filter images based on selected category
+  const filteredImages = selectedCategory === "all" 
+    ? galleryImages 
+    : galleryImages.filter(img => 
+        img.category && (img.category.slug === selectedCategory || img.category.name.toLowerCase() === selectedCategory)
+      );
+
+  const displayedImages = filteredImages.slice(0, visibleImages);
 
   const handleLoadMore = () => {
-    if (hasMore && !loadingMore) {
-      const nextPage = currentPage + 1;
-      setCurrentPage(nextPage);
-      fetchGalleryImages(nextPage, selectedCategory, false);
-    }
+    setVisibleImages(prev => prev + 8); // Load 8 more images at a time
   };
 
   const handleCategoryChange = (categoryId) => {
     setSelectedCategory(categoryId);
-    setCurrentPage(1);
-    setGalleryImages([]);
-    fetchGalleryImages(1, categoryId, true);
+    setVisibleImages(8); // Reset to 8 images when changing category
   };
 
   const openLightbox = (image) => {
@@ -334,15 +293,15 @@ export default function Gallery() {
   };
 
   const handleNextImage = () => {
-    const currentIndex = displayedImages.findIndex(img => img.id === lightboxImage.id);
-    const nextIndex = (currentIndex + 1) % displayedImages.length;
-    setLightboxImage(displayedImages[nextIndex]);
+    const currentIndex = filteredImages.findIndex(img => img.id === lightboxImage.id);
+    const nextIndex = (currentIndex + 1) % filteredImages.length;
+    setLightboxImage(filteredImages[nextIndex]);
   };
 
   const handlePrevImage = () => {
-    const currentIndex = displayedImages.findIndex(img => img.id === lightboxImage.id);
-    const prevIndex = (currentIndex - 1 + displayedImages.length) % displayedImages.length;
-    setLightboxImage(displayedImages[prevIndex]);
+    const currentIndex = filteredImages.findIndex(img => img.id === lightboxImage.id);
+    const prevIndex = (currentIndex - 1 + filteredImages.length) % filteredImages.length;
+    setLightboxImage(filteredImages[prevIndex]);
   };
 
   useEffect(() => {
@@ -493,21 +452,13 @@ export default function Gallery() {
                 </motion.div>
 
                 {/* Load More Button */}
-                {hasMore && (
+                {displayedImages.length < filteredImages.length && (
                   <div className="text-center mt-8">
                     <button
                       onClick={handleLoadMore}
-                      disabled={loadingMore}
-                      className="bg-[#00796b] text-white px-8 py-3 rounded-full hover:bg-[#d4af37] transition-all duration-300 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="bg-[#00796b] text-white px-8 py-3 rounded-full hover:bg-[#d4af37] transition-all duration-300 font-medium"
                     >
-                      {loadingMore ? (
-                        <span className="flex items-center gap-2">
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                          Loading...
-                        </span>
-                      ) : (
-                        `Load More Images ${totalCount > galleryImages.length ? `(${totalCount - galleryImages.length} remaining)` : ''}`
-                      )}
+                      Load More Images ({filteredImages.length - displayedImages.length} remaining)
                     </button>
                   </div>
                 )}
@@ -515,12 +466,12 @@ export default function Gallery() {
                 {/* Show total count */}
                 {galleryImages.length > 0 && (
                   <div className="text-center mt-4 text-gray-600">
-                    Showing {galleryImages.length} of {totalCount} images
+                    Showing {displayedImages.length} of {filteredImages.length} images
                   </div>
                 )}
 
                 {/* No Images Message */}
-                {displayedImages.length === 0 && !loading && (
+                {filteredImages.length === 0 && !loading && (
                   <div className="text-center py-12">
                     <svg className="mx-auto h-16 w-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
