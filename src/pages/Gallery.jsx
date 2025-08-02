@@ -174,14 +174,13 @@ export default function Gallery() {
   const othersCount = fallbackGalleryImages.filter(img => img.category.slug === "others").length;
   const totalCount = fallbackGalleryImages.length;
 
-  // Calculate counts for fallback categories (based on actual Azure blob structure)
-  // You have 63 images in Azure: gallery1.jpg to gallery66.jpg (with some gaps)
+  // Calculate counts for fallback categories (all in stairs temporarily)
   const fallbackCategories = [
     { id: "all", name: "All", icon: "🏛️", count: 63 }, // Total images in Azure blob
-    { id: "mosaic", name: "Mosaic", icon: "🎨", count: 12 }, // Images 39-50 (12 images)
-    { id: "floors", name: "Floors", icon: "🏢", count: 20 }, // Images 19-38 (20 images)  
-    { id: "stairs", name: "Stairs", icon: "🪜", count: 18 }, // Images 1-18 (18 images)
-    { id: "others", name: "Others", icon: "🔹", count: 13 }, // Images 51-66 (13 images with gaps)
+    { id: "stairs", name: "Stairs", icon: "🪜", count: 63 }, // All images in stairs for now
+    { id: "floors", name: "Floors", icon: "🏢", count: 0 }, 
+    { id: "mosaic", name: "Mosaic", icon: "🎨", count: 0 }, 
+    { id: "others", name: "Others", icon: "🔹", count: 0 }, 
   ];
 
   // Fetch gallery images and categories from backend with fallback
@@ -192,16 +191,25 @@ export default function Gallery() {
         
         console.log('Trying to fetch gallery from backend...');
         
-        // Try to fetch gallery images
-        const imagesResponse = await fetch(`${BACKEND_URL}/api/gallery/images/`);
+        // Try to fetch gallery images with larger page size
+        let imagesResponse = await fetch(`${BACKEND_URL}/api/gallery/images/?page_size=100`);
+        if (!imagesResponse.ok) {
+          // Fallback to default endpoint
+          imagesResponse = await fetch(`${BACKEND_URL}/api/gallery/images/`);
+        }
+        
         if (imagesResponse.ok) {
           const imagesData = await imagesResponse.json();
+          console.log('Raw backend response:', imagesData);
+          
           const backendImages = imagesData.results || imagesData;
+          console.log('Backend images array:', backendImages);
+          console.log('Backend images count:', backendImages?.length || 0);
           
           if (backendImages && backendImages.length > 0) {
             console.log('Using backend gallery images:', backendImages.length);
             
-            // Process backend images and assign categories based on image names
+            // Process backend images and assign ALL to stairs category temporarily
             const processedImages = backendImages.map((img, index) => {
               // Extract image number from filename (e.g., "gallery15.jpg" -> 15)
               let imgNum = index + 1;
@@ -212,41 +220,32 @@ export default function Gallery() {
                 }
               }
               
-              // Determine category based on image number (matching the Azure blob distribution)
-              let category;
-              if (imgNum <= 18) {
-                category = { slug: "stairs", name: "Stairs" };
-              } else if (imgNum <= 38) {
-                category = { slug: "floors", name: "Floors" };
-              } else if (imgNum <= 50) {
-                category = { slug: "mosaic", name: "Mosaic" };
-              } else {
-                category = { slug: "others", name: "Others" };
-              }
+              // PUT ALL IMAGES IN STAIRS CATEGORY FOR NOW
+              const category = { slug: "stairs", name: "Stairs" };
               
               return {
                 ...img,
                 category: category,
                 id: img.id || imgNum,
-                title: img.title || `${category.name} Project ${imgNum}`,
+                title: img.title || `Gallery Project ${imgNum}`,
                 project_location: img.project_location || "Faisalabad"
               };
             });
             
             setGalleryImages(processedImages);
             
-            // Calculate counts from processed images
-            const stairsCount = processedImages.filter(img => img.category?.slug === "stairs").length;
-            const floorsCount = processedImages.filter(img => img.category?.slug === "floors").length;
-            const mosaicCount = processedImages.filter(img => img.category?.slug === "mosaic").length;
-            const othersCount = processedImages.filter(img => img.category?.slug === "others").length;
+            // Calculate counts from processed images (all in stairs for now)
+            const stairsCount = processedImages.length; // All images are in stairs now
+            const floorsCount = 0;
+            const mosaicCount = 0;
+            const othersCount = 0;
             const totalCount = processedImages.length;
             
             const calculatedCategories = [
               { id: "all", name: "All", icon: "🏛️", count: totalCount },
-              { id: "mosaic", name: "Mosaic", icon: "🎨", count: mosaicCount },
-              { id: "floors", name: "Floors", icon: "🏢", count: floorsCount },
               { id: "stairs", name: "Stairs", icon: "🪜", count: stairsCount },
+              { id: "floors", name: "Floors", icon: "🏢", count: floorsCount },
+              { id: "mosaic", name: "Mosaic", icon: "🎨", count: mosaicCount },
               { id: "others", name: "Others", icon: "🔹", count: othersCount },
             ];
             
