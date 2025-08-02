@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
-import ScrollToTop from "../components/ScrollToTop";
+import { motion, AnimatePresence } from "framer-motion";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import HoverShadowBg from "../components/HoverShadowBg";
+import slider1 from "../assets/slider1.jpg";
+import hero from "../assets/hero_img1.jpg";
 
-// Import all gallery images
+// Import ALL stairs images
 import stairs1 from "../assets/stairs/gallery16.jpg";
 import stairs2 from "../assets/stairs/gallery33.jpg";
 import stairs3 from "../assets/stairs/gallery34.jpg";
@@ -57,14 +62,14 @@ import mosaic10 from "../assets/mosaic/gallery36.jpg";
 import mosaic11 from "../assets/mosaic/gallery40.jpg";
 import mosaic12 from "../assets/mosaic/gallery63.jpg";
 
-// Import others images
+// Import ALL others images
 import other1 from "../assets/others/gallery1.jpg";
-import other2 from "../assets/others/gallery2.jpg";
-import other3 from "../assets/others/gallery3.jpg";
-import other4 from "../assets/others/gallery18.jpg";
-import other5 from "../assets/others/gallery26.jpg";
-import other6 from "../assets/others/gallery27.jpg";
-import other7 from "../assets/others/gallery28.jpg";
+import other2 from "../assets/others/gallery18.jpg";
+import other3 from "../assets/others/gallery2.jpg";
+import other4 from "../assets/others/gallery26.jpg";
+import other5 from "../assets/others/gallery27.jpg";
+import other6 from "../assets/others/gallery28.jpg";
+import other7 from "../assets/others/gallery3.jpg";
 import other8 from "../assets/others/gallery43.jpg";
 import other9 from "../assets/others/gallery45.jpg";
 import other10 from "../assets/others/gallery50.jpg";
@@ -72,37 +77,44 @@ import other11 from "../assets/others/gallery51.jpg";
 import other12 from "../assets/others/gallery58.jpg";
 import other13 from "../assets/others/gallery61.jpg";
 
+
+
+
+
+
 export default function Gallery() {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [galleryImages, setGalleryImages] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [lightboxImage, setLightboxImage] = useState(null);
-  const [visibleImages, setVisibleImages] = useState(12);
+  const [visibleImages, setVisibleImages] = useState(8);
 
   const BACKEND_URL = 'https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net';
 
-  // Fallback gallery images
+  // Comprehensive fallback gallery images with ALL your assets
   const fallbackGalleryImages = [
     // Stairs collection (18 images)
     { id: 1, title: "Premium Marble Staircase Design", image: stairs1, category: { slug: "stairs", name: "Stairs" }, project_location: "Faisalabad" },
-    { id: 2, title: "Elegant Staircase Installation", image: stairs2, category: { slug: "stairs", name: "Stairs" }, project_location: "Lahore" },
-    { id: 3, title: "Designer Marble Stairs", image: stairs3, category: { slug: "stairs", name: "Stairs" }, project_location: "Karachi" },
-    { id: 4, title: "Modern Staircase Design", image: stairs4, category: { slug: "stairs", name: "Stairs" }, project_location: "Islamabad" },
-    { id: 5, title: "Luxury Stair Installation", image: stairs5, category: { slug: "stairs", name: "Stairs" }, project_location: "Faisalabad" },
-    { id: 6, title: "Contemporary Marble Stairs", image: stairs6, category: { slug: "stairs", name: "Stairs" }, project_location: "Lahore" },
-    { id: 7, title: "Executive Staircase Work", image: stairs7, category: { slug: "stairs", name: "Stairs" }, project_location: "Multan" },
-    { id: 8, title: "Premium Stair Craftsmanship", image: stairs8, category: { slug: "stairs", name: "Stairs" }, project_location: "Rawalpindi" },
-    { id: 9, title: "Elegant Marble Stairway", image: stairs9, category: { slug: "stairs", name: "Stairs" }, project_location: "Gujranwala" },
-    { id: 10, title: "Designer Stair Project", image: stairs10, category: { slug: "stairs", name: "Stairs" }, project_location: "Sialkot" },
-    { id: 11, title: "Modern Stair Installation", image: stairs11, category: { slug: "stairs", name: "Stairs" }, project_location: "Peshawar" },
-    { id: 12, title: "Luxury Staircase Design", image: stairs12, category: { slug: "stairs", name: "Stairs" }, project_location: "Quetta" },
-    { id: 13, title: "Premium Marble Stairway", image: stairs13, category: { slug: "stairs", name: "Stairs" }, project_location: "Hyderabad" },
-    { id: 14, title: "Contemporary Stair Work", image: stairs14, category: { slug: "stairs", name: "Stairs" }, project_location: "Sargodha" },
-    { id: 15, title: "Executive Staircase", image: stairs15, category: { slug: "stairs", name: "Stairs" }, project_location: "Bahawalpur" },
-    { id: 16, title: "Designer Marble Stairs", image: stairs16, category: { slug: "stairs", name: "Stairs" }, project_location: "Sukkur" },
-    { id: 17, title: "Elegant Stair Installation", image: stairs17, category: { slug: "stairs", name: "Stairs" }, project_location: "Larkana" },
-    { id: 18, title: "Modern Staircase Project", image: stairs18, category: { slug: "stairs", name: "Stairs" }, project_location: "Mardan" },
+    { id: 2, title: "Elegant Curved Staircase", image: stairs2, category: { slug: "stairs", name: "Stairs" }, project_location: "Lahore" },
+    { id: 3, title: "Modern Spiral Stairs", image: stairs3, category: { slug: "stairs", name: "Stairs" }, project_location: "Karachi" },
+    { id: 4, title: "Classic Marble Steps", image: stairs4, category: { slug: "stairs", name: "Stairs" }, project_location: "Islamabad" },
+    { id: 5, title: "Luxury Staircase Installation", image: stairs5, category: { slug: "stairs", name: "Stairs" }, project_location: "Faisalabad" },
+    { id: 6, title: "Contemporary Stair Design", image: stairs6, category: { slug: "stairs", name: "Stairs" }, project_location: "Lahore" },
+    { id: 7, title: "Granite Step Construction", image: stairs7, category: { slug: "stairs", name: "Stairs" }, project_location: "Multan" },
+    { id: 8, title: "Premium Stair Finishing", image: stairs8, category: { slug: "stairs", name: "Stairs" }, project_location: "Rawalpindi" },
+    { id: 9, title: "Marble Staircase with Railing", image: stairs9, category: { slug: "stairs", name: "Stairs" }, project_location: "Gujranwala" },
+    { id: 10, title: "Designer Staircase Project", image: stairs10, category: { slug: "stairs", name: "Stairs" }, project_location: "Sialkot" },
+    { id: 11, title: "Royal Staircase Design", image: stairs11, category: { slug: "stairs", name: "Stairs" }, project_location: "Peshawar" },
+    { id: 12, title: "Executive Stair Installation", image: stairs12, category: { slug: "stairs", name: "Stairs" }, project_location: "Quetta" },
+    { id: 13, title: "Curved Marble Steps", image: stairs13, category: { slug: "stairs", name: "Stairs" }, project_location: "Hyderabad" },
+    { id: 14, title: "Premium Staircase Work", image: stairs14, category: { slug: "stairs", name: "Stairs" }, project_location: "Sargodha" },
+    { id: 15, title: "Modern Stair Architecture", image: stairs15, category: { slug: "stairs", name: "Stairs" }, project_location: "Bahawalpur" },
+    { id: 16, title: "Elegant Staircase Design", image: stairs16, category: { slug: "stairs", name: "Stairs" }, project_location: "Sukkur" },
+    { id: 17, title: "Luxury Marble Stairway", image: stairs17, category: { slug: "stairs", name: "Stairs" }, project_location: "Larkana" },
+    { id: 18, title: "Designer Steps Installation", image: stairs18, category: { slug: "stairs", name: "Stairs" }, project_location: "Mardan" },
 
     // Floors collection (20 images)
     { id: 19, title: "Premium Marble Flooring", image: floor1, category: { slug: "floors", name: "Floors" }, project_location: "Faisalabad" },
@@ -136,39 +148,41 @@ export default function Gallery() {
     { id: 45, title: "Luxury Mosaic Design", image: mosaic7, category: { slug: "mosaic", name: "Mosaic" }, project_location: "Multan" },
     { id: 46, title: "Artistic Mosaic Creation", image: mosaic8, category: { slug: "mosaic", name: "Mosaic" }, project_location: "Rawalpindi" },
     { id: 47, title: "Premium Mosaic Artwork", image: mosaic9, category: { slug: "mosaic", name: "Mosaic" }, project_location: "Gujranwala" },
-    { id: 48, title: "Designer Mosaic Installation", image: mosaic10, category: { slug: "mosaic", name: "Mosaic" }, project_location: "Sialkot" },
-    { id: 49, title: "Contemporary Mosaic Work", image: mosaic11, category: { slug: "mosaic", name: "Mosaic" }, project_location: "Peshawar" },
-    { id: 50, title: "Elegant Mosaic Pattern", image: mosaic12, category: { slug: "mosaic", name: "Mosaic" }, project_location: "Quetta" },
+    { id: 48, title: "Decorative Mosaic Project", image: mosaic10, category: { slug: "mosaic", name: "Mosaic" }, project_location: "Sialkot" },
+    { id: 49, title: "Modern Mosaic Installation", image: mosaic11, category: { slug: "mosaic", name: "Mosaic" }, project_location: "Peshawar" },
+    { id: 50, title: "Executive Mosaic Design", image: mosaic12, category: { slug: "mosaic", name: "Mosaic" }, project_location: "Quetta" },
 
     // Others collection (13 images)
-    { id: 51, title: "Custom Marble Work", image: other1, category: { slug: "others", name: "Others" }, project_location: "Faisalabad" },
-    { id: 52, title: "Decorative Stone Installation", image: other2, category: { slug: "others", name: "Others" }, project_location: "Lahore" },
-    { id: 53, title: "Premium Stone Work", image: other3, category: { slug: "others", name: "Others" }, project_location: "Karachi" },
-    { id: 54, title: "Elegant Marble Feature", image: other4, category: { slug: "others", name: "Others" }, project_location: "Islamabad" },
-    { id: 55, title: "Designer Stone Pattern", image: other5, category: { slug: "others", name: "Others" }, project_location: "Faisalabad" },
-    { id: 56, title: "Contemporary Marble Art", image: other6, category: { slug: "others", name: "Others" }, project_location: "Lahore" },
-    { id: 57, title: "Luxury Stone Installation", image: other7, category: { slug: "others", name: "Others" }, project_location: "Multan" },
-    { id: 58, title: "Artistic Marble Design", image: other8, category: { slug: "others", name: "Others" }, project_location: "Rawalpindi" },
-    { id: 59, title: "Premium Stone Craftsmanship", image: other9, category: { slug: "others", name: "Others" }, project_location: "Gujranwala" },
-    { id: 60, title: "Executive Marble Work", image: other10, category: { slug: "others", name: "Others" }, project_location: "Sialkot" },
-    { id: 61, title: "Designer Stone Feature", image: other11, category: { slug: "others", name: "Others" }, project_location: "Peshawar" },
-    { id: 62, title: "Modern Marble Installation", image: other12, category: { slug: "others", name: "Others" }, project_location: "Quetta" },
-    { id: 63, title: "Elegant Stone Pattern", image: other13, category: { slug: "others", name: "Others" }, project_location: "Hyderabad" },
+    { id: 51, title: "Custom Stone Installation", image: other1, category: { slug: "others", name: "Others" }, project_location: "Faisalabad" },
+    { id: 52, title: "Special Project Design", image: other2, category: { slug: "others", name: "Others" }, project_location: "Lahore" },
+    { id: 53, title: "Unique Marble Work", image: other3, category: { slug: "others", name: "Others" }, project_location: "Karachi" },
+    { id: 54, title: "Designer Stone Project", image: other4, category: { slug: "others", name: "Others" }, project_location: "Islamabad" },
+    { id: 55, title: "Premium Custom Work", image: other5, category: { slug: "others", name: "Others" }, project_location: "Faisalabad" },
+    { id: 56, title: "Elegant Stone Installation", image: other6, category: { slug: "others", name: "Others" }, project_location: "Lahore" },
+    { id: 57, title: "Luxury Custom Design", image: other7, category: { slug: "others", name: "Others" }, project_location: "Multan" },
+    { id: 58, title: "Executive Stone Work", image: other8, category: { slug: "others", name: "Others" }, project_location: "Rawalpindi" },
+    { id: 59, title: "Contemporary Installation", image: other9, category: { slug: "others", name: "Others" }, project_location: "Gujranwala" },
+    { id: 60, title: "Artistic Stone Project", image: other10, category: { slug: "others", name: "Others" }, project_location: "Sialkot" },
+    { id: 61, title: "Designer Custom Work", image: other11, category: { slug: "others", name: "Others" }, project_location: "Peshawar" },
+    { id: 62, title: "Premium Stone Installation", image: other12, category: { slug: "others", name: "Others" }, project_location: "Quetta" },
+    { id: 63, title: "Luxury Custom Project", image: other13, category: { slug: "others", name: "Others" }, project_location: "Hyderabad" },
   ];
 
   const fallbackCategories = [
     { id: "all", name: "All", icon: "🏛️" },
-    { id: "mosaic", name: "Mosaic", icon: "🎨" },
-    { id: "floors", name: "Floors", icon: "🏢" },
     { id: "stairs", name: "Stairs", icon: "🪜" },
+    { id: "floors", name: "Floors", icon: "🏢" },
+    { id: "mosaic", name: "Mosaic", icon: "🎨" },
     { id: "others", name: "Others", icon: "🔹" },
   ];
 
-  // Fetch gallery data
+  // Fetch gallery images and categories from backend with fallback
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
+        
+        console.log('Trying to fetch gallery from backend...');
         
         // Try to fetch gallery images
         const imagesResponse = await fetch(`${BACKEND_URL}/api/gallery/images/`);
@@ -177,27 +191,33 @@ export default function Gallery() {
           const backendImages = imagesData.results || imagesData;
           
           if (backendImages && backendImages.length > 0) {
+            console.log('Using backend gallery images');
             setGalleryImages(backendImages);
           } else {
+            console.log('No backend images, using fallback gallery');
             setGalleryImages(fallbackGalleryImages);
           }
         } else {
+          console.log('Backend gallery failed, using fallback');
           setGalleryImages(fallbackGalleryImages);
         }
 
-        // Try to fetch categories
-        const categoriesResponse = await fetch(`${BACKEND_URL}/api/gallery/categories/`);
+        // Try to fetch categories with image counts - filter to only 4 categories
+        const categoriesResponse = await fetch(`${BACKEND_URL}/api/gallery/categories/with-count/`);
         if (categoriesResponse.ok) {
           const categoriesData = await categoriesResponse.json();
           if (categoriesData && categoriesData.length > 0) {
+            // Filter to only the 4 categories we want: mosaic, floors, stairs, others
             const allowedCategories = ['mosaic', 'floors', 'stairs', 'others'];
             const filteredCategories = categoriesData.filter(cat => 
               allowedCategories.includes(cat.slug.toLowerCase()) || 
               allowedCategories.includes(cat.name.toLowerCase())
             );
             
+            const totalImages = filteredCategories.reduce((sum, cat) => sum + cat.image_count, 0);
             const formattedCategories = [
-              { id: "all", name: "All", icon: "🏛️" },
+              { id: "all", name: "All", icon: "🏛️", count: totalImages },
+              // Order: Mosaic, Floors, Stairs, Others
               ...filteredCategories
                 .sort((a, b) => {
                   const order = ['mosaic', 'floors', 'stairs', 'others'];
@@ -208,7 +228,8 @@ export default function Gallery() {
                 .map(cat => ({ 
                   id: cat.slug, 
                   name: cat.name,
-                  icon: getCategoryIcon(cat.name)
+                  icon: getCategoryIcon(cat.name),
+                  count: cat.image_count
                 }))
             ];
             setCategories(formattedCategories);
@@ -216,6 +237,7 @@ export default function Gallery() {
             setCategories(fallbackCategories);
           }
         } else {
+          console.log('Using fallback categories');
           setCategories(fallbackCategories);
         }
 
@@ -235,8 +257,11 @@ export default function Gallery() {
     const icons = {
       'Stairs': '🪜',
       'Floors': '🏢',
-      'Mosaic': '🎨',
-      'Others': '🔹'
+      'Kitchen Countertops': '🍳',
+      'Bathroom': '🛁',
+      'Wall Cladding': '🧱',
+      'Mosaic Work': '🎨',
+      'Commercial Projects': '🏢'
     };
     return icons[categoryName] || '📸';
   };
@@ -251,7 +276,12 @@ export default function Gallery() {
   const displayedImages = filteredImages.slice(0, visibleImages);
 
   const handleLoadMore = () => {
-    setVisibleImages(prev => prev + 12);
+    setVisibleImages(prev => prev + 8); // Load 8 more images at a time
+  };
+
+  const handleCategoryChange = (categoryId) => {
+    setSelectedCategory(categoryId);
+    setVisibleImages(8); // Reset to 8 images when changing category
   };
 
   const openLightbox = (image) => {
@@ -262,136 +292,270 @@ export default function Gallery() {
     setLightboxImage(null);
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-amber-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading Gallery...</p>
-        </div>
-      </div>
-    );
-  }
+  const handleNextImage = () => {
+    const currentIndex = filteredImages.findIndex(img => img.id === lightboxImage.id);
+    const nextIndex = (currentIndex + 1) % filteredImages.length;
+    setLightboxImage(filteredImages[nextIndex]);
+  };
+
+  const handlePrevImage = () => {
+    const currentIndex = filteredImages.findIndex(img => img.id === lightboxImage.id);
+    const prevIndex = (currentIndex - 1 + filteredImages.length) % filteredImages.length;
+    setLightboxImage(filteredImages[prevIndex]);
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        closeLightbox();
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <ScrollToTop />
-      
-      {/* Hero Section */}
-      <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-amber-900 text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Our <span className="text-amber-400">Gallery</span>
-          </h1>
-          <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto">
-            Explore our finest marble and stone installations across Pakistan
-          </p>
-        </div>
-      </div>
+    <div className="relative bg-[#f9f9f9] text-[#06201d] min-h-screen overflow-hidden">
+      <HoverShadowBg mousePosition={mousePosition} />
+      <div className="relative z-10">
+        <Navbar />
 
-      {/* Categories Filter */}
-      <div className="py-8 bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap justify-center gap-4">
-            {categories.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => {
-                  setSelectedCategory(category.id);
-                  setVisibleImages(12);
-                }}
-                className={`px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
-                  selectedCategory === category.id
-                    ? "bg-amber-600 text-white shadow-lg"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                }`}
-              >
-                <span className="text-lg">{category.icon}</span>
-                {category.name}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Gallery Grid */}
-      <div className="py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {displayedImages.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-500 text-lg">No images found for this category.</p>
-            </div>
-          ) : (
-            <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {displayedImages.map((image) => (
-                  <div
-                    key={image.id}
-                    className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 cursor-pointer group"
-                    onClick={() => openLightbox(image)}
-                  >
-                    <div className="aspect-square overflow-hidden">
-                      <img
-                        src={image.image}
-                        alt={image.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        loading="lazy"
-                      />
-                    </div>
-                    <div className="p-4">
-                      <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2">
-                        {image.title}
-                      </h3>
-                      <p className="text-sm text-gray-600">
-                        📍 {image.project_location}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Load More Button */}
-              {displayedImages.length < filteredImages.length && (
-                <div className="text-center mt-12">
-                  <button
-                    onClick={handleLoadMore}
-                    className="bg-amber-600 text-white px-8 py-3 rounded-lg hover:bg-amber-700 transition-colors duration-300 font-semibold"
-                  >
-                    Load More Images
-                  </button>
-                </div>
-              )}
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* Lightbox */}
-      {lightboxImage && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4"
-          onClick={closeLightbox}
+        {/* Hero Section */}
+        <section 
+          className="py-16 sm:py-20 md:py-24 px-4 sm:px-6 text-center relative z-10 bg-cover bg-center bg-no-repeat"
+          style={{ 
+            backgroundImage: `url(${hero})`,
+            backgroundAttachment: 'fixed'
+          }}
         >
-          <div className="max-w-4xl max-h-full relative">
-            <button
-              onClick={closeLightbox}
-              className="absolute top-4 right-4 text-white hover:text-gray-300 z-10 bg-black bg-opacity-50 rounded-full p-2"
+          <div className="absolute inset-0 bg-black/40"></div>
+          <div className="relative z-10 max-w-4xl mx-auto">
+            <motion.h1
+              className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
             >
-              ✕
-            </button>
-            <img
-              src={lightboxImage.image}
-              alt={lightboxImage.title}
-              className="max-w-full max-h-full object-contain"
-              onClick={(e) => e.stopPropagation()}
-            />
-            <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-75 text-white p-4">
-              <h3 className="text-xl font-semibold">{lightboxImage.title}</h3>
-              <p className="text-gray-300">📍 {lightboxImage.project_location}</p>
-            </div>
+              Our Gallery
+            </motion.h1>
+            <motion.p
+              className="text-lg sm:text-xl text-white/90 max-w-3xl mx-auto leading-relaxed"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              Explore our stunning collection of marble and granite installations. 
+              From elegant staircases to luxurious floors, witness the artistry in every project.
+            </motion.p>
           </div>
-        </div>
-      )}
+        </section>
+
+        {/* Category Filter */}
+        <section className="py-8 px-4 sm:px-6">
+          <div className="max-w-7xl mx-auto">
+            <motion.div
+              className="flex flex-wrap justify-center gap-3 mb-8"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              {categories.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => handleCategoryChange(category.id)}
+                  className={`px-4 py-2 rounded-full transition-all duration-300 flex items-center gap-2 ${
+                    selectedCategory === category.id
+                      ? 'bg-[#00796b] text-white shadow-lg transform scale-105'
+                      : 'bg-white text-[#00796b] border border-[#00796b] hover:bg-[#00796b] hover:text-white'
+                  }`}
+                >
+                  <span>{category.icon}</span>
+                  <span className="font-medium">{category.name}</span>
+                  {category.count !== undefined && (
+                    <span className="text-xs opacity-75">({category.count})</span>
+                  )}
+                </button>
+              ))}
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Gallery Grid */}
+        <section className="py-8 px-4 sm:px-6">
+          <div className="max-w-7xl mx-auto">
+            {loading ? (
+              <div className="text-center py-12">
+                <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#00796b] mx-auto mb-4"></div>
+                <p className="text-gray-600">Loading gallery...</p>
+              </div>
+            ) : error ? (
+              <div className="text-center py-12">
+                <div className="text-red-500 mb-4">
+                  <svg className="mx-auto h-16 w-16 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Error loading gallery</h3>
+                  <p className="text-gray-600">{error}</p>
+                </div>
+              </div>
+            ) : (
+              <>
+                <motion.div
+                  className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.6 }}
+                >
+                  {displayedImages.map((image, index) => (
+                    <motion.div
+                      key={image.id || index}
+                      className="group cursor-pointer relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      onClick={() => openLightbox(image)}
+                    >
+                      <div className="aspect-square relative overflow-hidden">
+                        <img
+                          src={image.image ? (image.image.startsWith('http') || image.image.startsWith('/media') ? `${BACKEND_URL}${image.image}` : image.image) : hero}
+                          alt={image.title || 'Gallery image'}
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                          loading="lazy"
+                        />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                          <div className="text-white text-center">
+                            <svg className="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            <p className="text-sm font-medium">View</p>
+                          </div>
+                        </div>
+                      </div>
+                      {image.title && (
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
+                          <h3 className="text-white text-sm font-medium">{image.title}</h3>
+                          {image.project_location && (
+                            <p className="text-white/80 text-xs">{image.project_location}</p>
+                          )}
+                        </div>
+                      )}
+                    </motion.div>
+                  ))}
+                </motion.div>
+
+                {/* Load More Button */}
+                {displayedImages.length < filteredImages.length && (
+                  <div className="text-center mt-8">
+                    <button
+                      onClick={handleLoadMore}
+                      className="bg-[#00796b] text-white px-8 py-3 rounded-full hover:bg-[#d4af37] transition-all duration-300 font-medium"
+                    >
+                      Load More Images ({filteredImages.length - displayedImages.length} remaining)
+                    </button>
+                  </div>
+                )}
+
+                {/* Show total count */}
+                {galleryImages.length > 0 && (
+                  <div className="text-center mt-4 text-gray-600">
+                    Showing {displayedImages.length} of {filteredImages.length} images
+                  </div>
+                )}
+
+                {/* No Images Message */}
+                {filteredImages.length === 0 && !loading && (
+                  <div className="text-center py-12">
+                    <svg className="mx-auto h-16 w-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No images found</h3>
+                    <p className="text-gray-600">Try selecting a different category</p>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </section>
+
+        {/* Lightbox Modal */}
+        <AnimatePresence>
+          {lightboxImage && (
+            <motion.div
+              className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={closeLightbox}
+            >
+              <motion.div
+                className="relative max-w-4xl max-h-full"
+                initial={{ scale: 0.8 }}
+                animate={{ scale: 1 }}
+                exit={{ scale: 0.8 }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <img
+                  src={lightboxImage.image ? (lightboxImage.image.startsWith('http') || lightboxImage.image.startsWith('/media') ? `${BACKEND_URL}${lightboxImage.image}` : lightboxImage.image) : hero}
+                  alt={lightboxImage.title || 'Gallery image'}
+                  className="max-w-full max-h-[80vh] object-contain rounded-lg"
+                />
+                
+                {/* Image Info */}
+                {lightboxImage.title && (
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 rounded-b-lg">
+                    <h3 className="text-white text-lg font-medium">{lightboxImage.title}</h3>
+                    {lightboxImage.description && (
+                      <p className="text-white/90 text-sm mt-1">{lightboxImage.description}</p>
+                    )}
+                    {lightboxImage.project_location && (
+                      <p className="text-white/80 text-sm mt-1">📍 {lightboxImage.project_location}</p>
+                    )}
+                  </div>
+                )}
+
+                {/* Navigation Buttons */}
+                <button
+                  onClick={handlePrevImage}
+                  className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all duration-200"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                
+                <button
+                  onClick={handleNextImage}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all duration-200"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+
+                {/* Close Button */}
+                <button
+                  onClick={closeLightbox}
+                  className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all duration-200"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      <Footer />
     </div>
   );
 }
