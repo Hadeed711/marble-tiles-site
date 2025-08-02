@@ -28,10 +28,14 @@ export default function Products() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(null);
-  const [visibleProducts, setVisibleProducts] = useState(8); // Show only 8 products initially (2 rows)
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [totalCount, setTotalCount] = useState(0);
 
   const BACKEND_URL = 'https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net';
+  const PRODUCTS_PER_PAGE = 8;
 
   // Fallback products with your original images and data
   const fallbackProducts = [
@@ -107,6 +111,74 @@ export default function Products() {
     { id: "granite", name: "Granite" },
   ];
 
+  // Fetch products with pagination and filtering
+  const fetchProducts = async (page = 1, category = "all", search = "", reset = false) => {
+    try {
+      if (page === 1) setLoading(true);
+      else setLoadingMore(true);
+      
+      console.log(`Fetching products page ${page} for category ${category}...`);
+      
+      // Build API URL with pagination, category filter, and search
+      let apiUrl = `${BACKEND_URL}/api/products/?page=${page}&page_size=${PRODUCTS_PER_PAGE}`;
+      if (category !== "all") {
+        // Find category ID from categories list
+        const categoryObj = categories.find(cat => cat.id === category);
+        if (categoryObj && categoryObj.backendId) {
+          apiUrl += `&category=${categoryObj.backendId}`;
+        }
+      }
+      if (search) {
+        apiUrl += `&search=${encodeURIComponent(search)}`;
+      }
+      
+      const productsResponse = await fetch(apiUrl);
+      if (productsResponse.ok) {
+        const productsData = await productsResponse.json();
+        console.log('API Response:', productsData);
+        
+        if (productsData.results) {
+          // Server-side pagination response
+          if (reset || page === 1) {
+            setProducts(productsData.results);
+          } else {
+            setProducts(prev => [...prev, ...productsData.results]);
+          }
+          setHasMore(!!productsData.next);
+          setTotalCount(productsData.count || 0);
+        } else if (productsData.length > 0) {
+          // Fallback for non-paginated response
+          if (reset || page === 1) {
+            setProducts(productsData);
+          } else {
+            setProducts(prev => [...prev, ...productsData]);
+          }
+          setHasMore(false);
+          setTotalCount(productsData.length);
+        } else {
+          // No products from backend, use fallback
+          console.log('No backend products, using fallback');
+          setProducts(fallbackProducts);
+          setHasMore(false);
+          setTotalCount(fallbackProducts.length);
+        }
+      } else {
+        console.log('Backend products failed, using fallback');
+        setProducts(fallbackProducts);
+        setHasMore(false);
+        setTotalCount(fallbackProducts.length);
+      }
+    } catch (error) {
+      console.log('Error fetching products, using fallback:', error);
+      setProducts(fallbackProducts);
+      setHasMore(false);
+      setTotalCount(fallbackProducts.length);
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+    }
+  };
+
   // Fetch products and categories from backend with fallback
   useEffect(() => {
     const fetchData = async () => {
@@ -114,27 +186,7 @@ export default function Products() {
         setLoading(true);
         setError(null);
         
-        console.log('Trying to fetch from backend...');
-        
-        // Try to fetch products from backend
-        const productsResponse = await fetch(`${BACKEND_URL}/api/products/`);
-        
-        if (productsResponse.ok) {
-          const productsData = await productsResponse.json();
-          const backendProducts = productsData.results || productsData;
-          
-          // Check if we have valid products with images
-          if (backendProducts && backendProducts.length > 0) {
-            console.log('Using backend products:', backendProducts);
-            setProducts(backendProducts);
-          } else {
-            console.log('No backend products found, using fallback');
-            setProducts(fallbackProducts);
-          }
-        } else {
-          console.log('Backend failed, using fallback products');
-          setProducts(fallbackProducts);
-        }
+        console.log('Fetching categories...');
 
         // Try to fetch categories from backend
         const categoriesResponse = await fetch(`${BACKEND_URL}/api/products/categories/`);
@@ -144,7 +196,11 @@ export default function Products() {
           if (categoriesData && categoriesData.length > 0) {
             const formattedCategories = [
               { id: "all", name: "All Products" },
-              ...categoriesData.map(cat => ({ id: cat.slug, name: cat.name }))
+              ...categoriesData.map(cat => ({ 
+                id: cat.slug, 
+                name: cat.name,
+                backendId: cat.id // Store backend ID for filtering
+              }))
             ];
             setCategories(formattedCategories);
           } else {
@@ -155,10 +211,15 @@ export default function Products() {
           setCategories(fallbackCategories);
         }
 
+        // Fetch initial products
+        await fetchProducts(1, "all", "", true);
+
       } catch (error) {
-        console.log('Error fetching from backend, using fallback:', error);
-        setProducts(fallbackProducts);
+        console.log('Error fetching data:', error);
         setCategories(fallbackCategories);
+        setProducts(fallbackProducts);
+        setHasMore(false);
+        setTotalCount(fallbackProducts.length);
       } finally {
         setLoading(false);
       }
@@ -166,6 +227,19 @@ export default function Products() {
 
     fetchData();
   }, []);
+
+  // Handle search with debouncing to avoid too many API calls
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchTerm !== searchParams.get('search')) {
+        setCurrentPage(1);
+        setProducts([]);
+        fetchProducts(1, selectedCategory, searchTerm, true);
+      }
+    }, 500); // 500ms debounce
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   // Get search query from URL parameters
   useEffect(() => {
@@ -175,20 +249,22 @@ export default function Products() {
     }
   }, [searchParams]);
 
-  const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesCategory = selectedCategory === "all" || 
-                           (product.category && product.category.slug === selectedCategory) ||
-                           (product.category && product.category.name.toLowerCase() === selectedCategory);
-    return matchesSearch && matchesCategory;
-  });
-
-  // Pagination for better performance
-  const displayedProducts = filteredProducts.slice(0, visibleProducts);
+  // Products are now filtered on the backend, so we display all fetched products
+  const displayedProducts = products;
 
   const handleLoadMore = () => {
-    setVisibleProducts(prev => prev + 8); // Load 8 more products
+    if (hasMore && !loadingMore) {
+      const nextPage = currentPage + 1;
+      setCurrentPage(nextPage);
+      fetchProducts(nextPage, selectedCategory, searchTerm, false);
+    }
+  };
+
+  const handleCategoryChange = (categoryId) => {
+    setSelectedCategory(categoryId);
+    setCurrentPage(1);
+    setProducts([]);
+    fetchProducts(1, categoryId, searchTerm, true);
   };
 
   // Handle image zoom
@@ -310,7 +386,7 @@ export default function Products() {
             {categories.map((category) => (
               <button
                 key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
+                onClick={() => handleCategoryChange(category.id)}
                 className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 ${
                   selectedCategory === category.id
                     ? "bg-[#00796b] text-white shadow-lg"
@@ -331,7 +407,7 @@ export default function Products() {
           transition={{ duration: 0.6, delay: 0.4 }}
         >
           <p className="text-sm sm:text-base text-gray-600 text-center sm:text-left">
-            Showing {displayedProducts.length} of {filteredProducts.length} products
+            Showing {displayedProducts.length} of {totalCount} products
             {searchTerm && (
               <span className="block sm:inline ml-0 sm:ml-2 text-[#00796b] font-medium">
                 for "{searchTerm}"
@@ -347,9 +423,11 @@ export default function Products() {
           {(searchTerm || selectedCategory !== "all") && (
             <button
               onClick={() => {
-                handleSearchChange("");
+                setSearchTerm("");
                 setSelectedCategory("all");
-                setVisibleProducts(8); // Reset to initial load
+                setCurrentPage(1);
+                setProducts([]);
+                fetchProducts(1, "all", "", true);
               }}
               className="text-xs sm:text-sm text-gray-500 hover:text-[#00796b] underline mx-auto sm:mx-0"
             >
@@ -451,16 +529,31 @@ export default function Products() {
               ))}
               
               {/* Load More Button */}
-              {displayedProducts.length < filteredProducts.length && (
+              {hasMore && (
                 <div className="col-span-full text-center mt-8">
                   <motion.button
                     onClick={handleLoadMore}
-                    className="bg-[#00796b] text-white px-8 py-3 rounded-full hover:bg-[#d4af37] transition-all duration-300 font-medium shadow-lg"
+                    disabled={loadingMore}
+                    className="bg-[#00796b] text-white px-8 py-3 rounded-full hover:bg-[#d4af37] transition-all duration-300 font-medium shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    Load More Products ({filteredProducts.length - displayedProducts.length} remaining)
+                    {loadingMore ? (
+                      <span className="flex items-center gap-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        Loading...
+                      </span>
+                    ) : (
+                      `Load More Products ${totalCount > displayedProducts.length ? `(${totalCount - displayedProducts.length} remaining)` : ''}`
+                    )}
                   </motion.button>
+                </div>
+              )}
+
+              {/* Show total count */}
+              {displayedProducts.length > 0 && (
+                <div className="col-span-full text-center mt-4 text-gray-600">
+                  Showing {displayedProducts.length} of {totalCount} products
                 </div>
               )}
             </>
