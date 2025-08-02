@@ -6,7 +6,6 @@ import Footer from "../components/Footer";
 import HoverShadowBg from "../components/HoverShadowBg";
 import Card from "../components/Card";
 import PremiumButton from "../components/PremiumButton";
-import slider1 from "../assets/slider1.jpg";
 import hero from "../assets/hero_img1.jpg";
 
 // Import your original product images
@@ -186,9 +185,15 @@ export default function Products() {
 
   // Show only visibleProducts number of products for pagination
   const displayedProducts = filteredProducts.slice(0, visibleProducts);
+  const totalCount = filteredProducts.length;
 
   const handleLoadMore = () => {
     setVisibleProducts(prev => prev + 8); // Load 8 more products
+  };
+
+  const handleCategoryChange = (categoryId) => {
+    setSelectedCategory(categoryId);
+    setVisibleProducts(8); // Reset to 8 products when changing category
   };
 
   // Handle image zoom

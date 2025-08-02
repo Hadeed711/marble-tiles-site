@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import HoverShadowBg from "../components/HoverShadowBg";
-import slider1 from "../assets/slider1.jpg";
 import hero from "../assets/hero_img1.jpg";
 
 // Import ALL stairs images
