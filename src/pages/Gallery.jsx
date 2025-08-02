@@ -174,14 +174,14 @@ export default function Gallery() {
   const othersCount = fallbackGalleryImages.filter(img => img.category.slug === "others").length;
   const totalCount = fallbackGalleryImages.length;
 
-  // Calculate counts for fallback categories (based on Azure blob structure)
-  // You have 63 images in Azure: gallery1.jpg to gallery63.jpg (with some gaps like gallery59.jpg, gallery60.jpg missing)
+  // Calculate counts for fallback categories (based on actual Azure blob structure)
+  // You have 63 images in Azure: gallery1.jpg to gallery66.jpg (with some gaps)
   const fallbackCategories = [
     { id: "all", name: "All", icon: "🏛️", count: 63 }, // Total images in Azure blob
     { id: "mosaic", name: "Mosaic", icon: "🎨", count: 12 }, // Images 39-50 (12 images)
-    { id: "floors", name: "Floors", icon: "🏢", count: 20 }, // Images 19-38 (20 images)
+    { id: "floors", name: "Floors", icon: "🏢", count: 20 }, // Images 19-38 (20 images)  
     { id: "stairs", name: "Stairs", icon: "🪜", count: 18 }, // Images 1-18 (18 images)
-    { id: "others", name: "Others", icon: "🔹", count: 13 }, // Images 51-63 (13 images)
+    { id: "others", name: "Others", icon: "🔹", count: 13 }, // Images 51-66 (13 images with gaps)
   ];
 
   // Fetch gallery images and categories from backend with fallback
@@ -201,12 +201,19 @@ export default function Gallery() {
           if (backendImages && backendImages.length > 0) {
             console.log('Using backend gallery images:', backendImages.length);
             
-            // Process backend images and assign categories based on image names or create proper structure
+            // Process backend images and assign categories based on image names
             const processedImages = backendImages.map((img, index) => {
-              // Determine category based on image name or position
-              let category;
-              const imgNum = index + 1;
+              // Extract image number from filename (e.g., "gallery15.jpg" -> 15)
+              let imgNum = index + 1;
+              if (img.image && typeof img.image === 'string') {
+                const match = img.image.match(/gallery(\d+)/);
+                if (match) {
+                  imgNum = parseInt(match[1]);
+                }
+              }
               
+              // Determine category based on image number (matching the Azure blob distribution)
+              let category;
               if (imgNum <= 18) {
                 category = { slug: "stairs", name: "Stairs" };
               } else if (imgNum <= 38) {
@@ -220,7 +227,7 @@ export default function Gallery() {
               return {
                 ...img,
                 category: category,
-                id: img.id || index + 1,
+                id: img.id || imgNum,
                 title: img.title || `${category.name} Project ${imgNum}`,
                 project_location: img.project_location || "Faisalabad"
               };
@@ -290,13 +297,10 @@ export default function Gallery() {
           (typeof img.category === 'string' && img.category.toLowerCase() === selectedCategory)
         );
         
-        // Debug logging for category filtering
-        if (selectedCategory !== "all") {
-          console.log(`Filtering image ${img.id}: category=${JSON.stringify(img.category)}, selectedCategory=${selectedCategory}, matches=${hasCategory}`);
-        }
-        
         return hasCategory;
       });
+
+  console.log(`Gallery Debug: selectedCategory=${selectedCategory}, totalImages=${galleryImages.length}, filteredImages=${filteredImages.length}`);
 
   const displayedImages = filteredImages.slice(0, visibleImages);
 
