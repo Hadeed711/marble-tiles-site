@@ -30,7 +30,11 @@ export default function Products() {
   const [error, setError] = useState(null);
   const [visibleProducts, setVisibleProducts] = useState(8); // Show only 8 products initially (2 rows)
 
-  const BACKEND_URL = 'https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net';
+  // Backend URLs - prioritize production for live site
+  const BACKEND_URLS = [
+    'https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net', // Production (live)
+    'http://localhost:8000' // Development (fallback)
+  ];
 
   // Fallback products with your original images and data
   const fallbackProducts = [
@@ -121,17 +125,50 @@ export default function Products() {
         
         console.log('Trying to fetch from backend...');
         
-        // Try to fetch products from backend
-        const productsResponse = await fetch(`${BACKEND_URL}/api/products/`);
+        let productsData = null;
+        let categoriesData = null;
         
-        if (productsResponse.ok) {
-          const productsData = await productsResponse.json();
+        // Try each backend URL
+        for (const backendUrl of BACKEND_URLS) {
+          try {
+            console.log(`Trying backend: ${backendUrl}`);
+            
+            // Try to fetch products
+            const productsResponse = await fetch(`${backendUrl}/api/products/`);
+            if (productsResponse.ok) {
+              productsData = await productsResponse.json();
+              console.log(`✅ Products fetched from: ${backendUrl}`);
+              
+              // Try to fetch categories from the same working backend
+              const categoriesResponse = await fetch(`${backendUrl}/api/products/categories/`);
+              if (categoriesResponse.ok) {
+                categoriesData = await categoriesResponse.json();
+                console.log(`✅ Categories fetched from: ${backendUrl}`);
+              }
+              break; // Stop trying if this backend works
+            }
+          } catch (err) {
+            console.log(`❌ Backend ${backendUrl} failed:`, err.message);
+            continue; // Try next backend
+          }
+        }
+        
+        // Process products data
+        if (productsData) {
           const backendProducts = productsData.results || productsData;
-          
-          // Check if we have valid products with images
           if (backendProducts && backendProducts.length > 0) {
             console.log('Using backend products:', backendProducts);
-            setProducts(backendProducts);
+            // Transform backend products to match expected format
+            const transformedProducts = backendProducts.map(product => ({
+              ...product,
+              // Use image_url if available, otherwise use image field
+              image: product.image_url || product.image,
+              price: product.price ? product.price.toString().replace(/\.00$/, '') : '0',
+              category: product.category_name ? 
+                { slug: product.category_name.toLowerCase(), name: product.category_name } :
+                (typeof product.category === 'object' ? product.category : { slug: 'unknown', name: 'Unknown' })
+            }));
+            setProducts(transformedProducts);
           } else {
             console.log('No backend products found, using fallback');
             setProducts(fallbackProducts);
@@ -141,26 +178,18 @@ export default function Products() {
           setProducts(fallbackProducts);
         }
 
-        // Try to fetch categories from backend
-        const categoriesResponse = await fetch(`${BACKEND_URL}/api/products/categories/`);
-        
-        if (categoriesResponse.ok) {
-          const categoriesData = await categoriesResponse.json();
-          if (categoriesData && categoriesData.length > 0) {
-            // Calculate total products count
-            const totalProducts = products.length || fallbackProducts.length;
-            const formattedCategories = [
-              { id: "all", name: "All Products", count: totalProducts },
-              ...categoriesData.map(cat => ({ 
-                id: cat.slug, 
-                name: cat.name,
-                count: cat.product_count || 0
-              }))
-            ];
-            setCategories(formattedCategories);
-          } else {
-            setCategories(fallbackCategories);
-          }
+        // Process categories data
+        if (categoriesData && categoriesData.length > 0) {
+          const totalProducts = productsData ? (productsData.results || productsData).length : fallbackProducts.length;
+          const formattedCategories = [
+            { id: "all", name: "All Products", count: totalProducts },
+            ...categoriesData.map(cat => ({ 
+              id: cat.slug, 
+              name: cat.name,
+              count: cat.product_count || 0
+            }))
+          ];
+          setCategories(formattedCategories);
         } else {
           console.log('Using fallback categories');
           setCategories(fallbackCategories);
@@ -535,13 +564,7 @@ export default function Products() {
                   className="h-full"
                 >
                   <Card 
-                    image={product.image ? (
-                      product.image.startsWith('http') 
-                        ? product.image // Already a full URL (Azure Blob)
-                        : product.image.startsWith('/media') 
-                          ? `${BACKEND_URL}${product.image}` // Relative URL, prepend backend
-                          : product.image // Local import or other
-                    ) : hero} 
+                    image={product.image_url || product.image || hero} 
                     name={product.name} 
                     price={product.price ? (typeof product.price === 'string' ? `PKR ${product.price}` : `PKR ${product.price}`) : 'Contact for price'}
                     onImageClick={handleImageClick}
