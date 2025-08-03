@@ -50,8 +50,10 @@ export default function Home() {
           // Get only featured products or first 5 if no featured flag
           const featured = products.filter(p => p.is_featured).slice(0, 5);
           if (featured.length > 0) {
-            setBackendFeaturedProducts(featured.map(p => ({
-              image: `https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net${p.image}`,
+            // Use local assets images instead of blob storage images
+            const localImages = [black_gold, star_black, sunny_white, sunny_grey, tropical_grey];
+            setBackendFeaturedProducts(featured.map((p, index) => ({
+              image: localImages[index] || localImages[0], // Use local assets images
               name: p.name,
               price: `₹${p.price}/sq ft`
             })));

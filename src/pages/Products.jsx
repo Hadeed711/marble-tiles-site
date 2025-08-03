@@ -105,6 +105,7 @@ export default function Products() {
   const graniteCount = fallbackProducts.filter(product => product.category.slug === "granite").length;
   const totalProductCount = fallbackProducts.length;
 
+  // Fallback categories for just Marble and Granite
   const fallbackCategories = [
     { id: "all", name: "All Products", count: totalProductCount },
     { id: "marble", name: "Marble", count: marbleCount },
@@ -203,7 +204,6 @@ export default function Products() {
   };
 
   const handleCategoryChange = (categoryId) => {
-    console.log('Changing category to:', categoryId);
     setSelectedCategory(categoryId);
     setVisibleProducts(8); // Reset to 8 products when changing category
     setSearchTerm(""); // Clear search when changing category

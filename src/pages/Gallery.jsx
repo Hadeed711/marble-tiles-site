@@ -231,43 +231,41 @@ export default function Gallery() {
         if (backendImages && backendImages.length > 0) {
           console.log('Using backend gallery images:', backendImages.length);
           
-          // Process backend images and assign categories based on image names
+          // Process backend images and assign categories based on backend data
           const processedImages = backendImages.map((img, index) => {
-            // Extract image number from filename (e.g., "gallery15.jpg" -> 15)
-            let imgNum = index + 1;
-            if (img.image && typeof img.image === 'string') {
-              const match = img.image.match(/gallery(\d+)/);
-              if (match) {
-                imgNum = parseInt(match[1]);
-              }
-            }
-            
-            // Categorize based on assets folder structure
+            // Use the category from backend if available, otherwise use filename-based categorization
             let category;
             
-            // Stairs: gallery16, gallery33, gallery34, gallery35, gallery39, gallery41, gallery47, gallery48, gallery49, gallery5, gallery52, gallery53, gallery54, gallery55, gallery56, gallery65, gallery66, gallery7
-            const stairsImages = [16, 33, 34, 35, 39, 41, 47, 48, 49, 5, 52, 53, 54, 55, 56, 65, 66, 7];
-            
-            // Floors: gallery10, gallery11, gallery12, gallery13, gallery14, gallery15, gallery25, gallery31, gallery32, gallery37, gallery38, gallery4, gallery42, gallery44, gallery46, gallery57, gallery6, gallery64, gallery8, gallery9
-            const floorsImages = [10, 11, 12, 13, 14, 15, 25, 31, 32, 37, 38, 4, 42, 44, 46, 57, 6, 64, 8, 9];
-            
-            // Mosaic: gallery17, gallery19, gallery20, gallery21, gallery22, gallery23, gallery24, gallery29, gallery30, gallery36, gallery40, gallery63
-            const mosaicImages = [17, 19, 20, 21, 22, 23, 24, 29, 30, 36, 40, 63];
-            
-            // Others: gallery1, gallery18, gallery2, gallery26, gallery27, gallery28, gallery3, gallery43, gallery45, gallery50, gallery51, gallery58, gallery61
-            const othersImages = [1, 18, 2, 26, 27, 28, 3, 43, 45, 50, 51, 58, 61];
-            
-            if (stairsImages.includes(imgNum)) {
-              category = { slug: "stairs", name: "Stairs" };
-            } else if (floorsImages.includes(imgNum)) {
-              category = { slug: "floors", name: "Floors" };
-            } else if (mosaicImages.includes(imgNum)) {
-              category = { slug: "mosaic", name: "Mosaic" };
-            } else if (othersImages.includes(imgNum)) {
-              category = { slug: "others", name: "Others" };
+            if (img.category && img.category.slug) {
+              // Use backend category directly
+              category = img.category;
             } else {
-              // Default to others for any unmatched images
-              category = { slug: "others", name: "Others" };
+              // Fallback to filename-based categorization for images without backend category
+              let imgNum = index + 1;
+              if (img.image && typeof img.image === 'string') {
+                const match = img.image.match(/gallery(\d+)/);
+                if (match) {
+                  imgNum = parseInt(match[1]);
+                }
+              }
+              
+              // Categorize based on assets folder structure (fallback only)
+              const stairsImages = [16, 33, 34, 35, 39, 41, 47, 48, 49, 5, 52, 53, 54, 55, 56, 65, 66, 7];
+              const floorsImages = [10, 11, 12, 13, 14, 15, 25, 31, 32, 37, 38, 4, 42, 44, 46, 57, 6, 64, 8, 9];
+              const mosaicImages = [17, 19, 20, 21, 22, 23, 24, 29, 30, 36, 40, 63];
+              const othersImages = [1, 18, 2, 26, 27, 28, 3, 43, 45, 50, 51, 58, 61];
+              
+              if (stairsImages.includes(imgNum)) {
+                category = { slug: "stairs", name: "Stairs" };
+              } else if (floorsImages.includes(imgNum)) {
+                category = { slug: "floors", name: "Floors" };
+              } else if (mosaicImages.includes(imgNum)) {
+                category = { slug: "mosaic", name: "Mosaic" };
+              } else if (othersImages.includes(imgNum)) {
+                category = { slug: "others", name: "Others" };
+              } else {
+                category = { slug: "others", name: "Others" };
+              }
             }
             
             return {
@@ -631,7 +629,7 @@ export default function Gallery() {
         <AnimatePresence>
           {lightboxImage && (
             <motion.div
-              className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+              className="fixed inset-0 z-[9999] bg-black/90 flex items-center justify-center p-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
