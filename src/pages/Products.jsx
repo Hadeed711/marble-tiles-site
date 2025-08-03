@@ -32,7 +32,7 @@ export default function Products() {
 
   const BACKEND_URL = 'https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net';
 
-  // Fallback products with your original images and data
+  // Fallback products with your original images and data (extended for demonstration)
   const fallbackProducts = [
     { 
       id: 1,
@@ -97,6 +97,87 @@ export default function Products() {
       price: "7,200",
       category: { slug: "marble", name: "Marble" },
       description: "Sophisticated grey marble with subtle veining"
+    },
+    // Additional products to demonstrate load more functionality
+    { 
+      id: 9,
+      image: black_gold, 
+      name: "Premium Black Gold Marble", 
+      price: "15,000",
+      category: { slug: "marble", name: "Marble" },
+      description: "Exclusive black marble with enhanced gold veining"
+    },
+    { 
+      id: 10,
+      image: star_black, 
+      name: "Star Black Premium", 
+      price: "9,500",
+      category: { slug: "marble", name: "Marble" },
+      description: "High-grade black marble with distinctive star patterns"
+    },
+    { 
+      id: 11,
+      image: taweera, 
+      name: "Taweera Elite Granite", 
+      price: "11,200",
+      category: { slug: "granite", name: "Granite" },
+      description: "Premium grade granite with enhanced durability"
+    },
+    { 
+      id: 12,
+      image: jet_black, 
+      name: "Jet Black Premium", 
+      price: "8,800",
+      category: { slug: "marble", name: "Marble" },
+      description: "Premium deep black marble for luxury applications"
+    },
+    { 
+      id: 13,
+      image: tropical_grey, 
+      name: "Tropical Grey Elite", 
+      price: "12,500",
+      category: { slug: "granite", name: "Granite" },
+      description: "High-end grey granite with exotic tropical patterns"
+    },
+    { 
+      id: 14,
+      image: booti_seena, 
+      name: "Booti Seena Premium", 
+      price: "9,200",
+      category: { slug: "granite", name: "Granite" },
+      description: "Premium granite with refined speckled texture"
+    },
+    { 
+      id: 15,
+      image: sunny_white, 
+      name: "Pure White Marble", 
+      price: "7,800",
+      category: { slug: "marble", name: "Marble" },
+      description: "Pure white marble for ultimate luxury"
+    },
+    { 
+      id: 16,
+      image: sunny_grey, 
+      name: "Silver Grey Marble", 
+      price: "8,200",
+      category: { slug: "marble", name: "Marble" },
+      description: "Sophisticated silver-grey marble with elegant veining"
+    },
+    { 
+      id: 17,
+      image: black_gold, 
+      name: "Royal Black Gold", 
+      price: "18,000",
+      category: { slug: "marble", name: "Marble" },
+      description: "Royal grade black marble with luxurious gold accents"
+    },
+    { 
+      id: 18,
+      image: tropical_grey, 
+      name: "Storm Grey Granite", 
+      price: "13,500",
+      category: { slug: "granite", name: "Granite" },
+      description: "Dramatic granite with storm-like patterns"
     },
   ];
 
