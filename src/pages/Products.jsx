@@ -629,20 +629,6 @@ export default function Products() {
                   />
                 </motion.div>
               ))}
-              
-              {/* Load More Button */}
-              {displayedProducts.length < filteredProducts.length && (
-                <div className="col-span-full text-center mt-8">
-                  <motion.button
-                    onClick={handleLoadMore}
-                    className="bg-[#00796b] text-white px-8 py-3 rounded-full hover:bg-[#d4af37] transition-all duration-300 font-medium shadow-lg"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    Load More ({filteredProducts.length - displayedProducts.length} remaining)
-                  </motion.button>
-                </div>
-              )}
             </>
           ) : (
             <div className="col-span-full text-center py-12">
@@ -660,6 +646,56 @@ export default function Products() {
             </div>
           )}
         </motion.div>
+
+        {/* Load More Button - Outside the grid for better visibility */}
+        {!loading && !error && displayedProducts.length > 0 && displayedProducts.length < filteredProducts.length && (
+          <motion.div
+            className="text-center mt-12 mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            <motion.button
+              onClick={handleLoadMore}
+              className="bg-gradient-to-r from-[#00796b] to-[#4db6ac] hover:from-[#d4af37] hover:to-[#ffd700] text-white px-10 py-4 rounded-full font-semibold text-lg shadow-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-[#00796b] focus:ring-opacity-50"
+              whileHover={{ scale: 1.05, boxShadow: "0 10px 25px rgba(0, 121, 107, 0.3)" }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <span className="flex items-center gap-3">
+                <svg 
+                  width="20" 
+                  height="20" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                  className="animate-bounce"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+                Load More Products
+                <span className="bg-white bg-opacity-20 px-2 py-1 rounded-full text-sm">
+                  {filteredProducts.length - displayedProducts.length} remaining
+                </span>
+              </span>
+            </motion.button>
+            
+            {/* Progress indicator */}
+            <div className="mt-4 max-w-md mx-auto">
+              <div className="flex justify-between text-sm text-gray-600 mb-2">
+                <span>Showing {displayedProducts.length} of {filteredProducts.length}</span>
+                <span>{Math.round((displayedProducts.length / filteredProducts.length) * 100)}% loaded</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <motion.div 
+                  className="bg-gradient-to-r from-[#00796b] to-[#4db6ac] h-2 rounded-full"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${(displayedProducts.length / filteredProducts.length) * 100}%` }}
+                  transition={{ duration: 0.8, ease: "easeOut" }}
+                />
+              </div>
+            </div>
+          </motion.div>
+        )}
       </section>
 
       {/* Image Zoom Modal */}
