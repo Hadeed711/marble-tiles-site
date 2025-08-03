@@ -92,10 +92,8 @@ export default function Gallery() {
   const [lightboxImage, setLightboxImage] = useState(null);
   const [visibleImages, setVisibleImages] = useState(8);
 
-  const BACKEND_URL = 'https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net';
-
-  // Comprehensive fallback gallery images with ALL your assets
-  const fallbackGalleryImages = [
+  // Gallery images using local assets only
+  const localGalleryImages = [
     // Stairs collection (18 images)
     { id: 1, title: "Premium Marble Staircase Design", image: stairs1, category: { slug: "stairs", name: "Stairs" }, project_location: "Faisalabad" },
     { id: 2, title: "Elegant Curved Staircase", image: stairs2, category: { slug: "stairs", name: "Stairs" }, project_location: "Lahore" },
@@ -168,149 +166,29 @@ export default function Gallery() {
     { id: 63, title: "Luxury Custom Project", image: other13, category: { slug: "others", name: "Others" }, project_location: "Hyderabad" },
   ];
 
-  // Calculate counts for fallback categories
-  const mosaicCount = fallbackGalleryImages.filter(img => img.category.slug === "mosaic").length;
-  const floorsCount = fallbackGalleryImages.filter(img => img.category.slug === "floors").length;
-  const stairsCount = fallbackGalleryImages.filter(img => img.category.slug === "stairs").length;
-  const othersCount = fallbackGalleryImages.filter(img => img.category.slug === "others").length;
-  const totalCount = fallbackGalleryImages.length;
+  // Calculate counts for local categories
+  const mosaicCount = localGalleryImages.filter(img => img.category.slug === "mosaic").length;
+  const floorsCount = localGalleryImages.filter(img => img.category.slug === "floors").length;
+  const stairsCount = localGalleryImages.filter(img => img.category.slug === "stairs").length;
+  const othersCount = localGalleryImages.filter(img => img.category.slug === "others").length;
+  const totalCount = localGalleryImages.length;
 
-  // Calculate counts for fallback categories (based on actual assets structure)
-  const fallbackCategories = [
-    { id: "all", name: "All", icon: "🏛️", count: 63 }, // Total images in Azure blob
+  // Local categories based on actual assets structure
+  const localCategories = [
+    { id: "all", name: "All", icon: "🏛️", count: 63 }, // Total images
     { id: "stairs", name: "Stairs", icon: "🪜", count: 18 }, // 18 stairs images
     { id: "floors", name: "Floors", icon: "🏢", count: 20 }, // 20 floors images  
     { id: "mosaic", name: "Mosaic", icon: "🎨", count: 12 }, // 12 mosaic images
     { id: "others", name: "Others", icon: "🔹", count: 13 }, // 13 others images
   ];
 
-  // Fetch gallery images and categories from backend with fallback
+  // Initialize gallery with local images
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        
-        console.log('Trying to fetch gallery from backend...');
-        
-        // Try to fetch ALL gallery images (increase page_size to ensure we get all 63+ images)
-        let allImages = [];
-        let nextUrl = `${BACKEND_URL}/api/gallery/images/?page_size=200`;
-        
-        // Fetch all pages if the API is paginated
-        while (nextUrl) {
-          console.log('Fetching URL:', nextUrl); // Debug: Log the actual URL being fetched
-          const imagesResponse = await fetch(nextUrl);
-          if (imagesResponse.ok) {
-            const imagesData = await imagesResponse.json();
-            console.log('Backend response structure:', imagesData);
-            
-            // Handle both paginated and non-paginated responses
-            if (imagesData.results) {
-              // Paginated response
-              allImages = [...allImages, ...imagesData.results];
-              // Ensure next URL uses HTTPS
-              nextUrl = imagesData.next ? imagesData.next.replace('http://', 'https://') : null;
-              console.log('Next URL:', nextUrl); // Debug: Log next URL
-            } else if (Array.isArray(imagesData)) {
-              // Non-paginated array response
-              allImages = [...allImages, ...imagesData];
-              nextUrl = null;
-            } else {
-              // Unknown format
-              console.log('Unknown API response format');
-              break;
-            }
-          } else {
-            console.log('Failed to fetch page:', nextUrl);
-            break;
-          }
-        }
-        
-        const backendImages = allImages;
-          
-        if (backendImages && backendImages.length > 0) {
-          console.log('Using backend gallery images:', backendImages.length);
-          
-          // Process backend images and assign categories based on backend data
-          const processedImages = backendImages.map((img, index) => {
-            // Use the category from backend if available, otherwise use filename-based categorization
-            let category;
-            
-            if (img.category && img.category.slug) {
-              // Use backend category directly
-              category = img.category;
-            } else {
-              // Fallback to filename-based categorization for images without backend category
-              let imgNum = index + 1;
-              if (img.image && typeof img.image === 'string') {
-                const match = img.image.match(/gallery(\d+)/);
-                if (match) {
-                  imgNum = parseInt(match[1]);
-                }
-              }
-              
-              // Categorize based on assets folder structure (fallback only)
-              const stairsImages = [16, 33, 34, 35, 39, 41, 47, 48, 49, 5, 52, 53, 54, 55, 56, 65, 66, 7];
-              const floorsImages = [10, 11, 12, 13, 14, 15, 25, 31, 32, 37, 38, 4, 42, 44, 46, 57, 6, 64, 8, 9];
-              const mosaicImages = [17, 19, 20, 21, 22, 23, 24, 29, 30, 36, 40, 63];
-              const othersImages = [1, 18, 2, 26, 27, 28, 3, 43, 45, 50, 51, 58, 61];
-              
-              if (stairsImages.includes(imgNum)) {
-                category = { slug: "stairs", name: "Stairs" };
-              } else if (floorsImages.includes(imgNum)) {
-                category = { slug: "floors", name: "Floors" };
-              } else if (mosaicImages.includes(imgNum)) {
-                category = { slug: "mosaic", name: "Mosaic" };
-              } else if (othersImages.includes(imgNum)) {
-                category = { slug: "others", name: "Others" };
-              } else {
-                category = { slug: "others", name: "Others" };
-              }
-            }
-            
-            return {
-              ...img,
-              category: category,
-              id: img.id || imgNum,
-              title: img.title || `${category.name} Project ${imgNum}`,
-              project_location: img.project_location || "Faisalabad"
-            };
-          });
-          
-          setGalleryImages(processedImages);
-          
-          // Calculate counts from processed images
-          const stairsCount = processedImages.filter(img => img.category?.slug === "stairs").length;
-          const floorsCount = processedImages.filter(img => img.category?.slug === "floors").length;
-          const mosaicCount = processedImages.filter(img => img.category?.slug === "mosaic").length;
-          const othersCount = processedImages.filter(img => img.category?.slug === "others").length;
-          const totalCount = processedImages.length;
-          
-          const calculatedCategories = [
-            { id: "all", name: "All", icon: "🏛️", count: totalCount },
-            { id: "stairs", name: "Stairs", icon: "🪜", count: stairsCount },
-            { id: "floors", name: "Floors", icon: "🏢", count: floorsCount },
-            { id: "mosaic", name: "Mosaic", icon: "🎨", count: mosaicCount },
-            { id: "others", name: "Others", icon: "🔹", count: othersCount },
-          ];
-          
-          setCategories(calculatedCategories);
-        } else {
-          console.log('Backend gallery empty, using fallback');
-          setGalleryImages(fallbackGalleryImages);
-          setCategories(fallbackCategories);
-        }
-
-      } catch (error) {
-        console.log('Error fetching gallery, using fallback:', error);
-        setGalleryImages(fallbackGalleryImages);
-        setCategories(fallbackCategories);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+    setLoading(true);
+    console.log('Using local gallery images:', localGalleryImages.length);
+    setGalleryImages(localGalleryImages);
+    setCategories(localCategories);
+    setLoading(false);
   }, []);
 
   const getCategoryIcon = (categoryName) => {
@@ -566,13 +444,7 @@ export default function Gallery() {
                     >
                       <div className="aspect-square relative overflow-hidden">
                         <img
-                          src={image.image ? (
-                            image.image.startsWith('http') 
-                              ? image.image // Already a full URL (Azure Blob)
-                              : image.image.startsWith('/media') 
-                                ? `${BACKEND_URL}${image.image}` // Relative URL, prepend backend
-                                : image.image // Local import or other
-                          ) : hero}
+                          src={image.image || hero}
                           alt={image.title || 'Gallery image'}
                           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                           loading="lazy"
@@ -624,84 +496,80 @@ export default function Gallery() {
             )}
           </div>
         </section>
-
-        {/* Lightbox Modal */}
-        <AnimatePresence>
-          {lightboxImage && (
-            <motion.div
-              className="fixed inset-0 z-[9999] bg-black/90 flex items-center justify-center p-4"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={closeLightbox}
-            >
-              <motion.div
-                className="relative max-w-4xl max-h-full"
-                initial={{ scale: 0.8 }}
-                animate={{ scale: 1 }}
-                exit={{ scale: 0.8 }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <img
-                  src={lightboxImage.image ? (
-                    lightboxImage.image.startsWith('http') 
-                      ? lightboxImage.image // Already a full URL (Azure Blob)
-                      : lightboxImage.image.startsWith('/media') 
-                        ? `${BACKEND_URL}${lightboxImage.image}` // Relative URL, prepend backend
-                        : lightboxImage.image // Local import or other
-                  ) : hero}
-                  alt={lightboxImage.title || 'Gallery image'}
-                  className="max-w-full max-h-[80vh] object-contain rounded-lg"
-                />
-                
-                {/* Image Info */}
-                {lightboxImage.title && (
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 rounded-b-lg">
-                    <h3 className="text-white text-lg font-medium">{lightboxImage.title}</h3>
-                    {lightboxImage.description && (
-                      <p className="text-white/90 text-sm mt-1">{lightboxImage.description}</p>
-                    )}
-                    {lightboxImage.project_location && (
-                      <p className="text-white/80 text-sm mt-1">📍 {lightboxImage.project_location}</p>
-                    )}
-                  </div>
-                )}
-
-                {/* Navigation Buttons */}
-                <button
-                  onClick={handlePrevImage}
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all duration-200"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
-                  </svg>
-                </button>
-                
-                <button
-                  onClick={handleNextImage}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all duration-200"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-
-                {/* Close Button */}
-                <button
-                  onClick={closeLightbox}
-                  className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all duration-200"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
 
       <Footer />
+
+      {/* Lightbox Modal - Moved outside main container to avoid stacking context issues */}
+      <AnimatePresence>
+        {lightboxImage && (
+          <motion.div
+            className="fixed inset-0 z-[99999] bg-black/90 flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={closeLightbox}
+            style={{ zIndex: 999999, position: 'fixed' }}
+          >
+            <motion.div
+              className="relative max-w-4xl max-h-full z-[100000]"
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.8 }}
+              onClick={(e) => e.stopPropagation()}
+              style={{ zIndex: 1000000 }}
+            >
+              <img
+                src={lightboxImage.image || hero}
+                alt={lightboxImage.title || 'Gallery image'}
+                className="max-w-full max-h-[80vh] object-contain rounded-lg"
+              />
+              
+              {/* Image Info */}
+              {lightboxImage.title && (
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 rounded-b-lg">
+                  <h3 className="text-white text-lg font-medium">{lightboxImage.title}</h3>
+                  {lightboxImage.description && (
+                    <p className="text-white/90 text-sm mt-1">{lightboxImage.description}</p>
+                  )}
+                  {lightboxImage.project_location && (
+                    <p className="text-white/80 text-sm mt-1">📍 {lightboxImage.project_location}</p>
+                  )}
+                </div>
+              )}
+
+              {/* Navigation Buttons */}
+              <button
+                onClick={handlePrevImage}
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all duration-200"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              
+              <button
+                onClick={handleNextImage}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all duration-200"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+
+              {/* Close Button */}
+              <button
+                onClick={closeLightbox}
+                className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all duration-200"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
