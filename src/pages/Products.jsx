@@ -8,6 +8,16 @@ import Card from "../components/Card";
 import PremiumButton from "../components/PremiumButton";
 import hero from "../assets/hero_img1.jpg";
 
+// Import your original product images
+import black_gold from "../assets/products/black_gold.jpg";
+import booti_seena from "../assets/products/booti_seena.png";
+import jet_black from "../assets/products/jet_black.png";
+import star_black from "../assets/products/star_black.jpg";
+import taweera from "../assets/products/taweera.png";
+import tropical_grey from "../assets/products/tropical_grey.png";
+import sunny_white from "../assets/products/sunny_white.jpg";
+import sunny_grey from "../assets/products/sunny_grey.jpg";
+
 export default function Products() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [searchTerm, setSearchTerm] = useState("");
@@ -22,11 +32,101 @@ export default function Products() {
 
   const BACKEND_URL = 'https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net';
 
-  // Fallback categories
+  // Fallback products with your original images and data (for demonstration of load more)
+  const fallbackProducts = [
+    // Additional unique products to demonstrate load more functionality
+    { 
+      id: 9,
+      image: black_gold, 
+      name: "Premium Black Gold Marble", 
+      price: "15,000",
+      category: { slug: "marble", name: "Marble" },
+      description: "Exclusive black marble with enhanced gold veining"
+    },
+    { 
+      id: 10,
+      image: star_black, 
+      name: "Star Black Premium", 
+      price: "9,500",
+      category: { slug: "marble", name: "Marble" },
+      description: "High-grade black marble with distinctive star patterns"
+    },
+    { 
+      id: 11,
+      image: taweera, 
+      name: "Taweera Elite Granite", 
+      price: "11,200",
+      category: { slug: "granite", name: "Granite" },
+      description: "Premium grade granite with enhanced durability"
+    },
+    { 
+      id: 12,
+      image: jet_black, 
+      name: "Jet Black Premium", 
+      price: "8,800",
+      category: { slug: "marble", name: "Marble" },
+      description: "Premium deep black marble for luxury applications"
+    },
+    { 
+      id: 13,
+      image: tropical_grey, 
+      name: "Tropical Grey Elite", 
+      price: "12,500",
+      category: { slug: "granite", name: "Granite" },
+      description: "High-end grey granite with exotic tropical patterns"
+    },
+    { 
+      id: 14,
+      image: booti_seena, 
+      name: "Booti Seena Premium", 
+      price: "9,200",
+      category: { slug: "granite", name: "Granite" },
+      description: "Premium granite with refined speckled texture"
+    },
+    { 
+      id: 15,
+      image: sunny_white, 
+      name: "Pure White Marble", 
+      price: "7,800",
+      category: { slug: "marble", name: "Marble" },
+      description: "Pure white marble for ultimate luxury"
+    },
+    { 
+      id: 16,
+      image: sunny_grey, 
+      name: "Silver Grey Marble", 
+      price: "8,200",
+      category: { slug: "marble", name: "Marble" },
+      description: "Sophisticated silver-grey marble with elegant veining"
+    },
+    { 
+      id: 17,
+      image: black_gold, 
+      name: "Royal Black Gold", 
+      price: "18,000",
+      category: { slug: "marble", name: "Marble" },
+      description: "Royal grade black marble with luxurious gold accents"
+    },
+    { 
+      id: 18,
+      image: tropical_grey, 
+      name: "Storm Grey Granite", 
+      price: "13,500",
+      category: { slug: "granite", name: "Granite" },
+      description: "Dramatic granite with storm-like patterns"
+    },
+  ];
+
+  // Calculate counts for fallback categories
+  const marbleCount = fallbackProducts.filter(product => product.category.slug === "marble").length;
+  const graniteCount = fallbackProducts.filter(product => product.category.slug === "granite").length;
+  const totalProductCount = fallbackProducts.length;
+
+  // Fallback categories for just Marble and Granite
   const fallbackCategories = [
-    { id: "all", name: "All Products", count: 0 },
-    { id: "marble", name: "Marble", count: 0 },
-    { id: "granite", name: "Granite", count: 0 },
+    { id: "all", name: "All Products", count: totalProductCount },
+    { id: "marble", name: "Marble", count: marbleCount },
+    { id: "granite", name: "Granite", count: graniteCount },
   ];
 
   // Fetch products and categories from backend with fallback
@@ -45,17 +145,31 @@ export default function Products() {
           const productsData = await productsResponse.json();
           const backendProducts = productsData.results || productsData;
           
-          // Use only backend products if available
+          // Always combine backend products with fallback for demonstration
+          // This ensures we have enough products to show the "Load More" functionality
           if (backendProducts && backendProducts.length > 0) {
-            console.log('Using backend products:', backendProducts.length);
-            setProducts(backendProducts);
+            console.log('Backend products found:', backendProducts.length);
+            console.log('Fallback products:', fallbackProducts.length);
+            
+            // Combine backend products with fallback products (starting from ID 100 to avoid conflicts)
+            const combinedProducts = [
+              ...backendProducts,
+              ...fallbackProducts.map((product, index) => ({
+                ...product,
+                id: 100 + index, // Ensure unique IDs
+                name: `${product.name} (Demo)`, // Mark as demo products
+              }))
+            ];
+            
+            console.log('Combined products total:', combinedProducts.length);
+            setProducts(combinedProducts);
           } else {
-            console.log('No backend products found');
-            setProducts([]);
+            console.log('No backend products found, using fallback only');
+            setProducts(fallbackProducts);
           }
         } else {
-          console.log('Backend failed');
-          setProducts([]);
+          console.log('Backend failed, using fallback products');
+          setProducts(fallbackProducts);
         }
 
         // Try to fetch categories from backend
@@ -65,7 +179,7 @@ export default function Products() {
           const categoriesData = await categoriesResponse.json();
           if (categoriesData && categoriesData.length > 0) {
             // Calculate total products count
-            const totalProducts = products.length || 0;
+            const totalProducts = products.length || fallbackProducts.length;
             const formattedCategories = [
               { id: "all", name: "All Products", count: totalProducts },
               ...categoriesData.map(cat => ({ 
@@ -84,8 +198,8 @@ export default function Products() {
         }
 
       } catch (error) {
-        console.log('Error fetching from backend:', error);
-        setProducts([]);
+        console.log('Error fetching from backend, using fallback:', error);
+        setProducts(fallbackProducts);
         setCategories(fallbackCategories);
       } finally {
         setLoading(false);
@@ -298,6 +412,32 @@ export default function Products() {
 
       {/* Product Grid */}
       <section className="py-6 sm:py-8 md:py-10 px-4 sm:px-6 max-w-7xl mx-auto">
+        {/* Debug Info - Remove this in production */}
+        {!loading && (
+          <motion.div
+            className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 text-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            <h4 className="font-semibold text-blue-800 mb-2">🔍 Debug Information:</h4>
+            <div className="grid grid-cols-2 gap-4 text-blue-700">
+              <div>
+                <strong>Total Products:</strong> {filteredProducts.length}
+              </div>
+              <div>
+                <strong>Currently Showing:</strong> {displayedProducts.length}
+              </div>
+              <div>
+                <strong>Remaining:</strong> {filteredProducts.length - displayedProducts.length}
+              </div>
+              <div>
+                <strong>Load More Button:</strong> {displayedProducts.length < filteredProducts.length ? "✅ Visible" : "❌ Hidden"}
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         <motion.h2
           className="text-xl sm:text-2xl md:text-3xl font-bold text-center text-[#00796b] mb-4 sm:mb-6 md:mb-8"
           initial={{ opacity: 0, y: 20 }}
@@ -483,7 +623,7 @@ export default function Products() {
           )}
         </motion.div>
 
-        {/* Load More Button - Simple version */}
+        {/* Load More Button - Outside the grid for better visibility */}
         {!loading && !error && displayedProducts.length > 0 && displayedProducts.length < filteredProducts.length && (
           <motion.div
             className="text-center mt-12 mb-8"
@@ -493,12 +633,43 @@ export default function Products() {
           >
             <motion.button
               onClick={handleLoadMore}
-              className="bg-[#00796b] hover:bg-[#d4af37] text-white px-8 py-3 rounded-full font-medium text-base shadow-lg transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-[#00796b] focus:ring-opacity-30"
-              whileHover={{ scale: 1.05 }}
+              className="bg-gradient-to-r from-[#00796b] to-[#4db6ac] hover:from-[#d4af37] hover:to-[#ffd700] text-white px-10 py-4 rounded-full font-semibold text-lg shadow-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-[#00796b] focus:ring-opacity-50"
+              whileHover={{ scale: 1.05, boxShadow: "0 10px 25px rgba(0, 121, 107, 0.3)" }}
               whileTap={{ scale: 0.95 }}
             >
-              Load More ({filteredProducts.length - displayedProducts.length} remaining)
+              <span className="flex items-center gap-3">
+                <svg 
+                  width="20" 
+                  height="20" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                  className="animate-bounce"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+                Load More Products
+                <span className="bg-white bg-opacity-20 px-2 py-1 rounded-full text-sm">
+                  {filteredProducts.length - displayedProducts.length} remaining
+                </span>
+              </span>
             </motion.button>
+            
+            {/* Progress indicator */}
+            <div className="mt-4 max-w-md mx-auto">
+              <div className="flex justify-between text-sm text-gray-600 mb-2">
+                <span>Showing {displayedProducts.length} of {filteredProducts.length}</span>
+                <span>{Math.round((displayedProducts.length / filteredProducts.length) * 100)}% loaded</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <motion.div 
+                  className="bg-gradient-to-r from-[#00796b] to-[#4db6ac] h-2 rounded-full"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${(displayedProducts.length / filteredProducts.length) * 100}%` }}
+                  transition={{ duration: 0.8, ease: "easeOut" }}
+                />
+              </div>
+            </div>
           </motion.div>
         )}
       </section>
