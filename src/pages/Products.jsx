@@ -412,31 +412,7 @@ export default function Products() {
 
       {/* Product Grid */}
       <section className="py-6 sm:py-8 md:py-10 px-4 sm:px-6 max-w-7xl mx-auto">
-        {/* Debug Info - Remove this in production */}
-        {!loading && (
-          <motion.div
-            className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 text-sm"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-          >
-            <h4 className="font-semibold text-blue-800 mb-2">🔍 Debug Information:</h4>
-            <div className="grid grid-cols-2 gap-4 text-blue-700">
-              <div>
-                <strong>Total Products:</strong> {filteredProducts.length}
-              </div>
-              <div>
-                <strong>Currently Showing:</strong> {displayedProducts.length}
-              </div>
-              <div>
-                <strong>Remaining:</strong> {filteredProducts.length - displayedProducts.length}
-              </div>
-              <div>
-                <strong>Load More Button:</strong> {displayedProducts.length < filteredProducts.length ? "✅ Visible" : "❌ Hidden"}
-              </div>
-            </div>
-          </motion.div>
-        )}
+        
 
         <motion.h2
           className="text-xl sm:text-2xl md:text-3xl font-bold text-center text-[#00796b] mb-4 sm:mb-6 md:mb-8"
