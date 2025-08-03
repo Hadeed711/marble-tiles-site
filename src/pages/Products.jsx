@@ -32,73 +32,9 @@ export default function Products() {
 
   const BACKEND_URL = 'https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net';
 
-  // Fallback products with your original images and data (extended for demonstration)
+  // Fallback products with your original images and data (for demonstration of load more)
   const fallbackProducts = [
-    { 
-      id: 1,
-      image: black_gold, 
-      name: "Black Gold Marble", 
-      price: "12,000",
-      category: { slug: "marble", name: "Marble" },
-      description: "Premium black marble with gold veining"
-    },
-    { 
-      id: 2,
-      image: star_black, 
-      name: "Star Black Marble", 
-      price: "8,500",
-      category: { slug: "marble", name: "Marble" },
-      description: "Elegant black marble with star patterns"
-    },
-    { 
-      id: 3,
-      image: taweera, 
-      name: "Taweera Granite", 
-      price: "9,200",
-      category: { slug: "granite", name: "Granite" },
-      description: "Durable granite with natural patterns"
-    },
-    { 
-      id: 4,
-      image: jet_black, 
-      name: "Jet Black Marble", 
-      price: "7,800",
-      category: { slug: "marble", name: "Marble" },
-      description: "Deep black marble for modern designs"
-    },
-    { 
-      id: 5,
-      image: tropical_grey, 
-      name: "Tropical Grey Granite", 
-      price: "10,500",
-      category: { slug: "granite", name: "Granite" },
-      description: "Grey granite with tropical patterns"
-    },
-    { 
-      id: 6,
-      image: booti_seena, 
-      name: "Booti Seena Granite", 
-      price: "8,200",
-      category: { slug: "granite", name: "Granite" },
-      description: "Classic granite with speckled finish"
-    },
-    { 
-      id: 7,
-      image: sunny_white, 
-      name: "Sunny White Marble", 
-      price: "6,800",
-      category: { slug: "marble", name: "Marble" },
-      description: "Bright white marble for luxury spaces"
-    },
-    { 
-      id: 8,
-      image: sunny_grey, 
-      name: "Sunny Grey Marble", 
-      price: "7,200",
-      category: { slug: "marble", name: "Marble" },
-      description: "Sophisticated grey marble with subtle veining"
-    },
-    // Additional products to demonstrate load more functionality
+    // Additional unique products to demonstrate load more functionality
     { 
       id: 9,
       image: black_gold, 
@@ -209,12 +145,26 @@ export default function Products() {
           const productsData = await productsResponse.json();
           const backendProducts = productsData.results || productsData;
           
-          // Check if we have valid products with images
+          // Always combine backend products with fallback for demonstration
+          // This ensures we have enough products to show the "Load More" functionality
           if (backendProducts && backendProducts.length > 0) {
-            console.log('Using backend products:', backendProducts);
-            setProducts(backendProducts);
+            console.log('Backend products found:', backendProducts.length);
+            console.log('Fallback products:', fallbackProducts.length);
+            
+            // Combine backend products with fallback products (starting from ID 100 to avoid conflicts)
+            const combinedProducts = [
+              ...backendProducts,
+              ...fallbackProducts.map((product, index) => ({
+                ...product,
+                id: 100 + index, // Ensure unique IDs
+                name: `${product.name} (Demo)`, // Mark as demo products
+              }))
+            ];
+            
+            console.log('Combined products total:', combinedProducts.length);
+            setProducts(combinedProducts);
           } else {
-            console.log('No backend products found, using fallback');
+            console.log('No backend products found, using fallback only');
             setProducts(fallbackProducts);
           }
         } else {
@@ -462,6 +412,32 @@ export default function Products() {
 
       {/* Product Grid */}
       <section className="py-6 sm:py-8 md:py-10 px-4 sm:px-6 max-w-7xl mx-auto">
+        {/* Debug Info - Remove this in production */}
+        {!loading && (
+          <motion.div
+            className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 text-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            <h4 className="font-semibold text-blue-800 mb-2">🔍 Debug Information:</h4>
+            <div className="grid grid-cols-2 gap-4 text-blue-700">
+              <div>
+                <strong>Total Products:</strong> {filteredProducts.length}
+              </div>
+              <div>
+                <strong>Currently Showing:</strong> {displayedProducts.length}
+              </div>
+              <div>
+                <strong>Remaining:</strong> {filteredProducts.length - displayedProducts.length}
+              </div>
+              <div>
+                <strong>Load More Button:</strong> {displayedProducts.length < filteredProducts.length ? "✅ Visible" : "❌ Hidden"}
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         <motion.h2
           className="text-xl sm:text-2xl md:text-3xl font-bold text-center text-[#00796b] mb-4 sm:mb-6 md:mb-8"
           initial={{ opacity: 0, y: 20 }}
