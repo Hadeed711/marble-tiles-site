@@ -8,16 +8,6 @@ import Card from "../components/Card";
 import PremiumButton from "../components/PremiumButton";
 import hero from "../assets/hero_img1.jpg";
 
-// Import your original product images
-import black_gold from "../assets/products/black_gold.jpg";
-import booti_seena from "../assets/products/booti_seena.png";
-import jet_black from "../assets/products/jet_black.png";
-import star_black from "../assets/products/star_black.jpg";
-import taweera from "../assets/products/taweera.png";
-import tropical_grey from "../assets/products/tropical_grey.png";
-import sunny_white from "../assets/products/sunny_white.jpg";
-import sunny_grey from "../assets/products/sunny_grey.jpg";
-
 export default function Products() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [searchTerm, setSearchTerm] = useState("");
@@ -32,118 +22,32 @@ export default function Products() {
 
   const BACKEND_URL = 'https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net';
 
-  // Fallback products with your original images and data (for demonstration of load more)
-  const fallbackProducts = [
-    // Additional unique products to demonstrate load more functionality
-    { 
-      id: 9,
-      image: black_gold, 
-      name: "Premium Black Gold Marble", 
-      price: "15,000",
-      category: { slug: "marble", name: "Marble" },
-      description: "Exclusive black marble with enhanced gold veining"
-    },
-    { 
-      id: 10,
-      image: star_black, 
-      name: "Star Black Premium", 
-      price: "9,500",
-      category: { slug: "marble", name: "Marble" },
-      description: "High-grade black marble with distinctive star patterns"
-    },
-    { 
-      id: 11,
-      image: taweera, 
-      name: "Taweera Elite Granite", 
-      price: "11,200",
-      category: { slug: "granite", name: "Granite" },
-      description: "Premium grade granite with enhanced durability"
-    },
-    { 
-      id: 12,
-      image: jet_black, 
-      name: "Jet Black Premium", 
-      price: "8,800",
-      category: { slug: "marble", name: "Marble" },
-      description: "Premium deep black marble for luxury applications"
-    },
-    { 
-      id: 13,
-      image: tropical_grey, 
-      name: "Tropical Grey Elite", 
-      price: "12,500",
-      category: { slug: "granite", name: "Granite" },
-      description: "High-end grey granite with exotic tropical patterns"
-    },
-    { 
-      id: 14,
-      image: booti_seena, 
-      name: "Booti Seena Premium", 
-      price: "9,200",
-      category: { slug: "granite", name: "Granite" },
-      description: "Premium granite with refined speckled texture"
-    },
-    { 
-      id: 15,
-      image: sunny_white, 
-      name: "Pure White Marble", 
-      price: "7,800",
-      category: { slug: "marble", name: "Marble" },
-      description: "Pure white marble for ultimate luxury"
-    },
-    { 
-      id: 16,
-      image: sunny_grey, 
-      name: "Silver Grey Marble", 
-      price: "8,200",
-      category: { slug: "marble", name: "Marble" },
-      description: "Sophisticated silver-grey marble with elegant veining"
-    },
-    { 
-      id: 17,
-      image: black_gold, 
-      name: "Royal Black Gold", 
-      price: "18,000",
-      category: { slug: "marble", name: "Marble" },
-      description: "Royal grade black marble with luxurious gold accents"
-    },
-    { 
-      id: 18,
-      image: tropical_grey, 
-      name: "Storm Grey Granite", 
-      price: "13,500",
-      category: { slug: "granite", name: "Granite" },
-      description: "Dramatic granite with storm-like patterns"
-    },
-  ];
-
-  // Calculate counts for fallback categories
-  const marbleCount = fallbackProducts.filter(product => product.category.slug === "marble").length;
-  const graniteCount = fallbackProducts.filter(product => product.category.slug === "granite").length;
-  const totalProductCount = fallbackProducts.length;
-
-  // Fallback categories for just Marble and Granite
-  const fallbackCategories = [
-    { id: "all", name: "All Products", count: totalProductCount },
-    { id: "marble", name: "Marble", count: marbleCount },
-    { id: "granite", name: "Granite", count: graniteCount },
-  ];
-
-  // Fetch ALL products from ALL pages and categories from backend
+  // Fetch ALL products from ALL pages and categories from backend (ONLY backend, no fallback)
   useEffect(() => {
     const fetchAllProducts = async () => {
       let allProducts = [];
       let nextUrl = `${BACKEND_URL}/api/products/`;
       
       while (nextUrl) {
-        const response = await fetch(nextUrl);
-        if (!response.ok) throw new Error('Failed to fetch products');
-        
-        const data = await response.json();
-        allProducts = [...allProducts, ...(data.results || [])];
-        nextUrl = data.next; // Get next page URL
-        
-        console.log(`Fetched page with ${data.results?.length || 0} products. Total so far: ${allProducts.length}`);
+        try {
+          console.log('Fetching:', nextUrl);
+          const response = await fetch(nextUrl);
+          if (!response.ok) throw new Error(`Failed to fetch products: ${response.status}`);
+          
+          const data = await response.json();
+          allProducts = [...allProducts, ...(data.results || [])];
+          
+          // Fix mixed content: Convert HTTP next URL to HTTPS
+          nextUrl = data.next ? data.next.replace('http://', 'https://') : null;
+          
+          console.log(`✅ Fetched page with ${data.results?.length || 0} products. Total so far: ${allProducts.length}`);
+          if (nextUrl) {
+            console.log('Next page URL:', nextUrl);
+          }
+        } catch (error) {
+          console.error('Error fetching page:', error);
+          break; // Stop fetching if there's an error
+        }
       }
       
       return allProducts;
@@ -154,13 +58,14 @@ export default function Products() {
         setLoading(true);
         setError(null);
         
-        console.log('Fetching ALL products from backend...');
+        console.log('🔄 Fetching ALL products from backend...');
         
         // Fetch ALL products from all pages
         const allBackendProducts = await fetchAllProducts();
         
         if (allBackendProducts && allBackendProducts.length > 0) {
-          console.log('Total backend products fetched:', allBackendProducts.length);
+          console.log(`✅ Total backend products fetched: ${allBackendProducts.length}`);
+          console.log('Products:', allBackendProducts.map(p => ({ id: p.id, name: p.name })));
           setProducts(allBackendProducts);
           
           // Fetch categories from backend
@@ -211,15 +116,21 @@ export default function Products() {
             ]);
           }
         } else {
-          console.log('No backend products found, using fallback');
-          setProducts(fallbackProducts);
-          setCategories(fallbackCategories);
+          console.error('❌ No products found from backend');
+          setError('No products available at the moment');
+          setProducts([]);
+          setCategories([
+            { id: "all", name: "All Products", count: 0 }
+          ]);
         }
 
       } catch (error) {
-        console.log('Error fetching from backend, using fallback:', error);
-        setProducts(fallbackProducts);
-        setCategories(fallbackCategories);
+        console.error('❌ Error fetching from backend:', error);
+        setError('Failed to load products. Please try again later.');
+        setProducts([]);
+        setCategories([
+          { id: "all", name: "All Products", count: 0 }
+        ]);
       } finally {
         setLoading(false);
       }
