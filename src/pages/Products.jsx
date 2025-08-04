@@ -18,7 +18,7 @@ export default function Products() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [visibleProducts, setVisibleProducts] = useState(6); // Show only 6 products initially so Load More is visible
+  const [visibleProducts, setVisibleProducts] = useState(6); // Show 6 products initially, Load More shows remaining 3
 
   const BACKEND_URL = 'https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net';
 
@@ -31,46 +31,59 @@ export default function Products() {
         
         console.log('Fetching products from backend...');
         
-        // Fetch products from backend
-        const productsResponse = await fetch(`${BACKEND_URL}/api/products/`);
-        
-        if (productsResponse.ok) {
-          const productsData = await productsResponse.json();
-          const backendProducts = productsData.results || productsData;
+        // Fetch ALL products from backend (handle pagination)
+        const fetchAllProducts = async () => {
+          let allProducts = [];
+          let url = `${BACKEND_URL}/api/products/`;
           
-          if (backendProducts && backendProducts.length > 0) {
-            console.log('Successfully loaded', backendProducts.length, 'products from backend');
-            setProducts(backendProducts);
+          while (url) {
+            const response = await fetch(url);
+            if (!response.ok) {
+              throw new Error(`Failed to fetch products: ${response.status}`);
+            }
             
-            // Calculate category counts from actual products
-            const marbleProducts = backendProducts.filter(product => 
-              product.category === 1 || (product.category && product.category.id === 1) ||
-              (product.category && product.category.slug === 'marble') ||
-              (product.category && product.category.name && product.category.name.toLowerCase().includes('marble'))
-            );
+            const data = await response.json();
+            allProducts = allProducts.concat(data.results || []);
+            url = data.next; // Get next page URL, null if no more pages
             
-            const graniteProducts = backendProducts.filter(product => 
-              product.category === 2 || (product.category && product.category.id === 2) ||
-              (product.category && product.category.slug === 'granite') ||
-              (product.category && product.category.name && product.category.name.toLowerCase().includes('granite'))
-            );
-            
-            // Set categories with accurate counts
-            const categories = [
-              { id: "all", name: "All Products", count: backendProducts.length },
-              { id: "marble", name: "Marble", count: marbleProducts.length },
-              { id: "granite", name: "Granite", count: graniteProducts.length }
-            ];
-            
-            console.log('Category counts:', categories);
-            setCategories(categories);
-          } else {
-            setError('No products found in the database');
-            setProducts([]);
-            setCategories([{ id: "all", name: "All Products", count: 0 }]);
+            console.log(`Fetched ${data.results?.length || 0} products, total so far: ${allProducts.length}`);
           }
+          
+          return allProducts;
+        };
+        
+        const backendProducts = await fetchAllProducts();
+        
+        if (backendProducts && backendProducts.length > 0) {
+          console.log('Successfully loaded', backendProducts.length, 'products from backend');
+          setProducts(backendProducts);
+          
+          // Calculate category counts from actual products
+          const marbleProducts = backendProducts.filter(product => 
+            product.category === 1 || (product.category && product.category.id === 1) ||
+            (product.category && product.category.slug === 'marble') ||
+            (product.category && product.category.name && product.category.name.toLowerCase().includes('marble'))
+          );
+          
+          const graniteProducts = backendProducts.filter(product => 
+            product.category === 2 || (product.category && product.category.id === 2) ||
+            (product.category && product.category.slug === 'granite') ||
+            (product.category && product.category.name && product.category.name.toLowerCase().includes('granite'))
+          );
+          
+          // Set categories with accurate counts
+          const categories = [
+            { id: "all", name: "All Products", count: backendProducts.length },
+            { id: "marble", name: "Marble", count: marbleProducts.length },
+            { id: "granite", name: "Granite", count: graniteProducts.length }
+          ];
+          
+          console.log('Category counts:', categories);
+          setCategories(categories);
         } else {
-          throw new Error(`Failed to fetch products: ${productsResponse.status}`);
+          setError('No products found in the database');
+          setProducts([]);
+          setCategories([{ id: "all", name: "All Products", count: 0 }]);
         }
 
       } catch (error) {
