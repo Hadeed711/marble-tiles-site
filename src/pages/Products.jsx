@@ -18,11 +18,11 @@ export default function Products() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [visibleProducts, setVisibleProducts] = useState(8); // Show only 8 products initially (2 rows)
+  const [visibleProducts, setVisibleProducts] = useState(6); // Show only 6 products initially so Load More is visible
 
   const BACKEND_URL = 'https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net';
 
-  // Fetch products and categories from backend
+  // Fetch products and categories from backend only (no fallback products)
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -42,69 +42,28 @@ export default function Products() {
             console.log('Successfully loaded', backendProducts.length, 'products from backend');
             setProducts(backendProducts);
             
-            // Fetch categories and calculate counts based on actual products
-            const categoriesResponse = await fetch(`${BACKEND_URL}/api/products/categories/`);
+            // Calculate category counts from actual products
+            const marbleProducts = backendProducts.filter(product => 
+              product.category === 1 || (product.category && product.category.id === 1) ||
+              (product.category && product.category.slug === 'marble') ||
+              (product.category && product.category.name && product.category.name.toLowerCase().includes('marble'))
+            );
             
-            if (categoriesResponse.ok) {
-              const categoriesData = await categoriesResponse.json();
-              if (categoriesData && categoriesData.length > 0) {
-                // Calculate accurate counts from actual products
-                const categoryCountsMap = {};
-                backendProducts.forEach(product => {
-                  const categorySlug = product.category?.slug || 'uncategorized';
-                  categoryCountsMap[categorySlug] = (categoryCountsMap[categorySlug] || 0) + 1;
-                });
-                
-                const formattedCategories = [
-                  { id: "all", name: "All Products", count: backendProducts.length },
-                  ...categoriesData.map(cat => ({ 
-                    id: cat.slug, 
-                    name: cat.name,
-                    count: categoryCountsMap[cat.slug] || 0
-                  }))
-                ];
-                
-                console.log('Category counts:', formattedCategories);
-                setCategories(formattedCategories);
-              } else {
-                // Fallback categories if backend categories fail
-                const categoryCountsMap = {};
-                backendProducts.forEach(product => {
-                  const categorySlug = product.category?.slug || 'uncategorized';
-                  categoryCountsMap[categorySlug] = (categoryCountsMap[categorySlug] || 0) + 1;
-                });
-                
-                const uniqueCategories = Object.keys(categoryCountsMap).map(slug => ({
-                  id: slug,
-                  name: slug.charAt(0).toUpperCase() + slug.slice(1),
-                  count: categoryCountsMap[slug]
-                }));
-                
-                setCategories([
-                  { id: "all", name: "All Products", count: backendProducts.length },
-                  ...uniqueCategories
-                ]);
-              }
-            } else {
-              console.log('Categories fetch failed, creating from products');
-              // Create categories from products if API fails
-              const categoryCountsMap = {};
-              backendProducts.forEach(product => {
-                const categorySlug = product.category?.slug || 'uncategorized';
-                categoryCountsMap[categorySlug] = (categoryCountsMap[categorySlug] || 0) + 1;
-              });
-              
-              const uniqueCategories = Object.keys(categoryCountsMap).map(slug => ({
-                id: slug,
-                name: slug.charAt(0).toUpperCase() + slug.slice(1),
-                count: categoryCountsMap[slug]
-              }));
-              
-              setCategories([
-                { id: "all", name: "All Products", count: backendProducts.length },
-                ...uniqueCategories
-              ]);
-            }
+            const graniteProducts = backendProducts.filter(product => 
+              product.category === 2 || (product.category && product.category.id === 2) ||
+              (product.category && product.category.slug === 'granite') ||
+              (product.category && product.category.name && product.category.name.toLowerCase().includes('granite'))
+            );
+            
+            // Set categories with accurate counts
+            const categories = [
+              { id: "all", name: "All Products", count: backendProducts.length },
+              { id: "marble", name: "Marble", count: marbleProducts.length },
+              { id: "granite", name: "Granite", count: graniteProducts.length }
+            ];
+            
+            console.log('Category counts:', categories);
+            setCategories(categories);
           } else {
             setError('No products found in the database');
             setProducts([]);
@@ -138,9 +97,23 @@ export default function Products() {
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesCategory = selectedCategory === "all" || 
-                           (product.category && product.category.slug === selectedCategory) ||
-                           (product.category && product.category.name.toLowerCase() === selectedCategory);
+    
+    // Handle category filtering based on backend structure
+    let matchesCategory = false;
+    if (selectedCategory === "all") {
+      matchesCategory = true;
+    } else if (selectedCategory === "marble") {
+      matchesCategory = product.category === 1 || 
+                      (product.category && product.category.id === 1) ||
+                      (product.category && product.category.slug === 'marble') ||
+                      (product.category && product.category.name && product.category.name.toLowerCase().includes('marble'));
+    } else if (selectedCategory === "granite") {
+      matchesCategory = product.category === 2 || 
+                      (product.category && product.category.id === 2) ||
+                      (product.category && product.category.slug === 'granite') ||
+                      (product.category && product.category.name && product.category.name.toLowerCase().includes('granite'));
+    }
+    
     return matchesSearch && matchesCategory;
   });
 
@@ -149,12 +122,12 @@ export default function Products() {
   const totalCount = filteredProducts.length;
 
   const handleLoadMore = () => {
-    setVisibleProducts(prev => prev + 8); // Load 8 more products
+    setVisibleProducts(prev => prev + 6); // Load 6 more products
   };
 
   const handleCategoryChange = (categoryId) => {
     setSelectedCategory(categoryId);
-    setVisibleProducts(8); // Reset to 8 products when changing category
+    setVisibleProducts(6); // Reset to 6 products when changing category
     setSearchTerm(""); // Clear search when changing category
   };
 
@@ -318,7 +291,7 @@ export default function Products() {
               onClick={() => {
                 setSearchTerm("");
                 setSelectedCategory("all");
-                setVisibleProducts(8); // Reset to 8 products
+                setVisibleProducts(6); // Reset to 6 products
               }}
               className="text-xs sm:text-sm text-gray-500 hover:text-[#00796b] underline mx-auto sm:mx-0"
             >
@@ -330,6 +303,8 @@ export default function Products() {
 
       {/* Product Grid */}
       <section className="py-6 sm:py-8 md:py-10 px-4 sm:px-6 max-w-7xl mx-auto">
+        
+
         <motion.h2
           className="text-xl sm:text-2xl md:text-3xl font-bold text-center text-[#00796b] mb-4 sm:mb-6 md:mb-8"
           initial={{ opacity: 0, y: 20 }}
@@ -492,34 +467,12 @@ export default function Products() {
                           : product.image // Local import or other
                     ) : hero} 
                     name={product.name} 
+                    description={product.description || `Premium ${product.name.toLowerCase()}`}
                     price={product.price ? (typeof product.price === 'string' ? `PKR ${product.price}` : `PKR ${product.price}`) : 'Contact for price'}
                     onImageClick={handleImageClick}
                   />
                 </motion.div>
               ))}
-              
-              {/* Simple Load More Button */}
-              {displayedProducts.length < filteredProducts.length && (
-                <div className="col-span-full text-center mt-8">
-                  <motion.button
-                    onClick={handleLoadMore}
-                    className="bg-[#00796b] hover:bg-[#4db6ac] text-white px-8 py-3 rounded-full font-medium shadow-lg transition-all duration-300 flex items-center gap-2 mx-auto"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <svg 
-                      width="20" 
-                      height="20" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                    </svg>
-                    Load More ({filteredProducts.length - displayedProducts.length} remaining)
-                  </motion.button>
-                </div>
-              )}
             </>
           ) : (
             <div className="col-span-full text-center py-12">
@@ -537,6 +490,20 @@ export default function Products() {
             </div>
           )}
         </motion.div>
+
+        {/* Simple Load More Button */}
+        {!loading && !error && displayedProducts.length > 0 && displayedProducts.length < filteredProducts.length && (
+          <div className="text-center mt-8">
+            <motion.button
+              onClick={handleLoadMore}
+              className="bg-[#00796b] hover:bg-[#4db6ac] text-white px-8 py-3 rounded-full font-medium shadow-lg transition-all duration-300"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Load More ({filteredProducts.length - displayedProducts.length} remaining)
+            </motion.button>
+          </div>
+        )}
       </section>
 
       {/* Image Zoom Modal */}
