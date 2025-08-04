@@ -74,20 +74,24 @@ export default function Products() {
             
             if (categoriesResponse.ok) {
               const categoriesData = await categoriesResponse.json();
-              if (categoriesData && categoriesData.length > 0) {
+              console.log('Categories data:', categoriesData);
+              
+              if (categoriesData && categoriesData.results && categoriesData.results.length > 0) {
                 const formattedCategories = [
                   { id: "all", name: "All Products", count: allBackendProducts.length },
-                  ...categoriesData.map(cat => ({ 
+                  ...categoriesData.results.map(cat => ({ 
                     id: cat.slug, 
                     name: cat.name,
                     count: cat.product_count || 0
                   }))
                 ];
+                console.log('Formatted categories:', formattedCategories);
                 setCategories(formattedCategories);
               } else {
                 // Create basic categories based on actual products
-                const marbleCount = allBackendProducts.filter(p => p.category?.slug === "marble").length;
-                const graniteCount = allBackendProducts.filter(p => p.category?.slug === "granite").length;
+                const marbleCount = allBackendProducts.filter(p => p.category_name?.toLowerCase() === "marble").length;
+                const graniteCount = allBackendProducts.filter(p => p.category_name?.toLowerCase() === "granite").length;
+                console.log('Fallback categories - Marble:', marbleCount, 'Granite:', graniteCount);
                 setCategories([
                   { id: "all", name: "All Products", count: allBackendProducts.length },
                   { id: "marble", name: "Marble", count: marbleCount },
@@ -96,8 +100,9 @@ export default function Products() {
               }
             } else {
               // Create basic categories based on actual products
-              const marbleCount = allBackendProducts.filter(p => p.category?.slug === "marble").length;
-              const graniteCount = allBackendProducts.filter(p => p.category?.slug === "granite").length;
+              const marbleCount = allBackendProducts.filter(p => p.category_name?.toLowerCase() === "marble").length;
+              const graniteCount = allBackendProducts.filter(p => p.category_name?.toLowerCase() === "granite").length;
+              console.log('Response not OK - Marble:', marbleCount, 'Granite:', graniteCount);
               setCategories([
                 { id: "all", name: "All Products", count: allBackendProducts.length },
                 { id: "marble", name: "Marble", count: marbleCount },
@@ -107,8 +112,9 @@ export default function Products() {
           } catch (catError) {
             console.log('Error fetching categories, creating from products:', catError);
             // Create basic categories based on actual products
-            const marbleCount = allBackendProducts.filter(p => p.category?.slug === "marble").length;
-            const graniteCount = allBackendProducts.filter(p => p.category?.slug === "granite").length;
+            const marbleCount = allBackendProducts.filter(p => p.category_name?.toLowerCase() === "marble").length;
+            const graniteCount = allBackendProducts.filter(p => p.category_name?.toLowerCase() === "granite").length;
+            console.log('Error fallback - Marble:', marbleCount, 'Granite:', graniteCount);
             setCategories([
               { id: "all", name: "All Products", count: allBackendProducts.length },
               { id: "marble", name: "Marble", count: marbleCount },
@@ -151,8 +157,9 @@ export default function Products() {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesCategory = selectedCategory === "all" || 
+                           (product.category_name && product.category_name.toLowerCase() === selectedCategory.toLowerCase()) ||
                            (product.category && product.category.slug === selectedCategory) ||
-                           (product.category && product.category.name.toLowerCase() === selectedCategory);
+                           (product.category && product.category.name.toLowerCase() === selectedCategory.toLowerCase());
     return matchesSearch && matchesCategory;
   });
 
