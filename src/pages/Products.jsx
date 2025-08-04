@@ -138,37 +138,40 @@ export default function Products() {
         
         console.log('Trying to fetch from backend...');
         
-        // Try to fetch products from backend
-        const productsResponse = await fetch(`${BACKEND_URL}/api/products/`);
-        
-        if (productsResponse.ok) {
-          const productsData = await productsResponse.json();
-          const backendProducts = productsData.results || productsData;
+        // Function to fetch all products from paginated API
+        const fetchAllProducts = async () => {
+          let allProducts = [];
+          let url = `${BACKEND_URL}/api/products/`;
           
-          // Always combine backend products with fallback for demonstration
-          // This ensures we have enough products to show the "Load More" functionality
+          while (url) {
+            const response = await fetch(url);
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            allProducts = [...allProducts, ...(data.results || [])];
+            url = data.next; // Get next page URL or null if no more pages
+            
+            console.log(`Fetched ${data.results?.length || 0} products, total so far: ${allProducts.length}`);
+          }
+          
+          return allProducts;
+        };
+        
+        // Try to fetch all products from backend
+        try {
+          const backendProducts = await fetchAllProducts();
+          
           if (backendProducts && backendProducts.length > 0) {
-            console.log('Backend products found:', backendProducts.length);
-            console.log('Fallback products:', fallbackProducts.length);
-            
-            // Combine backend products with fallback products (starting from ID 100 to avoid conflicts)
-            const combinedProducts = [
-              ...backendProducts,
-              ...fallbackProducts.map((product, index) => ({
-                ...product,
-                id: 100 + index, // Ensure unique IDs
-                name: `${product.name} (Demo)`, // Mark as demo products
-              }))
-            ];
-            
-            console.log('Combined products total:', combinedProducts.length);
-            setProducts(combinedProducts);
+            console.log('All backend products fetched:', backendProducts.length);
+            setProducts(backendProducts);
           } else {
-            console.log('No backend products found, using fallback only');
+            console.log('No backend products found, using fallback');
             setProducts(fallbackProducts);
           }
-        } else {
-          console.log('Backend failed, using fallback products');
+        } catch (error) {
+          console.log('Backend failed, using fallback products:', error.message);
           setProducts(fallbackProducts);
         }
 
@@ -178,10 +181,9 @@ export default function Products() {
         if (categoriesResponse.ok) {
           const categoriesData = await categoriesResponse.json();
           if (categoriesData && categoriesData.length > 0) {
-            // Calculate total products count
-            const totalProducts = products.length || fallbackProducts.length;
+            // We'll update category counts after products are set
             const formattedCategories = [
-              { id: "all", name: "All Products", count: totalProducts },
+              { id: "all", name: "All Products", count: 0 }, // Will be updated
               ...categoriesData.map(cat => ({ 
                 id: cat.slug, 
                 name: cat.name,
@@ -208,6 +210,31 @@ export default function Products() {
 
     fetchData();
   }, []);
+
+  // Update category counts when products change
+  useEffect(() => {
+    if (products.length > 0 && categories.length > 0) {
+      const updatedCategories = categories.map(category => {
+        if (category.id === "all") {
+          return { ...category, count: products.length };
+        } else {
+          const count = products.filter(product => 
+            product.category?.slug === category.id
+          ).length;
+          return { ...category, count };
+        }
+      });
+      
+      // Only update if counts have changed
+      const countsChanged = updatedCategories.some((cat, index) => 
+        cat.count !== categories[index]?.count
+      );
+      
+      if (countsChanged) {
+        setCategories(updatedCategories);
+      }
+    }
+  }, [products]);
 
   // Get search query from URL parameters
   useEffect(() => {
