@@ -129,71 +129,90 @@ export default function Products() {
     { id: "granite", name: "Granite", count: graniteCount },
   ];
 
-  // Fetch products and categories from backend with fallback
+  // Fetch ALL products from ALL pages and categories from backend
   useEffect(() => {
+    const fetchAllProducts = async () => {
+      let allProducts = [];
+      let nextUrl = `${BACKEND_URL}/api/products/`;
+      
+      while (nextUrl) {
+        const response = await fetch(nextUrl);
+        if (!response.ok) throw new Error('Failed to fetch products');
+        
+        const data = await response.json();
+        allProducts = [...allProducts, ...(data.results || [])];
+        nextUrl = data.next; // Get next page URL
+        
+        console.log(`Fetched page with ${data.results?.length || 0} products. Total so far: ${allProducts.length}`);
+      }
+      
+      return allProducts;
+    };
+
     const fetchData = async () => {
       try {
         setLoading(true);
         setError(null);
         
-        console.log('Trying to fetch from backend...');
+        console.log('Fetching ALL products from backend...');
         
-        // Try to fetch products from backend
-        const productsResponse = await fetch(`${BACKEND_URL}/api/products/`);
+        // Fetch ALL products from all pages
+        const allBackendProducts = await fetchAllProducts();
         
-        if (productsResponse.ok) {
-          const productsData = await productsResponse.json();
-          const backendProducts = productsData.results || productsData;
+        if (allBackendProducts && allBackendProducts.length > 0) {
+          console.log('Total backend products fetched:', allBackendProducts.length);
+          setProducts(allBackendProducts);
           
-          // Always combine backend products with fallback for demonstration
-          // This ensures we have enough products to show the "Load More" functionality
-          if (backendProducts && backendProducts.length > 0) {
-            console.log('Backend products found:', backendProducts.length);
-            console.log('Fallback products:', fallbackProducts.length);
+          // Fetch categories from backend
+          try {
+            const categoriesResponse = await fetch(`${BACKEND_URL}/api/products/categories/`);
             
-            // Combine backend products with fallback products (starting from ID 100 to avoid conflicts)
-            const combinedProducts = [
-              ...backendProducts,
-              ...fallbackProducts.map((product, index) => ({
-                ...product,
-                id: 100 + index, // Ensure unique IDs
-                name: `${product.name} (Demo)`, // Mark as demo products
-              }))
-            ];
-            
-            console.log('Combined products total:', combinedProducts.length);
-            setProducts(combinedProducts);
-          } else {
-            console.log('No backend products found, using fallback only');
-            setProducts(fallbackProducts);
+            if (categoriesResponse.ok) {
+              const categoriesData = await categoriesResponse.json();
+              if (categoriesData && categoriesData.length > 0) {
+                const formattedCategories = [
+                  { id: "all", name: "All Products", count: allBackendProducts.length },
+                  ...categoriesData.map(cat => ({ 
+                    id: cat.slug, 
+                    name: cat.name,
+                    count: cat.product_count || 0
+                  }))
+                ];
+                setCategories(formattedCategories);
+              } else {
+                // Create basic categories based on actual products
+                const marbleCount = allBackendProducts.filter(p => p.category?.slug === "marble").length;
+                const graniteCount = allBackendProducts.filter(p => p.category?.slug === "granite").length;
+                setCategories([
+                  { id: "all", name: "All Products", count: allBackendProducts.length },
+                  { id: "marble", name: "Marble", count: marbleCount },
+                  { id: "granite", name: "Granite", count: graniteCount },
+                ]);
+              }
+            } else {
+              // Create basic categories based on actual products
+              const marbleCount = allBackendProducts.filter(p => p.category?.slug === "marble").length;
+              const graniteCount = allBackendProducts.filter(p => p.category?.slug === "granite").length;
+              setCategories([
+                { id: "all", name: "All Products", count: allBackendProducts.length },
+                { id: "marble", name: "Marble", count: marbleCount },
+                { id: "granite", name: "Granite", count: graniteCount },
+              ]);
+            }
+          } catch (catError) {
+            console.log('Error fetching categories, creating from products:', catError);
+            // Create basic categories based on actual products
+            const marbleCount = allBackendProducts.filter(p => p.category?.slug === "marble").length;
+            const graniteCount = allBackendProducts.filter(p => p.category?.slug === "granite").length;
+            setCategories([
+              { id: "all", name: "All Products", count: allBackendProducts.length },
+              { id: "marble", name: "Marble", count: marbleCount },
+              { id: "granite", name: "Granite", count: graniteCount },
+            ]);
           }
         } else {
-          console.log('Backend failed, using fallback products');
+          console.log('No backend products found, using fallback');
           setProducts(fallbackProducts);
-        }
-
-        // Try to fetch categories from backend
-        const categoriesResponse = await fetch(`${BACKEND_URL}/api/products/categories/`);
-        
-        if (categoriesResponse.ok) {
-          const categoriesData = await categoriesResponse.json();
-          if (categoriesData && categoriesData.length > 0) {
-            // Calculate total products count
-            const totalProducts = products.length || fallbackProducts.length;
-            const formattedCategories = [
-              { id: "all", name: "All Products", count: totalProducts },
-              ...categoriesData.map(cat => ({ 
-                id: cat.slug, 
-                name: cat.name,
-                count: cat.product_count || 0
-              }))
-            ];
-            setCategories(formattedCategories);
-          } else {
-            setCategories(fallbackCategories);
-          }
-        } else {
-          console.log('Using fallback categories');
           setCategories(fallbackCategories);
         }
 
