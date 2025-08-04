@@ -8,16 +8,6 @@ import Card from "../components/Card";
 import PremiumButton from "../components/PremiumButton";
 import hero from "../assets/hero_img1.jpg";
 
-// Import your original product images
-import black_gold from "../assets/products/black_gold.jpg";
-import booti_seena from "../assets/products/booti_seena.png";
-import jet_black from "../assets/products/jet_black.png";
-import star_black from "../assets/products/star_black.jpg";
-import taweera from "../assets/products/taweera.png";
-import tropical_grey from "../assets/products/tropical_grey.png";
-import sunny_white from "../assets/products/sunny_white.jpg";
-import sunny_grey from "../assets/products/sunny_grey.jpg";
-
 export default function Products() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [searchTerm, setSearchTerm] = useState("");
@@ -32,175 +22,103 @@ export default function Products() {
 
   const BACKEND_URL = 'https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net';
 
-  // Fallback products with your original images and data (for demonstration of load more)
-  const fallbackProducts = [
-    // Additional unique products to demonstrate load more functionality
-    { 
-      id: 9,
-      image: black_gold, 
-      name: "Premium Black Gold Marble", 
-      price: "15,000",
-      category: { slug: "marble", name: "Marble" },
-      description: "Exclusive black marble with enhanced gold veining"
-    },
-    { 
-      id: 10,
-      image: star_black, 
-      name: "Star Black Premium", 
-      price: "9,500",
-      category: { slug: "marble", name: "Marble" },
-      description: "High-grade black marble with distinctive star patterns"
-    },
-    { 
-      id: 11,
-      image: taweera, 
-      name: "Taweera Elite Granite", 
-      price: "11,200",
-      category: { slug: "granite", name: "Granite" },
-      description: "Premium grade granite with enhanced durability"
-    },
-    { 
-      id: 12,
-      image: jet_black, 
-      name: "Jet Black Premium", 
-      price: "8,800",
-      category: { slug: "marble", name: "Marble" },
-      description: "Premium deep black marble for luxury applications"
-    },
-    { 
-      id: 13,
-      image: tropical_grey, 
-      name: "Tropical Grey Elite", 
-      price: "12,500",
-      category: { slug: "granite", name: "Granite" },
-      description: "High-end grey granite with exotic tropical patterns"
-    },
-    { 
-      id: 14,
-      image: booti_seena, 
-      name: "Booti Seena Premium", 
-      price: "9,200",
-      category: { slug: "granite", name: "Granite" },
-      description: "Premium granite with refined speckled texture"
-    },
-    { 
-      id: 15,
-      image: sunny_white, 
-      name: "Pure White Marble", 
-      price: "7,800",
-      category: { slug: "marble", name: "Marble" },
-      description: "Pure white marble for ultimate luxury"
-    },
-    { 
-      id: 16,
-      image: sunny_grey, 
-      name: "Silver Grey Marble", 
-      price: "8,200",
-      category: { slug: "marble", name: "Marble" },
-      description: "Sophisticated silver-grey marble with elegant veining"
-    },
-    { 
-      id: 17,
-      image: black_gold, 
-      name: "Royal Black Gold", 
-      price: "18,000",
-      category: { slug: "marble", name: "Marble" },
-      description: "Royal grade black marble with luxurious gold accents"
-    },
-    { 
-      id: 18,
-      image: tropical_grey, 
-      name: "Storm Grey Granite", 
-      price: "13,500",
-      category: { slug: "granite", name: "Granite" },
-      description: "Dramatic granite with storm-like patterns"
-    },
-  ];
-
-  // Calculate counts for fallback categories
-  const marbleCount = fallbackProducts.filter(product => product.category.slug === "marble").length;
-  const graniteCount = fallbackProducts.filter(product => product.category.slug === "granite").length;
-  const totalProductCount = fallbackProducts.length;
-
-  // Fallback categories for just Marble and Granite
-  const fallbackCategories = [
-    { id: "all", name: "All Products", count: totalProductCount },
-    { id: "marble", name: "Marble", count: marbleCount },
-    { id: "granite", name: "Granite", count: graniteCount },
-  ];
-
-  // Fetch products and categories from backend with fallback
+  // Fetch products and categories from backend
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         setError(null);
         
-        console.log('Trying to fetch from backend...');
+        console.log('Fetching products from backend...');
         
-        // Try to fetch products from backend
+        // Fetch products from backend
         const productsResponse = await fetch(`${BACKEND_URL}/api/products/`);
         
         if (productsResponse.ok) {
           const productsData = await productsResponse.json();
           const backendProducts = productsData.results || productsData;
           
-          // Always combine backend products with fallback for demonstration
-          // This ensures we have enough products to show the "Load More" functionality
           if (backendProducts && backendProducts.length > 0) {
-            console.log('Backend products found:', backendProducts.length);
-            console.log('Fallback products:', fallbackProducts.length);
+            console.log('Successfully loaded', backendProducts.length, 'products from backend');
+            setProducts(backendProducts);
             
-            // Combine backend products with fallback products (starting from ID 100 to avoid conflicts)
-            const combinedProducts = [
-              ...backendProducts,
-              ...fallbackProducts.map((product, index) => ({
-                ...product,
-                id: 100 + index, // Ensure unique IDs
-                name: `${product.name} (Demo)`, // Mark as demo products
-              }))
-            ];
+            // Fetch categories and calculate counts based on actual products
+            const categoriesResponse = await fetch(`${BACKEND_URL}/api/products/categories/`);
             
-            console.log('Combined products total:', combinedProducts.length);
-            setProducts(combinedProducts);
+            if (categoriesResponse.ok) {
+              const categoriesData = await categoriesResponse.json();
+              if (categoriesData && categoriesData.length > 0) {
+                // Calculate accurate counts from actual products
+                const categoryCountsMap = {};
+                backendProducts.forEach(product => {
+                  const categorySlug = product.category?.slug || 'uncategorized';
+                  categoryCountsMap[categorySlug] = (categoryCountsMap[categorySlug] || 0) + 1;
+                });
+                
+                const formattedCategories = [
+                  { id: "all", name: "All Products", count: backendProducts.length },
+                  ...categoriesData.map(cat => ({ 
+                    id: cat.slug, 
+                    name: cat.name,
+                    count: categoryCountsMap[cat.slug] || 0
+                  }))
+                ];
+                
+                console.log('Category counts:', formattedCategories);
+                setCategories(formattedCategories);
+              } else {
+                // Fallback categories if backend categories fail
+                const categoryCountsMap = {};
+                backendProducts.forEach(product => {
+                  const categorySlug = product.category?.slug || 'uncategorized';
+                  categoryCountsMap[categorySlug] = (categoryCountsMap[categorySlug] || 0) + 1;
+                });
+                
+                const uniqueCategories = Object.keys(categoryCountsMap).map(slug => ({
+                  id: slug,
+                  name: slug.charAt(0).toUpperCase() + slug.slice(1),
+                  count: categoryCountsMap[slug]
+                }));
+                
+                setCategories([
+                  { id: "all", name: "All Products", count: backendProducts.length },
+                  ...uniqueCategories
+                ]);
+              }
+            } else {
+              console.log('Categories fetch failed, creating from products');
+              // Create categories from products if API fails
+              const categoryCountsMap = {};
+              backendProducts.forEach(product => {
+                const categorySlug = product.category?.slug || 'uncategorized';
+                categoryCountsMap[categorySlug] = (categoryCountsMap[categorySlug] || 0) + 1;
+              });
+              
+              const uniqueCategories = Object.keys(categoryCountsMap).map(slug => ({
+                id: slug,
+                name: slug.charAt(0).toUpperCase() + slug.slice(1),
+                count: categoryCountsMap[slug]
+              }));
+              
+              setCategories([
+                { id: "all", name: "All Products", count: backendProducts.length },
+                ...uniqueCategories
+              ]);
+            }
           } else {
-            console.log('No backend products found, using fallback only');
-            setProducts(fallbackProducts);
+            setError('No products found in the database');
+            setProducts([]);
+            setCategories([{ id: "all", name: "All Products", count: 0 }]);
           }
         } else {
-          console.log('Backend failed, using fallback products');
-          setProducts(fallbackProducts);
-        }
-
-        // Try to fetch categories from backend
-        const categoriesResponse = await fetch(`${BACKEND_URL}/api/products/categories/`);
-        
-        if (categoriesResponse.ok) {
-          const categoriesData = await categoriesResponse.json();
-          if (categoriesData && categoriesData.length > 0) {
-            // Calculate total products count
-            const totalProducts = products.length || fallbackProducts.length;
-            const formattedCategories = [
-              { id: "all", name: "All Products", count: totalProducts },
-              ...categoriesData.map(cat => ({ 
-                id: cat.slug, 
-                name: cat.name,
-                count: cat.product_count || 0
-              }))
-            ];
-            setCategories(formattedCategories);
-          } else {
-            setCategories(fallbackCategories);
-          }
-        } else {
-          console.log('Using fallback categories');
-          setCategories(fallbackCategories);
+          throw new Error(`Failed to fetch products: ${productsResponse.status}`);
         }
 
       } catch (error) {
-        console.log('Error fetching from backend, using fallback:', error);
-        setProducts(fallbackProducts);
-        setCategories(fallbackCategories);
+        console.error('Error fetching data:', error);
+        setError('Failed to load products. Please check your internet connection.');
+        setProducts([]);
+        setCategories([{ id: "all", name: "All Products", count: 0 }]);
       } finally {
         setLoading(false);
       }
@@ -412,8 +330,6 @@ export default function Products() {
 
       {/* Product Grid */}
       <section className="py-6 sm:py-8 md:py-10 px-4 sm:px-6 max-w-7xl mx-auto">
-        
-
         <motion.h2
           className="text-xl sm:text-2xl md:text-3xl font-bold text-center text-[#00796b] mb-4 sm:mb-6 md:mb-8"
           initial={{ opacity: 0, y: 20 }}
@@ -581,6 +497,29 @@ export default function Products() {
                   />
                 </motion.div>
               ))}
+              
+              {/* Simple Load More Button */}
+              {displayedProducts.length < filteredProducts.length && (
+                <div className="col-span-full text-center mt-8">
+                  <motion.button
+                    onClick={handleLoadMore}
+                    className="bg-[#00796b] hover:bg-[#4db6ac] text-white px-8 py-3 rounded-full font-medium shadow-lg transition-all duration-300 flex items-center gap-2 mx-auto"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <svg 
+                      width="20" 
+                      height="20" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                    </svg>
+                    Load More ({filteredProducts.length - displayedProducts.length} remaining)
+                  </motion.button>
+                </div>
+              )}
             </>
           ) : (
             <div className="col-span-full text-center py-12">
@@ -598,56 +537,6 @@ export default function Products() {
             </div>
           )}
         </motion.div>
-
-        {/* Load More Button - Outside the grid for better visibility */}
-        {!loading && !error && displayedProducts.length > 0 && displayedProducts.length < filteredProducts.length && (
-          <motion.div
-            className="text-center mt-12 mb-8"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-          >
-            <motion.button
-              onClick={handleLoadMore}
-              className="bg-gradient-to-r from-[#00796b] to-[#4db6ac] hover:from-[#d4af37] hover:to-[#ffd700] text-white px-10 py-4 rounded-full font-semibold text-lg shadow-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-[#00796b] focus:ring-opacity-50"
-              whileHover={{ scale: 1.05, boxShadow: "0 10px 25px rgba(0, 121, 107, 0.3)" }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <span className="flex items-center gap-3">
-                <svg 
-                  width="20" 
-                  height="20" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                  className="animate-bounce"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                </svg>
-                Load More Products
-                <span className="bg-white bg-opacity-20 px-2 py-1 rounded-full text-sm">
-                  {filteredProducts.length - displayedProducts.length} remaining
-                </span>
-              </span>
-            </motion.button>
-            
-            {/* Progress indicator */}
-            <div className="mt-4 max-w-md mx-auto">
-              <div className="flex justify-between text-sm text-gray-600 mb-2">
-                <span>Showing {displayedProducts.length} of {filteredProducts.length}</span>
-                <span>{Math.round((displayedProducts.length / filteredProducts.length) * 100)}% loaded</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <motion.div 
-                  className="bg-gradient-to-r from-[#00796b] to-[#4db6ac] h-2 rounded-full"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${(displayedProducts.length / filteredProducts.length) * 100}%` }}
-                  transition={{ duration: 0.8, ease: "easeOut" }}
-                />
-              </div>
-            </div>
-          </motion.div>
-        )}
       </section>
 
       {/* Image Zoom Modal */}

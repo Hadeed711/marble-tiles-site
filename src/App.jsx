@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home.jsx";
-import About from "./pages/About.jsx";
-import Products from "./pages/Products.jsx";
-import Contact from "./pages/Contact.jsx";
-import Gallery from "./pages/Gallery.jsx";
-import NotFound from "./pages/NotFound.jsx";
-import ScrollToTop from "./components/ScrollToTop.jsx";
-import SplashLoader from "./components/SplashLoader.jsx";
+import Home from "./pages/Home";
+import About from "./pages/About";
+import Products from "./pages/Products";
+import Contact from "./pages/Contact";
+import Gallery from "./pages/Gallery";
+import NotFound from "./pages/NotFound";
+import ScrollToTop from "./components/ScrollToTop";
+import SplashLoader from "./components/SplashLoader";
 
 function App() {
   const [loading, setLoading] = useState(true);
