@@ -156,10 +156,25 @@ export default function Products() {
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesCategory = selectedCategory === "all" || 
-                           (product.category_name && product.category_name.toLowerCase() === selectedCategory.toLowerCase()) ||
-                           (product.category && product.category.slug === selectedCategory) ||
-                           (product.category && product.category.name.toLowerCase() === selectedCategory.toLowerCase());
+    
+    // Simplified category matching - fix the blank page issue
+    if (selectedCategory === "all") {
+      return matchesSearch;
+    }
+    
+    // Multiple ways to match category (defensive programming)
+    const matchesCategory = 
+      // Match by category name (case-insensitive)
+      (product.category_name && product.category_name.toLowerCase() === selectedCategory.toLowerCase()) ||
+      // Match by category slug
+      (product.category && product.category.slug === selectedCategory) ||
+      // Match by category name from nested object
+      (product.category && product.category.name && product.category.name.toLowerCase() === selectedCategory.toLowerCase()) ||
+      // Match if selectedCategory is "marble" and product has marble in name
+      (selectedCategory.toLowerCase() === "marble" && product.name.toLowerCase().includes("marble")) ||
+      // Match if selectedCategory is "granite" and product has granite in name  
+      (selectedCategory.toLowerCase() === "granite" && product.name.toLowerCase().includes("granite"));
+    
     return matchesSearch && matchesCategory;
   });
 
@@ -172,9 +187,23 @@ export default function Products() {
   };
 
   const handleCategoryChange = (categoryId) => {
-    setSelectedCategory(categoryId);
-    setVisibleProducts(8); // Reset to 8 products when changing category
-    setSearchTerm(""); // Clear search when changing category
+    try {
+      console.log('🔄 Changing category to:', categoryId);
+      setSelectedCategory(categoryId);
+      setVisibleProducts(8); // Reset to 8 products when changing category
+      setSearchTerm(""); // Clear search when changing category
+      
+      // Clear search params when changing category
+      if (searchParams.get('search')) {
+        setSearchParams({});
+      }
+    } catch (error) {
+      console.error('❌ Error changing category:', error);
+      // Reset to safe state
+      setSelectedCategory("all");
+      setVisibleProducts(8);
+      setSearchTerm("");
+    }
   };
 
   // Handle image zoom
@@ -496,28 +525,39 @@ export default function Products() {
             </div>
           ) : displayedProducts.length > 0 ? (
             <>
-              {displayedProducts.map((product, index) => (
-                <motion.div
-                  key={product.id || index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="h-full"
-                >
-                  <Card 
-                    image={product.image ? (
-                      product.image.startsWith('http') 
-                        ? product.image // Already a full URL (Azure Blob)
-                        : product.image.startsWith('/media') 
-                          ? `${BACKEND_URL}${product.image}` // Relative URL, prepend backend
-                          : product.image // Local import or other
-                    ) : hero} 
-                    name={product.name} 
-                    price={product.price ? (typeof product.price === 'string' ? `PKR ${product.price}` : `PKR ${product.price}`) : 'Contact for price'}
-                    onImageClick={handleImageClick}
-                  />
-                </motion.div>
-              ))}
+              {displayedProducts.map((product, index) => {
+                try {
+                  return (
+                    <motion.div
+                      key={product.id || index}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      className="h-full"
+                    >
+                      <Card 
+                        image={product.image ? (
+                          product.image.startsWith('http') 
+                            ? product.image // Already a full URL (Azure Blob)
+                            : product.image.startsWith('/media') 
+                              ? `${BACKEND_URL}${product.image}` // Relative URL, prepend backend
+                              : product.image // Local import or other
+                        ) : hero} 
+                        name={product.name || 'Unnamed Product'} 
+                        price={product.price ? (typeof product.price === 'string' ? `PKR ${product.price}` : `PKR ${product.price}`) : 'Contact for price'}
+                        onImageClick={handleImageClick}
+                      />
+                    </motion.div>
+                  );
+                } catch (cardError) {
+                  console.error('❌ Error rendering card for product:', product, cardError);
+                  return (
+                    <div key={product.id || index} className="h-full p-4 border border-red-300 rounded-lg bg-red-50">
+                      <p className="text-red-600 text-sm">Error loading product</p>
+                    </div>
+                  );
+                }
+              })}
             </>
           ) : (
             <div className="col-span-full text-center py-12">
