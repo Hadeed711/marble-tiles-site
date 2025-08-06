@@ -18,125 +18,66 @@ export default function Products() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [visibleProducts, setVisibleProducts] = useState(8); // Show only 8 products initially (2 rows)
+  const [visibleProducts, setVisibleProducts] = useState(6); // Show only 6 products initially so Load More is visible
 
   const BACKEND_URL = 'https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net';
 
-  // Fetch ALL products from ALL pages and categories from backend (ONLY backend, no fallback)
+  // Fetch products and categories from backend only (no fallback products)
   useEffect(() => {
-    const fetchAllProducts = async () => {
-      let allProducts = [];
-      let nextUrl = `${BACKEND_URL}/api/products/`;
-      
-      while (nextUrl) {
-        try {
-          console.log('Fetching:', nextUrl);
-          const response = await fetch(nextUrl);
-          if (!response.ok) throw new Error(`Failed to fetch products: ${response.status}`);
-          
-          const data = await response.json();
-          allProducts = [...allProducts, ...(data.results || [])];
-          
-          // Fix mixed content: Convert HTTP next URL to HTTPS
-          nextUrl = data.next ? data.next.replace('http://', 'https://') : null;
-          
-          console.log(`✅ Fetched page with ${data.results?.length || 0} products. Total so far: ${allProducts.length}`);
-          if (nextUrl) {
-            console.log('Next page URL:', nextUrl);
-          }
-        } catch (error) {
-          console.error('Error fetching page:', error);
-          break; // Stop fetching if there's an error
-        }
-      }
-      
-      return allProducts;
-    };
-
     const fetchData = async () => {
       try {
         setLoading(true);
         setError(null);
         
-        console.log('🔄 Fetching ALL products from backend...');
+        console.log('Fetching products from backend...');
         
-        // Fetch ALL products from all pages
-        const allBackendProducts = await fetchAllProducts();
+        // Fetch products from backend
+        const productsResponse = await fetch(`${BACKEND_URL}/api/products/`);
         
-        if (allBackendProducts && allBackendProducts.length > 0) {
-          console.log(`✅ Total backend products fetched: ${allBackendProducts.length}`);
-          console.log('Products:', allBackendProducts.map(p => ({ id: p.id, name: p.name })));
-          setProducts(allBackendProducts);
+        if (productsResponse.ok) {
+          const productsData = await productsResponse.json();
+          const backendProducts = productsData.results || productsData;
           
-          // Fetch categories from backend
-          try {
-            const categoriesResponse = await fetch(`${BACKEND_URL}/api/products/categories/`);
+          if (backendProducts && backendProducts.length > 0) {
+            console.log('Successfully loaded', backendProducts.length, 'products from backend');
+            setProducts(backendProducts);
             
-            if (categoriesResponse.ok) {
-              const categoriesData = await categoriesResponse.json();
-              console.log('Categories data:', categoriesData);
-              
-              if (categoriesData && categoriesData.results && categoriesData.results.length > 0) {
-                const formattedCategories = [
-                  { id: "all", name: "All Products", count: allBackendProducts.length },
-                  ...categoriesData.results.map(cat => ({ 
-                    id: cat.slug, 
-                    name: cat.name,
-                    count: cat.product_count || 0
-                  }))
-                ];
-                console.log('Formatted categories:', formattedCategories);
-                setCategories(formattedCategories);
-              } else {
-                // Create basic categories based on actual products
-                const marbleCount = allBackendProducts.filter(p => p.category_name?.toLowerCase() === "marble").length;
-                const graniteCount = allBackendProducts.filter(p => p.category_name?.toLowerCase() === "granite").length;
-                console.log('Fallback categories - Marble:', marbleCount, 'Granite:', graniteCount);
-                setCategories([
-                  { id: "all", name: "All Products", count: allBackendProducts.length },
-                  { id: "marble", name: "Marble", count: marbleCount },
-                  { id: "granite", name: "Granite", count: graniteCount },
-                ]);
-              }
-            } else {
-              // Create basic categories based on actual products
-              const marbleCount = allBackendProducts.filter(p => p.category_name?.toLowerCase() === "marble").length;
-              const graniteCount = allBackendProducts.filter(p => p.category_name?.toLowerCase() === "granite").length;
-              console.log('Response not OK - Marble:', marbleCount, 'Granite:', graniteCount);
-              setCategories([
-                { id: "all", name: "All Products", count: allBackendProducts.length },
-                { id: "marble", name: "Marble", count: marbleCount },
-                { id: "granite", name: "Granite", count: graniteCount },
-              ]);
-            }
-          } catch (catError) {
-            console.log('Error fetching categories, creating from products:', catError);
-            // Create basic categories based on actual products
-            const marbleCount = allBackendProducts.filter(p => p.category_name?.toLowerCase() === "marble").length;
-            const graniteCount = allBackendProducts.filter(p => p.category_name?.toLowerCase() === "granite").length;
-            console.log('Error fallback - Marble:', marbleCount, 'Granite:', graniteCount);
-            setCategories([
-              { id: "all", name: "All Products", count: allBackendProducts.length },
-              { id: "marble", name: "Marble", count: marbleCount },
-              { id: "granite", name: "Granite", count: graniteCount },
-            ]);
+            // Calculate category counts from actual products
+            const marbleProducts = backendProducts.filter(product => 
+              product.category === 1 || (product.category && product.category.id === 1) ||
+              (product.category && product.category.slug === 'marble') ||
+              (product.category && product.category.name && product.category.name.toLowerCase().includes('marble'))
+            );
+            
+            const graniteProducts = backendProducts.filter(product => 
+              product.category === 2 || (product.category && product.category.id === 2) ||
+              (product.category && product.category.slug === 'granite') ||
+              (product.category && product.category.name && product.category.name.toLowerCase().includes('granite'))
+            );
+            
+            // Set categories with accurate counts
+            const categories = [
+              { id: "all", name: "All Products", count: backendProducts.length },
+              { id: "marble", name: "Marble", count: marbleProducts.length },
+              { id: "granite", name: "Granite", count: graniteProducts.length }
+            ];
+            
+            console.log('Category counts:', categories);
+            setCategories(categories);
+          } else {
+            setError('No products found in the database');
+            setProducts([]);
+            setCategories([{ id: "all", name: "All Products", count: 0 }]);
           }
         } else {
-          console.error('❌ No products found from backend');
-          setError('No products available at the moment');
-          setProducts([]);
-          setCategories([
-            { id: "all", name: "All Products", count: 0 }
-          ]);
+          throw new Error(`Failed to fetch products: ${productsResponse.status}`);
         }
 
       } catch (error) {
-        console.error('❌ Error fetching from backend:', error);
-        setError('Failed to load products. Please try again later.');
+        console.error('Error fetching data:', error);
+        setError('Failed to load products. Please check your internet connection.');
         setProducts([]);
-        setCategories([
-          { id: "all", name: "All Products", count: 0 }
-        ]);
+        setCategories([{ id: "all", name: "All Products", count: 0 }]);
       } finally {
         setLoading(false);
       }
@@ -157,23 +98,21 @@ export default function Products() {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    // Simplified category matching - fix the blank page issue
+    // Handle category filtering based on backend structure
+    let matchesCategory = false;
     if (selectedCategory === "all") {
-      return matchesSearch;
+      matchesCategory = true;
+    } else if (selectedCategory === "marble") {
+      matchesCategory = product.category === 1 || 
+                      (product.category && product.category.id === 1) ||
+                      (product.category && product.category.slug === 'marble') ||
+                      (product.category && product.category.name && product.category.name.toLowerCase().includes('marble'));
+    } else if (selectedCategory === "granite") {
+      matchesCategory = product.category === 2 || 
+                      (product.category && product.category.id === 2) ||
+                      (product.category && product.category.slug === 'granite') ||
+                      (product.category && product.category.name && product.category.name.toLowerCase().includes('granite'));
     }
-    
-    // Multiple ways to match category (defensive programming)
-    const matchesCategory = 
-      // Match by category name (case-insensitive)
-      (product.category_name && product.category_name.toLowerCase() === selectedCategory.toLowerCase()) ||
-      // Match by category slug
-      (product.category && product.category.slug === selectedCategory) ||
-      // Match by category name from nested object
-      (product.category && product.category.name && product.category.name.toLowerCase() === selectedCategory.toLowerCase()) ||
-      // Match if selectedCategory is "marble" and product has marble in name
-      (selectedCategory.toLowerCase() === "marble" && product.name.toLowerCase().includes("marble")) ||
-      // Match if selectedCategory is "granite" and product has granite in name  
-      (selectedCategory.toLowerCase() === "granite" && product.name.toLowerCase().includes("granite"));
     
     return matchesSearch && matchesCategory;
   });
@@ -183,27 +122,13 @@ export default function Products() {
   const totalCount = filteredProducts.length;
 
   const handleLoadMore = () => {
-    setVisibleProducts(prev => prev + 8); // Load 8 more products
+    setVisibleProducts(prev => prev + 6); // Load 6 more products
   };
 
   const handleCategoryChange = (categoryId) => {
-    try {
-      console.log('🔄 Changing category to:', categoryId);
-      setSelectedCategory(categoryId);
-      setVisibleProducts(8); // Reset to 8 products when changing category
-      setSearchTerm(""); // Clear search when changing category
-      
-      // Clear search params when changing category
-      if (searchParams.get('search')) {
-        setSearchParams({});
-      }
-    } catch (error) {
-      console.error('❌ Error changing category:', error);
-      // Reset to safe state
-      setSelectedCategory("all");
-      setVisibleProducts(8);
-      setSearchTerm("");
-    }
+    setSelectedCategory(categoryId);
+    setVisibleProducts(6); // Reset to 6 products when changing category
+    setSearchTerm(""); // Clear search when changing category
   };
 
   // Handle image zoom
@@ -366,7 +291,7 @@ export default function Products() {
               onClick={() => {
                 setSearchTerm("");
                 setSelectedCategory("all");
-                setVisibleProducts(8); // Reset to 8 products
+                setVisibleProducts(6); // Reset to 6 products
               }}
               className="text-xs sm:text-sm text-gray-500 hover:text-[#00796b] underline mx-auto sm:mx-0"
             >
@@ -525,39 +450,29 @@ export default function Products() {
             </div>
           ) : displayedProducts.length > 0 ? (
             <>
-              {displayedProducts.map((product, index) => {
-                try {
-                  return (
-                    <motion.div
-                      key={product.id || index}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: index * 0.1 }}
-                      className="h-full"
-                    >
-                      <Card 
-                        image={product.image ? (
-                          product.image.startsWith('http') 
-                            ? product.image // Already a full URL (Azure Blob)
-                            : product.image.startsWith('/media') 
-                              ? `${BACKEND_URL}${product.image}` // Relative URL, prepend backend
-                              : product.image // Local import or other
-                        ) : hero} 
-                        name={product.name || 'Unnamed Product'} 
-                        price={product.price ? (typeof product.price === 'string' ? `PKR ${product.price}` : `PKR ${product.price}`) : 'Contact for price'}
-                        onImageClick={handleImageClick}
-                      />
-                    </motion.div>
-                  );
-                } catch (cardError) {
-                  console.error('❌ Error rendering card for product:', product, cardError);
-                  return (
-                    <div key={product.id || index} className="h-full p-4 border border-red-300 rounded-lg bg-red-50">
-                      <p className="text-red-600 text-sm">Error loading product</p>
-                    </div>
-                  );
-                }
-              })}
+              {displayedProducts.map((product, index) => (
+                <motion.div
+                  key={product.id || index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="h-full"
+                >
+                  <Card 
+                    image={product.image ? (
+                      product.image.startsWith('http') 
+                        ? product.image // Already a full URL (Azure Blob)
+                        : product.image.startsWith('/media') 
+                          ? `${BACKEND_URL}${product.image}` // Relative URL, prepend backend
+                          : product.image // Local import or other
+                    ) : hero} 
+                    name={product.name} 
+                    description={product.description || `Premium ${product.name.toLowerCase()}`}
+                    price={product.price ? (typeof product.price === 'string' ? `PKR ${product.price}` : `PKR ${product.price}`) : 'Contact for price'}
+                    onImageClick={handleImageClick}
+                  />
+                </motion.div>
+              ))}
             </>
           ) : (
             <div className="col-span-full text-center py-12">
@@ -576,54 +491,18 @@ export default function Products() {
           )}
         </motion.div>
 
-        {/* Load More Button - Outside the grid for better visibility */}
+        {/* Simple Load More Button */}
         {!loading && !error && displayedProducts.length > 0 && displayedProducts.length < filteredProducts.length && (
-          <motion.div
-            className="text-center mt-12 mb-8"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-          >
+          <div className="text-center mt-8">
             <motion.button
               onClick={handleLoadMore}
-              className="bg-gradient-to-r from-[#00796b] to-[#4db6ac] hover:from-[#d4af37] hover:to-[#ffd700] text-white px-10 py-4 rounded-full font-semibold text-lg shadow-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-[#00796b] focus:ring-opacity-50"
-              whileHover={{ scale: 1.05, boxShadow: "0 10px 25px rgba(0, 121, 107, 0.3)" }}
+              className="bg-[#00796b] hover:bg-[#4db6ac] text-white px-8 py-3 rounded-full font-medium shadow-lg transition-all duration-300"
+              whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <span className="flex items-center gap-3">
-                <svg 
-                  width="20" 
-                  height="20" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                  className="animate-bounce"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                </svg>
-                Load More Products
-                <span className="bg-white bg-opacity-20 px-2 py-1 rounded-full text-sm">
-                  {filteredProducts.length - displayedProducts.length} remaining
-                </span>
-              </span>
+              Load More ({filteredProducts.length - displayedProducts.length} remaining)
             </motion.button>
-            
-            {/* Progress indicator */}
-            <div className="mt-4 max-w-md mx-auto">
-              <div className="flex justify-between text-sm text-gray-600 mb-2">
-                <span>Showing {displayedProducts.length} of {filteredProducts.length}</span>
-                <span>{Math.round((displayedProducts.length / filteredProducts.length) * 100)}% loaded</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <motion.div 
-                  className="bg-gradient-to-r from-[#00796b] to-[#4db6ac] h-2 rounded-full"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${(displayedProducts.length / filteredProducts.length) * 100}%` }}
-                  transition={{ duration: 0.8, ease: "easeOut" }}
-                />
-              </div>
-            </div>
-          </motion.div>
+          </div>
         )}
       </section>
 

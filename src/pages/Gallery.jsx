@@ -461,9 +461,6 @@ export default function Gallery() {
                       {image.title && (
                         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
                           <h3 className="text-white text-sm font-medium">{image.title}</h3>
-                          {image.project_location && (
-                            <p className="text-white/80 text-xs">{image.project_location}</p>
-                          )}
                         </div>
                       )}
                     </motion.div>
@@ -531,9 +528,6 @@ export default function Gallery() {
                   <h3 className="text-white text-lg font-medium">{lightboxImage.title}</h3>
                   {lightboxImage.description && (
                     <p className="text-white/90 text-sm mt-1">{lightboxImage.description}</p>
-                  )}
-                  {lightboxImage.project_location && (
-                    <p className="text-white/80 text-sm mt-1">📍 {lightboxImage.project_location}</p>
                   )}
                 </div>
               )}

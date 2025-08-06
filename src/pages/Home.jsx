@@ -15,11 +15,11 @@ import surface from "../assets/others/gallery61.jpg";
 import mosaic from "../assets/mosaic/gallery63.jpg";
 
 // Import product images
-import black_gold from "../assets/products/black_gold.jpg";
-import star_black from "../assets/products/star_black.jpg";
-import sunny_white from "../assets/products/sunny_white.jpg";
-import sunny_grey from "../assets/products/sunny_grey.jpg";
-import tropical_grey from "../assets/products/tropical_grey.png";
+import black_gold from "../assets/products/black_gold.webp";
+import star_black from "../assets/products/star_black.webp";
+import sunny_white from "../assets/products/sunny_white.webp";
+import sunny_grey from "../assets/products/sunny_grey.webp";
+import tropical_grey from "../assets/products/tropical_grey.webp";
 
 
 // High-quality marble and stone images
@@ -414,7 +414,13 @@ export default function Home() {
                     viewport={{ once: true }}
                     transition={{ delay: 0.1, duration: 0.3 }}
                   >
-                    {service.title}
+                    {/* Mobile: Add numbering, Desktop: No numbering */}
+                    <span className="md:hidden">
+                      {String(index + 1).padStart(2, '0')}. {service.title}
+                    </span>
+                    <span className="hidden md:inline">
+                      {service.title}
+                    </span>
                   </motion.h2>
 
                   {/* Description with typing effect */}
@@ -450,7 +456,7 @@ export default function Home() {
 
                   {/* Feature list with staggered animations */}
                   <motion.ul 
-                    className="text-sm sm:text-base text-gray-600 space-y-3 sm:space-y-4 text-center md:text-left"
+                    className="text-sm sm:text-base text-gray-600 space-y-3 sm:space-y-4 text-left"
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     viewport={{ once: true }}
@@ -459,7 +465,7 @@ export default function Home() {
                     {service.features.map((feature, featureIndex) => (
                       <motion.li 
                         key={featureIndex}
-                        className="flex items-start justify-center md:justify-start gap-3 group/item hover:text-[#00796b] transition-colors duration-300"
+                        className="flex items-start gap-3 group/item hover:text-[#00796b] transition-colors duration-300"
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}

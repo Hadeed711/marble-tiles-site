@@ -5,10 +5,10 @@ export default function Loader() {
     <div className="fixed inset-0 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center z-[9999]">
       <div className="text-center">
         {/* Modern Loading Animation */}
-        <motion.div className="relative">
+        <motion.div className="relative mx-auto flex items-center justify-center">
           {/* Outer Ring */}
           <motion.div
-            className="w-20 h-20 rounded-full border-4 border-gray-200"
+            className="w-20 h-20 rounded-full border-4 border-gray-200 relative"
             animate={{ rotate: 360 }}
             transition={{
               repeat: Infinity,
@@ -29,7 +29,7 @@ export default function Loader() {
           
           {/* Inner Ring */}
           <motion.div
-            className="absolute inset-2 w-12 h-12 rounded-full border-3 border-gray-300"
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full border-3 border-gray-300"
             animate={{ rotate: -360 }}
             transition={{
               repeat: Infinity,
@@ -50,7 +50,7 @@ export default function Loader() {
 
           {/* Center Stone Icon */}
           <motion.div
-            className="absolute inset-0 flex items-center justify-center"
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center"
             animate={{ scale: [1, 1.1, 1] }}
             transition={{
               repeat: Infinity,
