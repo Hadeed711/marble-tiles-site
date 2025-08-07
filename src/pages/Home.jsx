@@ -36,38 +36,6 @@ export default function Home() {
   const [currentCardsToShow, setCurrentCardsToShow] = useState(
     cardsToShow.desktop
   );
-  const [backendFeaturedProducts, setBackendFeaturedProducts] = useState([]);
-  const [useBackendProducts, setUseBackendProducts] = useState(false);
-
-  // Try to fetch featured products from backend
-  useEffect(() => {
-    const fetchFeaturedProducts = async () => {
-      try {
-        const response = await fetch('https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net/api/products/');
-        if (response.ok) {
-          const data = await response.json();
-          const products = data.results || data;
-          // Get only featured products or first 5 if no featured flag
-          const featured = products.filter(p => p.is_featured).slice(0, 5);
-          if (featured.length > 0) {
-            // Use local assets images instead of blob storage images
-            const localImages = [black_gold, star_black, sunny_white, sunny_grey, tropical_grey];
-            setBackendFeaturedProducts(featured.map((p, index) => ({
-              image: localImages[index] || localImages[0], // Use local assets images
-              name: p.name,
-              price: `₹${p.price}/sq ft`
-            })));
-            setUseBackendProducts(true);
-          }
-        }
-      } catch (error) {
-        console.log('Using fallback featured products:', error);
-        // Will use hardcoded products as fallback
-      }
-    };
-
-    fetchFeaturedProducts();
-  }, []);
 
   // Helper to start interval
   const startSliderInterval = () => {
@@ -204,15 +172,10 @@ export default function Home() {
     },
   ];
 
-  // Get current featured products (backend or fallback)
-  const currentFeaturedProducts = useBackendProducts && backendFeaturedProducts.length > 0 
-    ? backendFeaturedProducts 
-    : featuredProducts;
-
   // Calculate max index for the product slider - responsive
   const maxProductIndex = Math.max(
     0,
-    currentFeaturedProducts.length - currentCardsToShow
+    featuredProducts.length - currentCardsToShow
   );
 
   // Handle previous product navigation
@@ -648,8 +611,8 @@ export default function Home() {
                 className="flex gap-4 sm:gap-6"
                 style={{
                   width: `${
-                    cardWidth * currentFeaturedProducts.length +
-                    24 * (currentFeaturedProducts.length - 1)
+                    cardWidth * featuredProducts.length +
+                    24 * (featuredProducts.length - 1)
                   }px`,
                 }}
                 animate={{
@@ -660,7 +623,7 @@ export default function Home() {
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
               >
-                {currentFeaturedProducts.map((product) => (
+                {featuredProducts.map((product) => (
                   <div
                     key={product.name}
                     className="w-80 sm:w-80 flex-shrink-0 h-full"
