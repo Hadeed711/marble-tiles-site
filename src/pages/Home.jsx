@@ -6,6 +6,7 @@ import Footer from "../components/Footer";
 import Card from "../components/Card";
 import HoverShadowBg from "../components/HoverShadowBg";
 import PremiumButton from "../components/PremiumButton";
+import AdBanner from "../components/AdBanner";
 import slider1 from "../assets/cover_img3.jpg";
 import slider2 from "../assets/cover_img4.jpg";
 import slider3 from "../assets/cover_img.jpg";
@@ -754,6 +755,9 @@ export default function Home() {
             View All Products →
           </Link>
         </div>
+
+        {/* Ad Banner before Footer */}
+        <AdBanner />
 
         <Footer />
 
