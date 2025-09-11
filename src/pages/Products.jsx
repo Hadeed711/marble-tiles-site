@@ -8,17 +8,128 @@ import Card from "../components/Card";
 import PremiumButton from "../components/PremiumButton";
 import hero from "../assets/hero_img1.jpg";
 
+// Import product images
+import black_gold from "../assets/products/black_gold.webp";
+import booti_seena from "../assets/products/booti_seena.webp";
+import jet_black from "../assets/products/jet_black.webp";
+import star_black from "../assets/products/star_black.webp";
+import sunny_grey from "../assets/products/sunny_grey.webp";
+import sunny_white from "../assets/products/sunny_white.webp";
+import taweera from "../assets/products/taweera.webp";
+import tropical_grey from "../assets/products/tropical_grey.webp";
+
 export default function Products() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchParams, setSearchParams] = useSearchParams();
   const [zoomedImage, setZoomedImage] = useState(null);
+  const [visibleProducts, setVisibleProducts] = useState(6);
+
+  // Frontend-only product data (8 products)
+  const products = [
+    {
+      id: 1,
+      name: "Black Gold Marble",
+      description: "Premium black marble with golden veining, perfect for luxury interiors",
+      price: "12000",
+      category: { id: 1, name: "Marble", slug: "marble" },
+      image: black_gold,
+      in_stock: true,
+      is_featured: true
+    },
+    {
+      id: 2,
+      name: "Booti Seena Marble",
+      description: "Traditional Pakistani marble with unique patterns and durability",
+      price: "8500",
+      category: { id: 1, name: "Marble", slug: "marble" },
+      image: booti_seena,
+      in_stock: true,
+      is_featured: false
+    },
+    {
+      id: 3,
+      name: "Jet Black Marble",
+      description: "Pure black marble for modern and contemporary designs",
+      price: "10500",
+      category: { id: 1, name: "Marble", slug: "marble" },
+      image: jet_black,
+      in_stock: true,
+      is_featured: true
+    },
+    {
+      id: 4,
+      name: "Star Black Marble",
+      description: "Black marble with star-like patterns, ideal for flooring",
+      price: "8500",
+      category: { id: 1, name: "Marble", slug: "marble" },
+      image: star_black,
+      in_stock: true,
+      is_featured: true
+    },
+    {
+      id: 5,
+      name: "Sunny Grey Marble",
+      description: "Light grey marble with natural veining for elegant spaces",
+      price: "7200",
+      category: { id: 1, name: "Marble", slug: "marble" },
+      image: sunny_grey,
+      in_stock: true,
+      is_featured: true
+    },
+    {
+      id: 6,
+      name: "Sunny White Marble",
+      description: "Pure white marble perfect for bathrooms and kitchens",
+      price: "6800",
+      category: { id: 1, name: "Marble", slug: "marble" },
+      image: sunny_white,
+      in_stock: true,
+      is_featured: true
+    },
+    {
+      id: 7,
+      name: "Taweera Marble",
+      description: "Local Pakistani marble with excellent quality and finish",
+      price: "5500",
+      category: { id: 1, name: "Marble", slug: "marble" },
+      image: taweera,
+      in_stock: true,
+      is_featured: false
+    },
+    {
+      id: 8,
+      name: "Tropical Grey Granite",
+      description: "Durable granite with tropical grey patterns for countertops",
+      price: "9500",
+      category: { id: 2, name: "Granite", slug: "granite" },
+      image: tropical_grey,
+      in_stock: true,
+      is_featured: true
+    }
+  ];
+
+  // Calculate categories from products
+  const marbleProducts = products.filter(product => 
+    product.category.slug === 'marble'
+  );
+  const graniteProducts = products.filter(product => 
+    product.category.slug === 'granite'
+  );
+
+  const categories = [
+    { id: "all", name: "All Products", count: products.length },
+    { id: "marble", name: "Marble", count: marbleProducts.length },
+    { id: "granite", name: "Granite", count: graniteProducts.length }
+  ];
+
+  // Comment out the old backend fetching logic for future use
+  /*
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [visibleProducts, setVisibleProducts] = useState(6); // Show only 6 products initially so Load More is visible
 
   const BACKEND_URL = 'https://sundar-bnhkawbtbbhjfxbz.eastasia-01.azurewebsites.net';
 
@@ -85,6 +196,7 @@ export default function Products() {
 
     fetchData();
   }, []);
+  */
 
   // Get search query from URL parameters
   useEffect(() => {
@@ -95,23 +207,18 @@ export default function Products() {
   }, [searchParams]);
 
   const filteredProducts = products.filter(product => {
+    console.log('Product being filtered:', product);
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    // Handle category filtering based on backend structure
+    // Simplified category filtering for frontend data
     let matchesCategory = false;
     if (selectedCategory === "all") {
       matchesCategory = true;
     } else if (selectedCategory === "marble") {
-      matchesCategory = product.category === 1 || 
-                      (product.category && product.category.id === 1) ||
-                      (product.category && product.category.slug === 'marble') ||
-                      (product.category && product.category.name && product.category.name.toLowerCase().includes('marble'));
+      matchesCategory = product.category.slug === 'marble';
     } else if (selectedCategory === "granite") {
-      matchesCategory = product.category === 2 || 
-                      (product.category && product.category.id === 2) ||
-                      (product.category && product.category.slug === 'granite') ||
-                      (product.category && product.category.name && product.category.name.toLowerCase().includes('granite'));
+      matchesCategory = product.category.slug === 'granite';
     }
     
     return matchesSearch && matchesCategory;
@@ -120,6 +227,11 @@ export default function Products() {
   // Show only visibleProducts number of products for pagination
   const displayedProducts = filteredProducts.slice(0, visibleProducts);
   const totalCount = filteredProducts.length;
+  
+  console.log('Products array length:', products.length);
+  console.log('Filtered products length:', filteredProducts.length);
+  console.log('Displayed products length:', displayedProducts.length);
+  console.log('Selected category:', selectedCategory);
 
   const handleLoadMore = () => {
     setVisibleProducts(prev => prev + 6); // Load 6 more products
@@ -360,95 +472,7 @@ export default function Products() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
         >
-          {loading ? (
-            <div className="col-span-full text-center py-16">
-              <div className="flex flex-col items-center">
-                {/* Modern Spinner */}
-                <div className="relative">
-                  <motion.div
-                    className="w-16 h-16 rounded-full border-4 border-gray-200"
-                    animate={{ rotate: 360 }}
-                    transition={{
-                      repeat: Infinity,
-                      duration: 1.5,
-                      ease: "linear",
-                    }}
-                  >
-                    <motion.div
-                      className="absolute inset-0 rounded-full border-4 border-transparent border-t-[#00796b] border-r-[#00796b]"
-                      animate={{ rotate: 360 }}
-                      transition={{
-                        repeat: Infinity,
-                        duration: 1,
-                        ease: "linear",
-                      }}
-                    />
-                  </motion.div>
-                  
-                  {/* Center Icon */}
-                  <motion.div
-                    className="absolute inset-0 flex items-center justify-center"
-                    animate={{ scale: [1, 1.1, 1] }}
-                    transition={{
-                      repeat: Infinity,
-                      duration: 2,
-                      ease: "easeInOut",
-                    }}
-                  >
-                    <div className="w-4 h-4 bg-gradient-to-br from-[#00796b] to-[#d4af37] rounded-sm transform rotate-45"></div>
-                  </motion.div>
-                </div>
-
-                {/* Loading Text */}
-                <motion.div
-                  className="mt-6"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  <motion.p
-                    className="text-[#00796b] font-semibold text-lg mb-2"
-                    animate={{ opacity: [0.7, 1, 0.7] }}
-                    transition={{
-                      repeat: Infinity,
-                      duration: 2,
-                      ease: "easeInOut",
-                    }}
-                  >
-                    Loading Premium Products
-                  </motion.p>
-                  <p className="text-gray-500 text-sm">Fetching marble & granite collection...</p>
-                </motion.div>
-
-                {/* Animated Dots */}
-                <div className="flex space-x-1 mt-4">
-                  {[0, 1, 2].map((index) => (
-                    <motion.div
-                      key={index}
-                      className="w-2 h-2 bg-[#d4af37] rounded-full"
-                      animate={{ y: [0, -6, 0] }}
-                      transition={{
-                        repeat: Infinity,
-                        duration: 1,
-                        ease: "easeInOut",
-                        delay: index * 0.15,
-                      }}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-          ) : error ? (
-            <div className="col-span-full text-center py-12">
-              <div className="text-red-500 mb-4">
-                <svg className="mx-auto h-16 w-16 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Error loading products</h3>
-                <p className="text-gray-600">{error}</p>
-              </div>
-            </div>
-          ) : displayedProducts.length > 0 ? (
+          {displayedProducts.length > 0 ? (
             <>
               {displayedProducts.map((product, index) => (
                 <motion.div
@@ -459,16 +483,9 @@ export default function Products() {
                   className="h-full"
                 >
                   <Card 
-                    image={product.image ? (
-                      product.image.startsWith('http') 
-                        ? product.image // Already a full URL (Azure Blob)
-                        : product.image.startsWith('/media') 
-                          ? `${BACKEND_URL}${product.image}` // Relative URL, prepend backend
-                          : product.image // Local import or other
-                    ) : hero} 
+                    image={product.image} 
                     name={product.name} 
                     description={product.description || `Premium ${product.name.toLowerCase()}`}
-                    price={product.price ? (typeof product.price === 'string' ? `PKR ${product.price}` : `PKR ${product.price}`) : 'Contact for price'}
                     onImageClick={handleImageClick}
                   />
                 </motion.div>
@@ -492,7 +509,7 @@ export default function Products() {
         </motion.div>
 
         {/* Simple Load More Button */}
-        {!loading && !error && displayedProducts.length > 0 && displayedProducts.length < filteredProducts.length && (
+        {displayedProducts.length > 0 && displayedProducts.length < filteredProducts.length && (
           <div className="text-center mt-8">
             <motion.button
               onClick={handleLoadMore}

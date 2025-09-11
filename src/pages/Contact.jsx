@@ -244,6 +244,9 @@ _Sent from Sundar Marbles Website_`;
               options, pricing, or anything else — we're ready to answer your
               questions.
             </p>
+
+            {/* Comment out the original contact form for future use */}
+            {/*
             <form
               onSubmit={handleSubmit}
               className="space-y-6 bg-white p-8 rounded-2xl shadow-xl"
@@ -313,6 +316,7 @@ _Sent from Sundar Marbles Website_`;
                 </button>
               </div>
             </form>
+            */}
           </div>
 
           <div className="space-y-8 mt-40">
