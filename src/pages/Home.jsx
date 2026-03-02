@@ -356,156 +356,180 @@ export default function Home() {
         </div>
 
         {/* Services */}
-        <div className="py-8 sm:py-12 md:py-16 px-4 sm:px-6 space-y-12 sm:space-y-16 md:space-y-20">
-          {services.map((service, index) => (
-            <div key={index} className="relative group">
+        <div className="py-16 sm:py-20 md:py-28 bg-white overflow-hidden">
+
+          {/* Section Header */}
+          <motion.div
+            className="text-center mb-14 sm:mb-20 px-4"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <p className="text-xs sm:text-sm font-bold uppercase tracking-[0.25em] text-[#d4af37] mb-3">
+              What We Offer
+            </p>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#1a1a1a] leading-tight mb-4">
+              Crafted With <span className="bg-gradient-to-r from-[#00796b] to-[#d4af37] bg-clip-text text-transparent">Precision</span>
+            </h2>
+            <div className="flex items-center justify-center gap-3 mb-5">
+              <div className="h-px w-16 bg-gradient-to-r from-transparent to-[#d4af37]"></div>
+              <div className="w-2.5 h-2.5 rounded-full bg-[#00796b]"></div>
+              <div className="h-px w-16 bg-gradient-to-l from-transparent to-[#d4af37]"></div>
+            </div>
+            <p className="text-gray-500 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+              From flooring to staircases, every surface we touch becomes a statement of timeless luxury.
+            </p>
+          </motion.div>
+
+          {/* Service Blocks */}
+          <div className="space-y-6 sm:space-y-8 px-4 sm:px-6 md:px-10">
+            {services.map((service, index) => (
               <motion.div
-                className={`flex flex-col ${
-                  index % 2 !== 0 ? "md:flex-row-reverse" : "md:flex-row"
-                } items-center gap-6 sm:gap-8`}
-                initial={{ opacity: 0, y: 30 }}
+                key={index}
+                className={`group flex flex-col ${index % 2 !== 0 ? "md:flex-row-reverse" : "md:flex-row"} min-h-[340px] md:min-h-[400px] rounded-2xl overflow-hidden shadow-[0_4px_30px_rgba(0,0,0,0.08)] border border-gray-100`}
+                initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.7, ease: "easeOut" }}
               >
-                {/* Content Section - Shows first on mobile */}
-                <div className="w-full md:w-1/2 space-y-4 sm:space-y-6 order-1 md:order-none">
-                  {/* Title with gradient effect */}
-                  <motion.h2 
-                    className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#00796b] via-[#d4af37] to-[#00796b] bg-clip-text text-transparent mb-3 sm:mb-4 text-center md:text-left leading-tight"
+                {/* Image Panel */}
+                <div className="relative w-full md:w-[55%] overflow-hidden min-h-[220px] md:min-h-full">
+                  <motion.img
+                    src={service.image}
+                    alt={service.title}
+                    className="w-full h-full object-cover min-h-[220px] md:min-h-[400px] transition-transform duration-700 group-hover:scale-105"
+                  />
+                  {/* Dark gradient over image */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/20 to-transparent md:bg-gradient-to-l" style={{ background: index % 2 !== 0 ? "linear-gradient(to left, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.15) 50%, transparent 100%)" : "linear-gradient(to right, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.15) 50%, transparent 100%)" }}></div>
+
+                  {/* Large service number watermark on image */}
+                  <div
+                    className="absolute bottom-4 text-[90px] sm:text-[110px] font-black text-white/10 leading-none select-none pointer-events-none"
+                    style={{ [index % 2 !== 0 ? "right" : "left"]: "16px" }}
+                  >
+                    {String(index + 1).padStart(2, "0")}
+                  </div>
+
+                  {/* Pill badge */}
+                  <div className="absolute top-5 left-5">
+                    <span className="inline-flex items-center gap-1.5 bg-white/20 backdrop-blur-md text-white text-xs font-semibold px-3 py-1.5 rounded-full border border-white/30">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#d4af37] inline-block"></span>
+                      Premium Service
+                    </span>
+                  </div>
+                </div>
+
+                {/* Content Panel */}
+                  <div className="w-full md:w-[45%] bg-[#fafafa] flex flex-col justify-center px-6 sm:px-8 md:px-10 py-8 sm:py-10 relative overflow-hidden">
+                  {/* Decorative large number behind text */}
+                  <div className="absolute -top-4 right-0 text-[80px] font-black text-[#00796b]/5 leading-none select-none pointer-events-none">
+                    {String(index + 1).padStart(2, "0")}
+                  </div>
+
+                  {/* Index label */}
+                  <motion.p
+                    className="text-xs font-bold uppercase tracking-[0.2em] text-[#d4af37] mb-3"
+                    initial={{ opacity: 0, x: -15 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.15, duration: 0.4 }}
+                  >
+                    {String(index + 1).padStart(2, "0")} — Our Services
+                  </motion.p>
+
+                  {/* Title */}
+                  <motion.h2
+                    className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#1a1a1a] leading-tight mb-3"
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: 0.1, duration: 0.3 }}
+                    transition={{ delay: 0.2, duration: 0.5 }}
                   >
-                    {/* Mobile: Add numbering, Desktop: No numbering */}
-                    <span className="md:hidden">
-                      {String(index + 1).padStart(2, '0')}. {service.title}
-                    </span>
-                    <span className="hidden md:inline">
-                      {service.title}
-                    </span>
+                    {service.title}
                   </motion.h2>
 
-                  {/* Description with typing effect */}
-                  <motion.p 
-                    className="text-base sm:text-lg text-gray-700 leading-relaxed mb-3 sm:mb-4 text-center md:text-left font-medium"
+                  {/* Accent line */}
+                  <motion.div
+                    className="w-12 h-1 rounded-full bg-gradient-to-r from-[#00796b] to-[#d4af37] mb-5"
+                    initial={{ scaleX: 0, originX: 0 }}
+                    whileInView={{ scaleX: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.3, duration: 0.5 }}
+                  />
+
+                  {/* Description */}
+                  <motion.p
+                    className="text-gray-600 text-sm sm:text-base leading-relaxed mb-6"
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     viewport={{ once: true }}
-                    transition={{ delay: 0.2, duration: 0.4 }}
+                    transition={{ delay: 0.3, duration: 0.5 }}
                   >
                     {service.description}
                   </motion.p>
 
-                  {/* Subheading with premium styling */}
-                  <motion.div
-                    className="text-center md:text-left mb-4"
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.3, duration: 0.4 }}
-                  >
-                    <h3 className="text-lg sm:text-xl font-bold text-[#00796b] mb-2 relative inline-block">
-                      {service.subheading}
-                      <motion.div
-                        className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-[#d4af37] to-[#00796b]"
-                        initial={{ scaleX: 0 }}
-                        whileInView={{ scaleX: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.4, duration: 0.5 }}
-                      />
-                    </h3>
-                  </motion.div>
-
-                  {/* Feature list with staggered animations */}
-                  <motion.ul 
-                    className="text-sm sm:text-base text-gray-600 space-y-3 sm:space-y-4 text-left"
+                  {/* Subheading */}
+                  <motion.p
+                    className="text-xs font-bold uppercase tracking-widest text-[#00796b] mb-4"
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     viewport={{ once: true }}
-                    transition={{ delay: 0.3, duration: 0.4 }}
+                    transition={{ delay: 0.35, duration: 0.4 }}
                   >
-                    {service.features.map((feature, featureIndex) => (
-                      <motion.li 
-                        key={featureIndex}
-                        className="flex items-start gap-3 group/item hover:text-[#00796b] transition-colors duration-300"
-                        initial={{ opacity: 0, x: -20 }}
+                    {service.subheading}
+                  </motion.p>
+
+                  {/* Features */}
+                  <motion.ul
+                    className="space-y-3 mb-8"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.4, duration: 0.4 }}
+                  >
+                    {service.features.map((feature, fi) => (
+                      <motion.li
+                        key={fi}
+                        className="flex items-start gap-3 group/feat"
+                        initial={{ opacity: 0, x: -12 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
-                        transition={{ delay: 0.4 + featureIndex * 0.05, duration: 0.3 }}
-                        whileHover={{ x: 5 }}
+                        transition={{ delay: 0.45 + fi * 0.07, duration: 0.35 }}
                       >
-                        <motion.span 
-                          className="w-2 h-2 bg-gradient-to-r from-[#d4af37] to-[#00796b] rounded-full mt-2 flex-shrink-0 group-hover/item:scale-125 transition-transform duration-300"
-                          whileHover={{ 
-                            scale: 1.5,
-                            boxShadow: "0 0 10px rgba(212, 175, 55, 0.5)"
-                          }}
-                        />
-                        <span className="leading-relaxed font-medium">{feature}</span>
+                        <span className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-gradient-to-br from-[#00796b] to-[#4db6ac] flex items-center justify-center shadow-sm">
+                          <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                          </svg>
+                        </span>
+                        <span className="text-gray-700 text-sm sm:text-base leading-relaxed group-hover/feat:text-[#00796b] transition-colors duration-200">
+                          {feature}
+                        </span>
                       </motion.li>
                     ))}
                   </motion.ul>
 
-                  {/* CTA Button with futuristic design */}
-                  <motion.div 
-                    className="text-center md:text-left mt-6"
-                    initial={{ opacity: 0, y: 20 }}
+                  {/* CTA */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 12 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: 0.6, duration: 0.3 }}
+                    transition={{ delay: 0.65, duration: 0.4 }}
                   >
-                    <PremiumButton
+                    <Link
                       to="/contact"
-                      leftIcon="M13 10V3L4 14h7v7l9-11h-7z"
-                      rightIcon="M17 8l4 4m0 0l-4 4m4-4H3"
-                      className="px-8 py-4 text-sm sm:text-base"
+                      className="group/btn inline-flex items-center gap-2 bg-[#00796b] hover:bg-[#005f56] text-white text-sm font-bold px-7 py-3.5 rounded-full shadow-lg hover:shadow-[0_8px_25px_rgba(0,121,107,0.4)] transition-all duration-300 hover:-translate-y-0.5"
                     >
-                      Get Premium Quote
-                    </PremiumButton>
+                      Get a Free Quote
+                      <svg className="w-4 h-4 transition-transform duration-300 group-hover/btn:translate-x-1" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      </svg>
+                    </Link>
                   </motion.div>
                 </div>
-
-                {/* Image Section - Shows second on mobile */}
-                <motion.div 
-                  className="w-full md:w-1/2 relative overflow-hidden rounded-xl order-2 md:order-none"
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ duration: 0.4 }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                  <img
-                    src={service.image}
-                    alt={service.title}
-                    className="w-full h-68 sm:h-80 md:h-96 rounded-xl shadow-2xl object-cover transform group-hover:scale-105 transition-transform duration-700"
-                  />
-                  {/* Floating overlay badge */}
-                  <motion.div
-                    className="absolute top-4 left-4 bg-gradient-to-r from-[#00796b]/90 to-[#d4af37]/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-semibold opacity-0 group-hover:opacity-100"
-                    initial={{ x: -20, opacity: 0 }}
-                    whileInView={{ x: 0, opacity: 1 }}
-                    transition={{ delay: 0.2, duration: 0.3 }}
-                  >
-                    Premium Service
-                  </motion.div>
-                </motion.div>
               </motion.div>
-
-              {/* Enhanced divider with animated gradient */}
-              <motion.div 
-                className="flex justify-center mt-8 sm:mt-12"
-                initial={{ opacity: 0, scaleX: 0 }}
-                whileInView={{ opacity: 1, scaleX: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.8, duration: 0.5 }}
-              >
-                <div className="relative">
-                  <div className="h-1 w-32 sm:w-48 bg-gradient-to-r from-[#d4af37] via-[#00796b] to-[#d4af37] rounded-full group-hover:w-64 transition-all duration-500"></div>
-                  <div className="absolute inset-0 h-1 w-32 sm:w-48 bg-gradient-to-r from-[#d4af37] via-[#00796b] to-[#d4af37] rounded-full opacity-50 blur-sm group-hover:w-64 transition-all duration-500"></div>
-                </div>
-              </motion.div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
         {/* About Section */}

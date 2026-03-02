@@ -10,9 +10,25 @@ export default function Footer() {
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
       
-      className="relative z-10 bg-gradient-to-b from-[#004d40] to-[#30786c] text-white pt-8 sm:pt-10 pb-4 sm:pb-6"
+      className="relative z-10 bg-gradient-to-b from-[#003d33] via-[#004d40] to-[#005f4e] text-white pt-10 sm:pt-14 pb-4 sm:pb-6 overflow-hidden"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+      {/* Subtle tile-joint diamond pattern overlay */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-0 opacity-100"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Cpath d='M0 28 L28 0 L56 28 L28 56 Z' fill='none' stroke='rgba(255,255,255,0.055)' stroke-width='0.8'/%3E%3C/svg%3E")`,
+          backgroundSize: "56px 56px",
+        }}
+      />
+      {/* Subtle gold shimmer at top */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute top-0 left-0 right-0 h-px z-0"
+        style={{ background: "linear-gradient(to right, transparent, rgba(212,175,55,0.5), transparent)" }}
+      />
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
 
         {/* Brand */}
         <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
@@ -95,7 +111,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="mt-6 sm:mt-8 border-t border-[#d4af37]/20 pt-3 sm:pt-4 text-xs sm:text-sm text-gray-200">
+      <div className="relative z-10 mt-6 sm:mt-10 border-t border-[#d4af37]/25 pt-3 sm:pt-4 text-xs sm:text-sm text-gray-200">
         <div className="flex flex-col sm:grid sm:grid-cols-3 items-center gap-2">
           {/* Empty left space for desktop layout */}
           <div className="hidden sm:block"></div>
