@@ -3,6 +3,7 @@ import React from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import HoverShadowBg from "../components/HoverShadowBg";
+import Seo from "../components/Seo";
 import aboutImage from "../assets/cover_img4.jpg";
 import talha_img from "../assets/talha_img.JPG";
 import tahir_img from "../assets/tahir_img.JPG";
@@ -61,6 +62,11 @@ export default function About() {
 
     <HoverShadowBg mousePosition={mousePosition} />
     <div className="relative z-10">
+      <Seo
+        title="About Us | Sundar Marbles – Marble & Granite Supplier in Faisalabad Since 2008"
+        description="Learn about Sundar Marbles, Faisalabad's trusted marble and granite company since 2008. Meet our team and discover our commitment to premium natural stone craftsmanship."
+        path="/about"
+      />
       <Navbar />
       
 

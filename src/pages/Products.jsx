@@ -4,6 +4,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import HoverShadowBg from "../components/HoverShadowBg";
+import Seo from "../components/Seo";
 import Card from "../components/Card";
 import PremiumButton from "../components/PremiumButton";
 import hero from "../assets/hero_img1.jpg";
@@ -274,6 +275,11 @@ export default function Products() {
     <div className="relative bg-[#f9f9f9] text-[#06201d] min-h-screen overflow-hidden">
       <HoverShadowBg mousePosition={mousePosition} />
       <div className="relative z-10">
+        <Seo
+          title="Marble & Granite Products with Prices | Sundar Marbles Faisalabad"
+          description="Explore premium marble and granite products at Sundar Marbles Faisalabad: Black Gold, Jet Black, Star Black, Sunny White, Booti Seena, Tropical Grey and more — with prices in PKR. Order on WhatsApp."
+          path="/products"
+        />
         <Navbar />
 
       {/* Premium Hero Section */}

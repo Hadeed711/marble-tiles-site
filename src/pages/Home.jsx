@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import Seo from "../components/Seo";
 import Card from "../components/Card";
 import HoverShadowBg from "../components/HoverShadowBg";
 import PremiumButton from "../components/PremiumButton";
@@ -154,27 +155,27 @@ export default function Home() {
     {
       image: black_gold,
       name: "Black Gold Marble",
-      price: "₹12,000/sq ft"
+      price: "Rs. 12,000/sq ft"
     },
     {
       image: star_black,
       name: "Star Black Marble",
-      price: "₹8,500/sq ft"
+      price: "Rs. 8,500/sq ft"
     },
     {
       image: sunny_white,
       name: "Sunny White Marble",
-      price: "₹6,800/sq ft"
+      price: "Rs. 6,800/sq ft"
     },
     {
       image: sunny_grey,
       name: "Sunny Grey Marble",
-      price: "₹7,200/sq ft"
+      price: "Rs. 7,200/sq ft"
     },
     {
       image: tropical_grey,
       name: "Tropical Grey Granite",
-      price: "₹9,500/sq ft"
+      price: "Rs. 9,500/sq ft"
     },
   ];
 
@@ -205,6 +206,11 @@ export default function Home() {
       <HoverShadowBg mousePosition={mousePosition} />
 
       <div className="relative z-10">
+        <Seo
+          title="Marble & Granite Store in Faisalabad | Sundar Marbles – Premium Supplier Since 2008"
+          description="Looking for a marble or granite store in Faisalabad? Sundar Marbles is your trusted marble supplier, granite store, and mosaic tile factory. Premium natural stone floors, staircases & surfaces since 2008. Visit our showroom or call now!"
+          path="/"
+        />
         <Navbar />
 
         {/* Hero Slider */}
@@ -789,24 +795,38 @@ export default function Home() {
         <AdBanner />
 
         {/* SEO Content Section */}
-        <section className="bg-[#f4f4f4] border-t border-gray-200 py-10 px-6 md:px-20">
-          <div className="max-w-5xl mx-auto">
-            <h2 className="text-xl md:text-2xl font-bold text-[#1a1a1a] mb-4">
-              Marble Store &amp; Granite Supplier in Faisalabad, Pakistan
-            </h2>
-            <p className="text-gray-600 text-sm md:text-base leading-relaxed mb-4">
-              Sundar Marbles is Faisalabad's trusted <strong>marble store</strong> and <strong>granite store</strong>, offering a wide selection of natural stone products for homes, offices, and commercial spaces. Whether you are searching for <strong>marble near me</strong>, a reliable <strong>granite supplier</strong>, or a complete <strong>marble shop in Pakistan</strong>, our showroom at Millat Road Faisalabad has everything you need under one roof.
-            </p>
-            <p className="text-gray-600 text-sm md:text-base leading-relaxed mb-4">
-              Our product range includes <strong>marble flooring tiles</strong>, <strong>granite tiles</strong>, <strong>mosaic tiles</strong>, marble staircases, bathroom surfaces, and kitchen countertops. We supply premium stone varieties including Black Gold Marble, Star Black Marble, Sunny White Marble, Sunny Grey Marble, and Tropical Grey Granite — all available at competitive prices in Pakistani Rupee (PKR).
-            </p>
-            <p className="text-gray-600 text-sm md:text-base leading-relaxed mb-6">
-              As a leading <strong>marble factory and supplier</strong> since 2008, we serve homeowners, builders, architects, and contractors across Faisalabad and all of Punjab, Pakistan. Visit our <strong>marble showroom</strong> or contact us for a free quote on your next flooring or renovation project.
-            </p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 text-xs text-gray-500">
-              {["Marble Store Faisalabad","Granite Store Pakistan","Mosaic Tile Supplier","Marble Flooring","Granite Tiles","Marble Near Me","Stone Supplier","Marble Showroom"].map((kw) => (
-                <span key={kw} className="bg-white border border-gray-200 rounded px-3 py-1.5 text-center">{kw}</span>
-              ))}
+        <section className="bg-white border-t border-gray-100 py-14 sm:py-16 px-4 sm:px-6 md:px-10">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-8">
+              <p className="text-xs sm:text-sm font-bold uppercase tracking-[0.25em] text-[#d4af37] mb-3">
+                Why Choose Us
+              </p>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-[#1a1a1a] leading-tight mb-4">
+                Marble Store &amp; Granite Supplier in{" "}
+                <span className="bg-gradient-to-r from-[#00796b] to-[#d4af37] bg-clip-text text-transparent">
+                  Faisalabad
+                </span>
+              </h2>
+              <div className="flex items-center justify-center gap-3">
+                <div className="h-px w-16 bg-gradient-to-r from-transparent to-[#d4af37]"></div>
+                <div className="w-2.5 h-2.5 rounded-full bg-[#00796b]"></div>
+                <div className="h-px w-16 bg-gradient-to-l from-transparent to-[#d4af37]"></div>
+              </div>
+            </div>
+            <div className="space-y-4 text-gray-600 text-sm md:text-base leading-relaxed">
+              <p>
+                Sundar Marbles is Faisalabad's trusted <strong className="text-gray-800 font-semibold">marble and granite store</strong>, offering a wide selection of natural stone products for homes, offices, and commercial spaces. Whether you are looking for a reliable <strong className="text-gray-800 font-semibold">granite supplier</strong> or a complete <strong className="text-gray-800 font-semibold">marble shop in Pakistan</strong>, our showroom at Millat Road, Faisalabad has everything you need under one roof.
+              </p>
+              <p>
+                Our product range includes <strong className="text-gray-800 font-semibold">marble flooring tiles</strong>, <strong className="text-gray-800 font-semibold">granite tiles</strong>, <strong className="text-gray-800 font-semibold">mosaic tiles</strong>, marble staircases, bathroom surfaces, and kitchen countertops. We supply premium stone varieties including Black Gold Marble, Star Black Marble, Sunny White Marble, Sunny Grey Marble, and Tropical Grey Granite — all at competitive prices.
+              </p>
+              <p>
+                As a leading <strong className="text-gray-800 font-semibold">marble factory and supplier</strong> since 2008, we serve homeowners, builders, architects, and contractors across Faisalabad and all of Punjab, Pakistan. Visit our showroom or{" "}
+                <Link to="/contact" className="text-[#00796b] font-semibold hover:underline">
+                  contact us for a free quote
+                </Link>{" "}
+                on your next flooring or renovation project.
+              </p>
             </div>
           </div>
         </section>

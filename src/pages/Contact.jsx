@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
+import Seo from "../components/Seo";
 import Loader from "../components/Loader";
 import HoverShadowBg from "../components/HoverShadowBg";
 
@@ -208,6 +209,11 @@ _Sent from Sundar Marbles Website_`;
 
   return (
     <div className="relative min-h-screen bg-[#f7f9f9] text-[#333] overflow-hidden">
+      <Seo
+        title="Contact Us – Get a Free Quote | Sundar Marbles Faisalabad"
+        description="Contact Sundar Marbles for a free quote on marble flooring, granite, staircases and mosaic work. Visit us at Chakki Stop, Millat Road, Faisalabad or call +92-320-6040196."
+        path="/contact"
+      />
       <Navbar />
       <HoverShadowBg mousePosition={mousePosition} />
 

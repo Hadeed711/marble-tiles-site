@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import HoverShadowBg from "../components/HoverShadowBg";
+import Seo from "../components/Seo";
 import hero from "../assets/hero_img1.jpg";
 
 // Import ALL stairs images
@@ -80,6 +81,49 @@ import other13 from "../assets/others/gallery61.jpg";
 
 
 
+
+// Clean line icons for the category filter tabs (inherit the button's text color)
+function CategoryIcon({ type }) {
+  const shapes = {
+    all: (
+      <>
+        <rect x="3" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="3" width="7" height="7" rx="1" />
+        <rect x="3" y="14" width="7" height="7" rx="1" />
+        <rect x="14" y="14" width="7" height="7" rx="1" />
+      </>
+    ),
+    stairs: <path d="M4 20h4v-4h4v-4h4V8h4V4" />,
+    floors: (
+      <>
+        <rect x="3" y="3" width="18" height="18" rx="1" />
+        <path d="M3 9h18M3 15h18M9 3v6M15 9v6M9 15v6" />
+      </>
+    ),
+    mosaic: (
+      <>
+        <path d="M12 3l3.5 3.5L12 10 8.5 6.5z" />
+        <path d="M6.5 11.5L10 15l-3.5 3.5L3 15z" />
+        <path d="M17.5 11.5L21 15l-3.5 3.5L14 15z" />
+      </>
+    ),
+    others: <path d="M12 3l2.1 6.9L21 12l-6.9 2.1L12 21l-2.1-6.9L3 12l6.9-2.1z" />,
+  };
+  return (
+    <svg
+      className="w-4 h-4"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {shapes[type]}
+    </svg>
+  );
+}
 
 export default function Gallery() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -175,34 +219,20 @@ export default function Gallery() {
 
   // Local categories based on actual assets structure
   const localCategories = [
-    { id: "all", name: "All", icon: "🏛️", count: 63 }, // Total images
-    { id: "stairs", name: "Stairs", icon: "🪜", count: 18 }, // 18 stairs images
-    { id: "floors", name: "Floors", icon: "🏢", count: 20 }, // 20 floors images  
-    { id: "mosaic", name: "Mosaic", icon: "🎨", count: 12 }, // 12 mosaic images
-    { id: "others", name: "Others", icon: "🔹", count: 13 }, // 13 others images
+    { id: "all", name: "All", icon: <CategoryIcon type="all" />, count: totalCount },
+    { id: "stairs", name: "Stairs", icon: <CategoryIcon type="stairs" />, count: stairsCount },
+    { id: "floors", name: "Floors", icon: <CategoryIcon type="floors" />, count: floorsCount },
+    { id: "mosaic", name: "Mosaic", icon: <CategoryIcon type="mosaic" />, count: mosaicCount },
+    { id: "others", name: "Others", icon: <CategoryIcon type="others" />, count: othersCount },
   ];
 
   // Initialize gallery with local images
   useEffect(() => {
     setLoading(true);
-    console.log('Using local gallery images:', localGalleryImages.length);
     setGalleryImages(localGalleryImages);
     setCategories(localCategories);
     setLoading(false);
   }, []);
-
-  const getCategoryIcon = (categoryName) => {
-    const icons = {
-      'Stairs': '🪜',
-      'Floors': '🏢',
-      'Kitchen Countertops': '🍳',
-      'Bathroom': '🛁',
-      'Wall Cladding': '🧱',
-      'Mosaic Work': '🎨',
-      'Commercial Projects': '🏢'
-    };
-    return icons[categoryName] || '📸';
-  };
 
   // Filter images based on selected category
   const filteredImages = selectedCategory === "all" 
@@ -216,8 +246,6 @@ export default function Gallery() {
         
         return hasCategory;
       });
-
-  console.log(`Gallery Debug: selectedCategory=${selectedCategory}, totalImages=${galleryImages.length}, filteredImages=${filteredImages.length}`);
 
   const displayedImages = filteredImages.slice(0, visibleImages);
 
@@ -272,6 +300,11 @@ export default function Gallery() {
     <div className="relative bg-[#f9f9f9] text-[#06201d] min-h-screen overflow-hidden">
       <HoverShadowBg mousePosition={mousePosition} />
       <div className="relative z-10">
+        <Seo
+          title="Project Gallery – Marble Flooring, Staircases & Mosaic Work | Sundar Marbles"
+          description="Browse 60+ completed marble and granite projects by Sundar Marbles Faisalabad: luxury marble flooring, staircases, mosaic art, and custom stone installations across Pakistan."
+          path="/gallery"
+        />
         <Navbar />
 
         {/* Hero Section */}
