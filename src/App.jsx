@@ -8,6 +8,7 @@ import Gallery from "./pages/Gallery";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 import SplashLoader from "./components/SplashLoader";
+import ChatBot from "./components/ChatBot";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -32,6 +33,7 @@ function App() {
             <Route path="/gallery" element={<Gallery />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <ChatBot />
         </Router>
       </div>
     </>

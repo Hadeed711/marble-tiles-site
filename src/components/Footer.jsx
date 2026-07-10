@@ -78,10 +78,10 @@ export default function Footer() {
             <p className="flex items-center justify-center sm:justify-start gap-2">
               <Mail size={14} className="sm:w-4 sm:h-4" />
               <a 
-                href="mailto:info@sundarmarbles.com?subject=Inquiry%20about%20Marble%20Products&body=Hello%20Sundar%20Marbles,%0D%0A%0D%0AI%20am%20interested%20in%20your%20marble%20and%20granite%20products.%20Please%20provide%20more%20information.%0D%0A%0D%0AThank%20you." 
+                href="mailto:Talha796a@gmail.com?subject=Inquiry%20about%20Marble%20Products&body=Hello%20Sundar%20Marbles,%0D%0A%0D%0AI%20am%20interested%20in%20your%20marble%20and%20granite%20products.%20Please%20provide%20more%20information.%0D%0A%0D%0AThank%20you." 
                 className="hover:text-[#d4af37] underline transition-colors"
               >
-                info@sundarmarbles.com
+                Talha796a@gmail.com
               </a>
             </p>
             <p className="flex items-start justify-center sm:justify-start gap-2">
