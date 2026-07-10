@@ -102,7 +102,7 @@ const knowledgeBase = [
     id: "website",
     keywords: ["website", "site", "online", "order online", "domain"],
     answer:
-      "🌐 Our official website is https://sundarmarbles.tech — browse Products and the Gallery, and use the Contact page to reach us. You can also order via WhatsApp.",
+      "🌐 Our official website is https://www.sundarmarbles.tech — browse Products and the Gallery, and use the Contact page to reach us. You can also order via WhatsApp.",
   },
 ];
 

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://sundarmarbles.tech/sitemap.xml
+Sitemap: https://www.sundarmarbles.tech/sitemap.xml

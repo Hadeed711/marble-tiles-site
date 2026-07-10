@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 
 // Single place to change when the domain moves
-const SITE_URL = "https://sundarmarbles.tech";
+const SITE_URL = "https://www.sundarmarbles.tech";
 
 function setMeta(attr, key, content) {
   let el = document.head.querySelector(`meta[${attr}="${key}"]`);
