@@ -7,9 +7,6 @@ const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
 const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
 const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER || "923206040196";
-// Optional: CallMeBot API key enables silent auto-send (see .env comments).
-// Without it, the bot falls back to opening WhatsApp with the message prefilled.
-const CALLMEBOT_KEY = import.meta.env.VITE_CALLMEBOT_API_KEY;
 // PLACEHOLDER — set the real receiving inbox in .env when decided
 const RECEIVER_EMAIL = import.meta.env.VITE_CONTACT_RECEIVER_EMAIL || "owner-email-here@example.com";
 
@@ -60,31 +57,6 @@ export default function ChatBot() {
   const sendWhatsApp = async (lead) => {
     const text = `New inquiry from Sundar Marbles website chatbot\n\nName: ${lead.name}\nPhone: ${lead.phone}\n\nMessage:\n${lead.message}`;
 
-    if (CALLMEBOT_KEY) {
-      // Silent auto-send via CallMeBot (no window opens for the visitor)
-      setSending(true);
-      try {
-        await fetch(
-          `https://api.callmebot.com/whatsapp.php?phone=+${WHATSAPP_NUMBER}&text=${encodeURIComponent(
-            text
-          )}&apikey=${CALLMEBOT_KEY}`,
-          { mode: "no-cors" }
-        );
-        push(
-          bot(
-            "📱 Done! Your message has been sent to our team on WhatsApp automatically. We'll contact you soon. Anything else I can help with?",
-            ["💬 Marble prices", "📧 Send Email"]
-          )
-        );
-        setSending(false);
-        return;
-      } catch (err) {
-        console.error("CallMeBot error, falling back to wa.me:", err);
-        setSending(false);
-      }
-    }
-
-    // Fallback: open WhatsApp with the message prefilled
     window.open(
       `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`,
       "_blank",
