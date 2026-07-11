@@ -10,8 +10,12 @@ const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER || "923206040196";
 // PLACEHOLDER — set the real receiving inbox in .env when decided
 const RECEIVER_EMAIL = import.meta.env.VITE_CONTACT_RECEIVER_EMAIL || "owner-email-here@example.com";
 
-const GREETING =
-  "Assalam-o-Alaikum! 👋 I'm the Sundar Marbles assistant. Ask me about marble types, prices, locations, delivery or services — or I can send a WhatsApp message or email to our team for you.";
+// EmailJS temporarily disabled — flip to true to re-enable email sending from the chatbot
+const EMAIL_ENABLED = false;
+
+const GREETING = EMAIL_ENABLED
+  ? "Assalam-o-Alaikum! 👋 I'm the Sundar Marbles assistant. Ask me about marble types, prices, locations, delivery or services — or I can send a WhatsApp message or email to our team for you."
+  : "Assalam-o-Alaikum! 👋 I'm the Sundar Marbles assistant. Ask me about marble types, prices, locations, delivery or services — or I can send a WhatsApp message to our team for you.";
 
 const CONTACT_SUGGESTION =
   "I don't have that information right now. I can connect you with our team instead — choose an option below:";
@@ -20,7 +24,13 @@ const CONTACT_SUGGESTION =
 const PHONE_REGEX = /^(\+?92|0)3\d{2}-?\d{7}$/;
 
 let msgId = 0;
-const bot = (text, suggestions) => ({ id: ++msgId, from: "bot", text, suggestions });
+// When email is disabled, strip email buttons from every suggestion list
+const bot = (text, suggestions) => ({
+  id: ++msgId,
+  from: "bot",
+  text,
+  suggestions: EMAIL_ENABLED ? suggestions : suggestions?.filter((s) => !s.includes("Email")),
+});
 const user = (text) => ({ id: ++msgId, from: "user", text });
 
 export default function ChatBot() {
@@ -45,6 +55,15 @@ export default function ChatBot() {
   const push = (...msgs) => setMessages((prev) => [...prev, ...msgs]);
 
   const startFlow = (channel) => {
+    if (channel === "email" && !EMAIL_ENABLED) {
+      push(
+        bot(
+          "📧 Email is currently unavailable — but I can send a WhatsApp message to our team instead, or you can call us at 041-8816900.",
+          ["📱 Send WhatsApp"]
+        )
+      );
+      return;
+    }
     setFlow({ channel, step: "name", lead: { name: "", phone: "", message: "" } });
     const label = channel === "whatsapp" ? "WhatsApp message" : "email";
     push(
@@ -71,6 +90,7 @@ export default function ChatBot() {
   };
 
   const sendEmail = async (lead) => {
+    if (!EMAIL_ENABLED) return;
     setSending(true);
     try {
       await emailjs.send(

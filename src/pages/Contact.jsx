@@ -11,6 +11,9 @@ const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
 const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
 const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
+// EmailJS temporarily disabled — flip to true to re-enable the contact form
+const EMAIL_ENABLED = false;
+
 export default function Contact() {
   const [formData, setFormData] = useState({
     name: "",
@@ -38,6 +41,7 @@ export default function Contact() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!EMAIL_ENABLED) return;
     setError("");
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -121,6 +125,7 @@ export default function Contact() {
               questions.
             </p>
 
+            {EMAIL_ENABLED ? (
             <motion.form
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
@@ -188,6 +193,75 @@ export default function Contact() {
                 </button>
               </div>
             </motion.form>
+            ) : (
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="bg-white p-10 rounded-2xl shadow-xl flex flex-col items-center text-center space-y-6"
+            >
+              <div className="relative w-24 h-24 flex items-center justify-center">
+                <motion.span
+                  className="absolute inset-0 rounded-full border-2 border-[#00796b]/30"
+                  animate={{ scale: [1, 1.6], opacity: [0.6, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
+                />
+                <motion.span
+                  className="absolute inset-0 rounded-full border-2 border-[#d4af37]/40"
+                  animate={{ scale: [1, 1.6], opacity: [0.6, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeOut", delay: 0.7 }}
+                />
+                <motion.div
+                  className="w-20 h-20 rounded-full bg-[#00796b] flex items-center justify-center text-4xl shadow-lg"
+                  animate={{ y: [0, -8, 0] }}
+                  transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  📞
+                </motion.div>
+              </div>
+
+              <h3 className="text-2xl font-semibold text-[#00796b]">
+                Reach Us Directly
+              </h3>
+              <p className="text-[#555] max-w-sm">
+                Our online contact form is temporarily unavailable. Please call
+                us or visit one of our branches — we'd love to help with your
+                marble, granite or mosaic project.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-3">
+                <a
+                  href="tel:0418816900"
+                  className="bg-[#00796b] text-white px-6 py-3 rounded-full hover:bg-[#d4af37] transition-all duration-300"
+                >
+                  📞 Call 041-8816900
+                </a>
+                <a
+                  href="https://wa.me/923206040196"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="border-2 border-[#00796b] text-[#00796b] px-6 py-3 rounded-full hover:bg-[#00796b] hover:text-white transition-all duration-300"
+                >
+                  💬 WhatsApp Us
+                </a>
+              </div>
+
+              <motion.div
+                className="flex gap-2 pt-2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              >
+                {[0, 1, 2].map((i) => (
+                  <motion.span
+                    key={i}
+                    className="w-2 h-2 rounded-full bg-[#d4af37]"
+                    animate={{ opacity: [0.3, 1, 0.3] }}
+                    transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.3 }}
+                  />
+                ))}
+              </motion.div>
+            </motion.div>
+            )}
           </div>
 
           <div className="space-y-8 md:mt-40">
